@@ -1,0 +1,37 @@
+{
+  "name": "phaser-rpg-postgres",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --import tsx scripts/dev.mjs",
+    "dev:client": "node scripts/devClient.mjs",
+    "server": "node --import tsx src/server/index.ts",
+    "db:schema": "node --import tsx src/server/applySchema.ts",
+    "build": "tsc -b && node scripts/buildClient.mjs",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "pg": "^8.13.1",
+    "phaser": "^3.90.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tsx": "^4.20.5",
+    "vite": "^7.1.2",
+    "zustand": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "typescript": "^5.9.2"
+  }
+}
