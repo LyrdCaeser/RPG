@@ -36,16 +36,22 @@ export function ClassSelectPanel() {
   };
 
   return (
-    <section className="class-select-panel" aria-label="Class selection">
-      <h2>Choose Class</h2>
-      <div>
-        {classes.map((definition) => (
-          <button type="button" key={definition.classId} onClick={() => selectClass(definition.classId)} disabled={busy}>
-            <strong>{definition.name}</strong>
-            <span>{definition.description}</span>
-          </button>
-        ))}
-      </div>
-    </section>
+    <>
+      <div className="class-select-backdrop" aria-hidden="true" />
+      <section className="class-select-panel" aria-label="Class selection" role="dialog" aria-modal="true">
+        <header>
+          <h2>Chọn Lớp</h2>
+          <span>Choose your combat style to enter the world.</span>
+        </header>
+        <div>
+          {classes.map((definition) => (
+            <button type="button" key={definition.classId} onClick={() => selectClass(definition.classId)} disabled={busy}>
+              <strong>{definition.name}</strong>
+              <span>{definition.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

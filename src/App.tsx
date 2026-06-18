@@ -37,42 +37,31 @@ import { BattlePanel } from "./ui/BattlePanel";
 import { InventoryPanel } from "./ui/InventoryPanel";
 import { EquipmentPanel } from "./ui/EquipmentPanel";
 import { ShopPanel } from "./ui/ShopPanel";
-import { EventPanel } from "./ui/EventPanel";
 import { CutsceneOverlay } from "./ui/CutsceneOverlay";
 import { AccountPanel } from "./ui/AccountPanel";
-import { LeaderboardPanel } from "./ui/LeaderboardPanel";
-import { GiftcodeRedeemPanel } from "./ui/GiftcodeRedeemPanel";
 import { MinimapPanel } from "./ui/MinimapPanel";
 import { MapTransitionOverlay } from "./ui/MapTransitionOverlay";
 import { ClassSelectPanel } from "./ui/ClassSelectPanel";
 import { SkillPanel } from "./ui/SkillPanel";
 import { HotbarPanel } from "./ui/HotbarPanel";
-import { CraftingPanel } from "./ui/CraftingPanel";
-import { UpgradePanel } from "./ui/UpgradePanel";
-import { PetPanel } from "./ui/PetPanel";
-import { MountPanel } from "./ui/MountPanel";
-import { AchievementPanel } from "./ui/AchievementPanel";
-import { TitlePanel } from "./ui/TitlePanel";
-import { CollectionPanel } from "./ui/CollectionPanel";
 import { MailboxPanel } from "./ui/MailboxPanel";
-import { SocialPanel } from "./ui/SocialPanel";
 import { ChatPanel } from "./ui/ChatPanel";
-import { PartyPanel } from "./ui/PartyPanel";
-import { PartyHud } from "./ui/PartyHud";
 import { useGameStore } from "./store/useGameStore";
 import type { PlayerSnapshot } from "./data/types";
-import { clearRuntimeContentDefinitions, setRuntimeContentDefinitions } from "./data/runtimeContent";
+import { clearRuntimeContentDefinitions, getRuntimeQuestDefinitions, setRuntimeContentDefinitions } from "./data/runtimeContent";
+import { getObjectiveCount } from "./systems/questSystem";
 
 const AUTOSAVE_MS = 15000;
 const AdminPanel = lazy(() => import("./ui/admin/AdminPanel").then((module) => ({ default: module.AdminPanel })));
 const GuildPanel = lazy(() => import("./ui/GuildPanel").then((module) => ({ default: module.GuildPanel })));
 const PvPPanel = lazy(() => import("./ui/PvPPanel").then((module) => ({ default: module.PvPPanel })));
+type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "admin" | null;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [sessionReady, setSessionReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [guildPanelLoaded, setGuildPanelLoaded] = useState(false);
   const [pvpPanelLoaded, setPvpPanelLoaded] = useState(false);
   const player = useGameStore((state) => state.player);
@@ -96,6 +85,7 @@ export default function App() {
   const guildPanelOpen = useGameStore((state) => state.guildPanelOpen);
   const pvpPanelOpen = useGameStore((state) => state.pvpPanelOpen);
   const latestPlayerRef = useRef<PlayerSnapshot | null>(null);
+  const isAdmin = account?.role === "admin" || account?.role === "owner";
 
   useEffect(() => {
     latestPlayerRef.current = player;
@@ -470,6 +460,22 @@ export default function App() {
     };
   }, [persistPlayer, player?.id]);
 
+  const openPanel = useCallback(
+    (panel: Exclude<ActivePanel, null>) => {
+      setActivePanel((current) => (current === panel ? null : panel));
+    },
+    []
+  );
+
+  const closeActivePanel = useCallback(() => {
+    setActivePanel(null);
+  }, []);
+
+  useEffect(() => {
+    setGuildPanelOpen(activePanel === "guild");
+    setPvpPanelOpen(activePanel === "pvp");
+  }, [activePanel, setGuildPanelOpen, setPvpPanelOpen]);
+
   useEffect(() => {
     if (guildPanelOpen) setGuildPanelLoaded(true);
   }, [guildPanelOpen]);
@@ -477,6 +483,24 @@ export default function App() {
   useEffect(() => {
     if (pvpPanelOpen) setPvpPanelLoaded(true);
   }, [pvpPanelOpen]);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        closeActivePanel();
+      }
+      if (event.key.toLowerCase() === "i" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const target = event.target as HTMLElement | null;
+        const tagName = target?.tagName.toLowerCase();
+        if (tagName === "input" || tagName === "textarea" || target?.isContentEditable) return;
+        event.preventDefault();
+        openPanel("inventory");
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [closeActivePanel, openPanel]);
 
   if (!account || !sessionReady) {
     return (
@@ -503,63 +527,154 @@ export default function App() {
     );
   }
 
+  const classSelectionOpen = !player.classId;
+
   return (
     <main className="shell">
       <GameCanvas initialPlayer={player} />
       <div className="ui-layer">
-        <Hud />
-        <AccountPanel />
-        {!adminPanelOpen ? (
-          <button type="button" className="admin-toggle" onClick={() => setAdminPanelOpen(true)}>
-            Admin
-          </button>
+        {classSelectionOpen ? (
+          <>
+            <ClassSelectPanel />
+            <WarningToast />
+          </>
         ) : (
-          <Suspense fallback={<div className="admin-loading">Loading admin section</div>}>
-            <AdminPanel initialOpen showToggle={false} onClose={() => setAdminPanelOpen(false)} />
-          </Suspense>
+          <>
+            <Hud />
+            <AccountPanel />
+            <GameMenu activePanel={activePanel} isAdmin={isAdmin} onOpen={openPanel} />
+            <QuestTracker />
+            <ChatPanel />
+            <HotbarPanel />
+            <QuestProgressController />
+            {activePanel && (
+              <section className="major-panel-shell" data-panel={activePanel} aria-label={`${activePanel} panel`}>
+                <header>
+                  <strong>{panelTitle(activePanel)}</strong>
+                  <button type="button" onClick={closeActivePanel} aria-label="Close panel">
+                    Close
+                  </button>
+                </header>
+                <div className="major-panel-body">
+                  {activePanel === "inventory" && (
+                    <>
+                      <InventoryPanel />
+                      <EquipmentPanel />
+                    </>
+                  )}
+                  {activePanel === "skills" && <SkillPanel />}
+                  {activePanel === "quests" && <QuestPanel onQuestSaved={() => persistPlayer("quest update")} />}
+                  {activePanel === "map" && <MinimapPanel />}
+                  {activePanel === "mail" && <MailboxPanel />}
+                  {activePanel === "admin" && isAdmin && (
+                    <Suspense fallback={<div className="admin-loading">Loading admin section</div>}>
+                      <AdminPanel initialOpen showToggle={false} onClose={closeActivePanel} />
+                    </Suspense>
+                  )}
+                  {guildPanelLoaded && (
+                    <Suspense fallback={<div className="admin-loading">Loading guild panel</div>}>
+                      <GuildPanel />
+                    </Suspense>
+                  )}
+                  {pvpPanelLoaded && (
+                    <Suspense fallback={<div className="admin-loading">Loading PvP panel</div>}>
+                      <PvPPanel />
+                    </Suspense>
+                  )}
+                </div>
+              </section>
+            )}
+            <WarningToast />
+          </>
         )}
-        <MinimapPanel />
-        <ClassSelectPanel />
-        <SkillPanel />
-        <CraftingPanel />
-        <UpgradePanel />
-        <PetPanel />
-        <MountPanel />
-        <AchievementPanel />
-        <TitlePanel />
-        <CollectionPanel />
-        <MailboxPanel />
-        <SocialPanel />
-        <ChatPanel />
-        <PartyPanel />
-        <PartyHud />
-        <button type="button" className="guild-toggle" onClick={() => setGuildPanelOpen(true)}>Guild</button>
-        <button type="button" className="pvp-toggle" onClick={() => setPvpPanelOpen(true)}>PvP</button>
-        {guildPanelLoaded ? (
-          <Suspense fallback={<div className="admin-loading">Loading guild panel</div>}>
-            <GuildPanel />
-          </Suspense>
-        ) : null}
-        {pvpPanelLoaded ? (
-          <Suspense fallback={<div className="admin-loading">Loading PvP panel</div>}>
-            <PvPPanel />
-          </Suspense>
-        ) : null}
-        <HotbarPanel />
-        <QuestProgressController />
-        <InventoryPanel />
-        <EquipmentPanel />
-        <EventPanel />
-        <LeaderboardPanel />
-        <GiftcodeRedeemPanel />
-        <QuestPanel onQuestSaved={() => persistPlayer("quest update")} />
         <BattlePanel />
         <ShopPanel />
         <DialogueBox onQuestSaved={() => persistPlayer("quest update")} />
         <CutsceneOverlay />
         <MapTransitionOverlay />
-        <WarningToast />
       </div>
     </main>
   );
+}
+
+interface GameMenuProps {
+  activePanel: ActivePanel;
+  isAdmin: boolean;
+  onOpen: (panel: Exclude<ActivePanel, null>) => void;
+}
+
+function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
+  const items: { panel: Exclude<ActivePanel, null>; label: string; shortcut?: string; adminOnly?: boolean }[] = [
+    { panel: "inventory", label: "Inventory", shortcut: "I" },
+    { panel: "skills", label: "Skills" },
+    { panel: "quests", label: "Quests" },
+    { panel: "map", label: "Map" },
+    { panel: "mail", label: "Mail" },
+    { panel: "guild", label: "Guild" },
+    { panel: "pvp", label: "PvP" },
+    { panel: "admin", label: "Admin", adminOnly: true }
+  ];
+
+  return (
+    <nav className="game-menu" aria-label="Game menu">
+      {items
+        .filter((item) => !item.adminOnly || isAdmin)
+        .map((item) => (
+          <button
+            type="button"
+            key={item.panel}
+            data-active={activePanel === item.panel}
+            onClick={() => onOpen(item.panel)}
+            title={item.shortcut ? `${item.label} (${item.shortcut})` : item.label}
+          >
+            <span>{item.label}</span>
+            {item.shortcut && <kbd>{item.shortcut}</kbd>}
+          </button>
+        ))}
+    </nav>
+  );
+}
+
+function QuestTracker() {
+  const [collapsed, setCollapsed] = useState(false);
+  const quests = useGameStore((state) => state.quests);
+  const activeQuests = quests.filter((quest) => quest.state === "active" || quest.state === "completed").slice(0, 3);
+
+  return (
+    <aside className="quest-tracker" data-collapsed={collapsed} aria-label="Quest tracker">
+      <header>
+        <strong>Quests</strong>
+        <button type="button" onClick={() => setCollapsed((value) => !value)}>
+          {collapsed ? "Show" : "Hide"}
+        </button>
+      </header>
+      {!collapsed && (
+        <div>
+          {activeQuests.length === 0 && <p>No active quests</p>}
+          {activeQuests.map((quest) => {
+            const definition = getRuntimeQuestDefinitions().find((candidate) => candidate.id === quest.questId);
+            if (!definition) return null;
+            const firstObjective = definition.objectives[0];
+            const current = firstObjective ? getObjectiveCount(quest, firstObjective) : 0;
+            return (
+              <article key={quest.questId} data-state={quest.state}>
+                <strong>{definition.title}</strong>
+                <span>{quest.state}</span>
+                {firstObjective && (
+                  <small>
+                    {firstObjective.label}: {current}/{firstObjective.requiredCount}
+                  </small>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </aside>
+  );
+}
+
+function panelTitle(panel: Exclude<ActivePanel, null>) {
+  if (panel === "pvp") return "PvP";
+  return panel.charAt(0).toUpperCase() + panel.slice(1);
 }

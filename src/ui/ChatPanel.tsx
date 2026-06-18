@@ -35,7 +35,7 @@ export function ChatPanel() {
   const account = useGameStore((state) => state.account);
   const player = useGameStore((state) => state.player);
   const addWarning = useGameStore((state) => state.addWarning);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ChatTab>("world");
   const [worldMessages, setWorldMessages] = useState<ChatMessage[]>([]);
   const [mapMessages, setMapMessages] = useState<ChatMessage[]>([]);

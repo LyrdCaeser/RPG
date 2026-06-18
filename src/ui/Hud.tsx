@@ -17,7 +17,7 @@ export function Hud() {
         </strong>
       </div>
       <div className="hud-stat">
-        <span>MP</span>
+        <span>Energy</span>
         <strong>
           {player.mp}/{player.maxMp}
         </strong>
@@ -35,8 +35,8 @@ export function Hud() {
         <strong>{player.gold}</strong>
       </div>
       <div className="hud-stat">
-        <span>{player.classId ?? "Class"}</span>
-        <strong>{player.stats ? `${player.stats.attack}/${player.stats.defense}` : "-"}</strong>
+        <span>Class</span>
+        <strong>{player.classId ?? "-"}</strong>
       </div>
       <div className="hud-map">{player.mapId}</div>
       {activeTitle && <div className="hud-title">{activeTitle.name}</div>}

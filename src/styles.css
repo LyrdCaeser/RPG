@@ -783,15 +783,25 @@ button:disabled {
   font-size: 22px;
 }
 
+.class-select-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  background: #030504b8;
+  backdrop-filter: blur(2px);
+}
+
 .class-select-panel {
   position: absolute;
   inset: 50%;
   z-index: 8;
-  width: min(740px, calc(100% - 32px));
+  width: min(780px, calc(100% - 48px));
+  max-height: calc(100% - 72px);
+  overflow: auto;
   transform: translate(-50%, -50%);
   border: 1px solid #6b817a;
   border-radius: 8px;
-  padding: 16px;
+  padding: 18px;
   background: #101917f5;
   box-shadow: 0 18px 54px #0009;
 }
@@ -802,9 +812,19 @@ button:disabled {
   font-size: 18px;
 }
 
+.class-select-panel header {
+  display: grid;
+  gap: 4px;
+}
+
+.class-select-panel header span {
+  color: #a7b9b3;
+  font-size: 12px;
+}
+
 .class-select-panel > div {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
   gap: 8px;
   margin-top: 12px;
 }
@@ -813,7 +833,7 @@ button:disabled {
   display: grid;
   align-content: start;
   gap: 8px;
-  min-height: 148px;
+  min-height: 132px;
   padding: 10px;
   text-align: left;
 }
@@ -907,6 +927,7 @@ button:disabled {
   position: absolute;
   left: 50%;
   bottom: 14px;
+  z-index: 3;
   display: grid;
   grid-template-columns: repeat(4, 82px);
   gap: 8px;
@@ -1486,8 +1507,10 @@ button:disabled {
   position: absolute;
   left: 14px;
   bottom: 98px;
+  z-index: 3;
   min-height: 30px;
   padding: 0 10px;
+  background: #111c19db;
 }
 
 .chat-panel {
@@ -2457,24 +2480,205 @@ button:disabled {
   pointer-events: auto;
 }
 
+.game-menu {
+  position: absolute;
+  left: 14px;
+  top: 154px;
+  z-index: 3;
+  display: grid;
+  gap: 7px;
+  width: 116px;
+}
+
+.game-menu button {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  min-height: 34px;
+  border-color: #536b64;
+  padding: 0 9px;
+  background: #111c19db;
+  box-shadow: 0 8px 22px #0005;
+}
+
+.game-menu button[data-active="true"] {
+  border-color: #d6b75c;
+  color: #fff1b8;
+}
+
+.game-menu kbd {
+  color: #a7b9b3;
+  font-size: 10px;
+  font-family: inherit;
+}
+
+.major-panel-shell {
+  position: absolute;
+  left: 144px;
+  top: 86px;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(430px, calc(100vw - 176px));
+  max-height: calc(100vh - 178px);
+  border: 1px solid #6b817a;
+  border-radius: 8px;
+  background: #101917f2;
+  box-shadow: 0 18px 54px #0009;
+  overflow: hidden;
+}
+
+.major-panel-shell[data-panel="guild"],
+.major-panel-shell[data-panel="pvp"],
+.major-panel-shell[data-panel="admin"] {
+  left: 50%;
+  width: min(920px, calc(100vw - 96px));
+  transform: translateX(-50%);
+}
+
+.major-panel-shell > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #354a44;
+  padding: 9px 10px;
+  background: #172520;
+}
+
+.major-panel-shell > header strong {
+  color: #fff1b8;
+  font-size: 14px;
+}
+
+.major-panel-shell > header button {
+  min-height: 28px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+
+.major-panel-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 10px;
+}
+
+.major-panel-body .inventory-panel,
+.major-panel-body .equipment-panel,
+.major-panel-body .skill-panel,
+.major-panel-body .quest-panel,
+.major-panel-body .minimap-panel,
+.major-panel-body .mailbox-panel,
+.major-panel-body .guild-panel,
+.major-panel-body .pvp-panel,
+.major-panel-body .admin-panel {
+  position: static;
+  inset: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  top: auto;
+  width: auto;
+  max-height: none;
+  margin: 0;
+  transform: none;
+  box-shadow: none;
+}
+
+.major-panel-body .equipment-panel,
+.major-panel-body .mailbox-panel {
+  margin-top: 10px;
+}
+
+.major-panel-body .inventory-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.major-panel-body .minimap-canvas {
+  height: 260px;
+}
+
+.quest-tracker {
+  position: absolute;
+  top: 116px;
+  right: 14px;
+  z-index: 2;
+  width: min(250px, calc(100vw - 28px));
+  border: 1px solid #536b64;
+  border-radius: 8px;
+  background: #111c19dc;
+  box-shadow: 0 12px 30px #0006;
+  overflow: hidden;
+}
+
+.quest-tracker header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: #172520;
+}
+
+.quest-tracker header strong {
+  color: #fff1b8;
+  font-size: 13px;
+}
+
+.quest-tracker button {
+  min-height: 26px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.quest-tracker > div {
+  display: grid;
+  gap: 6px;
+  max-height: 250px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.quest-tracker article {
+  display: grid;
+  gap: 3px;
+  border: 1px solid #354a44;
+  border-radius: 6px;
+  padding: 7px;
+  background: #202f2bcc;
+}
+
+.quest-tracker article[data-state="completed"] {
+  border-color: #72c47b;
+}
+
+.quest-tracker p,
+.quest-tracker span,
+.quest-tracker small {
+  margin: 0;
+  color: #a7b9b3;
+  font-size: 11px;
+}
+
 .hud {
   position: absolute;
   top: 14px;
   left: 14px;
   display: flex;
   align-items: stretch;
-  gap: 8px;
-  max-width: calc(100% - 28px);
-  overflow-x: auto;
+  gap: 6px;
+  max-width: calc(100% - 286px);
+  overflow: hidden;
 }
 
 .hud-stat,
 .hud-map,
 .interact-prompt {
-  min-width: 74px;
+  min-width: 68px;
   border: 1px solid #60766f;
   border-radius: 6px;
-  padding: 8px 10px;
+  padding: 7px 9px;
   background: #17211fcc;
   backdrop-filter: blur(4px);
 }
@@ -2489,7 +2693,7 @@ button:disabled {
 .hud-stat strong {
   display: block;
   margin-top: 2px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .hud-map,
@@ -2501,6 +2705,19 @@ button:disabled {
 
 .interact-prompt {
   color: #ffe89d;
+}
+
+.hud-title {
+  display: grid;
+  place-items: center;
+  min-width: 88px;
+  border: 1px solid #60766f;
+  border-radius: 6px;
+  padding: 7px 9px;
+  color: #fff1b8;
+  background: #17211fcc;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .quest-panel {
@@ -3086,7 +3303,8 @@ button:disabled {
 .warnings {
   position: absolute;
   right: 14px;
-  bottom: 14px;
+  bottom: 104px;
+  z-index: 9;
   display: grid;
   gap: 8px;
   width: min(420px, calc(100% - 28px));
@@ -3112,10 +3330,48 @@ button:disabled {
     padding: 10px;
   }
 
+  .game-menu {
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 92px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: auto;
+  }
+
+  .game-menu button {
+    justify-content: center;
+    min-width: 0;
+    padding: 0 6px;
+  }
+
+  .game-menu kbd {
+    display: none;
+  }
+
+  .major-panel-shell,
+  .major-panel-shell[data-panel="guild"],
+  .major-panel-shell[data-panel="pvp"],
+  .major-panel-shell[data-panel="admin"] {
+    left: 10px;
+    right: 10px;
+    top: 74px;
+    width: auto;
+    max-height: calc(100% - 184px);
+    transform: none;
+  }
+
+  .quest-tracker {
+    top: 92px;
+    right: 10px;
+    width: min(220px, calc(100% - 20px));
+  }
+
   .hud {
     top: 10px;
     left: 10px;
     gap: 6px;
+    max-width: calc(100% - 20px);
   }
 
   .hud-stat,
@@ -3152,6 +3408,18 @@ button:disabled {
     display: none;
   }
 
+  .major-panel-body .inventory-panel,
+  .major-panel-body .equipment-panel,
+  .major-panel-body .minimap-panel,
+  .major-panel-body .skill-panel,
+  .major-panel-body .mailbox-panel {
+    display: grid;
+  }
+
+  .major-panel-body .shop-panel {
+    display: grid;
+  }
+
   .class-select-panel > div {
     grid-template-columns: 1fr;
   }
@@ -3159,6 +3427,7 @@ button:disabled {
   .hotbar-panel {
     grid-template-columns: repeat(4, minmax(60px, 1fr));
     width: calc(100% - 20px);
+    bottom: 10px;
   }
 
   .admin-panel {
