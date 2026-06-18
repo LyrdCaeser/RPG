@@ -1,4 +1,7 @@
 import "dotenv/config";
+import { existsSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import cors from "cors";
 import express from "express";
 import playerRouter from "./routes/player.js";
@@ -41,6 +44,9 @@ import { isAuthError } from "./auth.js";
 const app = express();
 const port = Number(process.env.PORT ?? 8787);
 const host = process.env.HOST ?? "0.0.0.0";
+const serverDir = dirname(fileURLToPath(import.meta.url));
+const clientDistPath = resolve(serverDir, "../../dist");
+const clientIndexPath = join(clientDistPath, "index.html");
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
@@ -91,6 +97,27 @@ app.use("/api/chat", chatRouter);
 app.use("/api/party", partyRouter);
 app.use("/api/guild", guildRouter);
 app.use("/api/pvp", pvpRouter);
+
+const clientStatic = express.static(clientDistPath, { index: false });
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    next();
+    return;
+  }
+  clientStatic(req, res, next);
+});
+
+app.use((req, res, next) => {
+  if ((req.method !== "GET" && req.method !== "HEAD") || req.path.startsWith("/api")) {
+    next();
+    return;
+  }
+  if (!existsSync(clientIndexPath)) {
+    res.status(500).json({ error: "Frontend build is missing. Run npm run build before starting the server." });
+    return;
+  }
+  res.sendFile(clientIndexPath);
+});
 
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   const message = error instanceof Error ? error.message : "Unexpected server error.";
