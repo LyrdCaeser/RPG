@@ -2,6 +2,134 @@
   box-sizing: border-box;
 }
 
+.tutorial-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  z-index: 34;
+  display: grid;
+  gap: 10px;
+  width: min(560px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border: 1px solid rgba(226, 190, 97, 0.78);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(49, 34, 21, 0.94), rgba(15, 26, 25, 0.92)),
+    radial-gradient(circle at top left, rgba(236, 195, 92, 0.18), transparent 42%);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 245, 190, 0.14);
+  color: #fff3c7;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.tutorial-panel header,
+.tutorial-panel footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tutorial-panel h2,
+.tutorial-panel p,
+.tutorial-panel strong,
+.tutorial-panel small {
+  margin: 0;
+}
+
+.tutorial-panel header span,
+.tutorial-panel small {
+  color: #cfddcc;
+  font-size: 12px;
+}
+
+.tutorial-panel h2 {
+  color: #ffd66b;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.tutorial-panel p {
+  color: #e7dcc3;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tutorial-panel > strong {
+  border-left: 3px solid #e2be61;
+  padding-left: 10px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.tutorial-progress {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.tutorial-progress span {
+  display: grid;
+  min-height: 22px;
+  place-items: center;
+  border: 1px solid rgba(151, 124, 74, 0.78);
+  border-radius: 999px;
+  background: rgba(18, 27, 24, 0.78);
+  color: #d6c7a9;
+  font-size: 11px;
+}
+
+.tutorial-progress span[data-complete="true"] {
+  border-color: rgba(109, 215, 139, 0.88);
+  color: #d6ffdf;
+  background: rgba(34, 92, 49, 0.8);
+}
+
+.tutorial-progress span[data-active="true"] {
+  border-color: #ffd66b;
+  color: #14100b;
+  background: linear-gradient(180deg, #ffe189, #d7a947);
+  font-weight: 800;
+}
+
+.tutorial-panel button,
+.tutorial-pill {
+  border: 1px solid rgba(226, 190, 97, 0.75);
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: #fff7d8;
+  background: rgba(64, 47, 28, 0.9);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tutorial-panel button:hover,
+.tutorial-pill:hover {
+  border-color: #ffe189;
+  background: rgba(94, 68, 32, 0.96);
+}
+
+.tutorial-panel button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.tutorial-panel .ghost-button {
+  color: #cfe7df;
+  background: rgba(18, 27, 24, 0.76);
+}
+
+.tutorial-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  z-index: 34;
+  transform: translateX(-50%);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
 html,
 body,
 #root {

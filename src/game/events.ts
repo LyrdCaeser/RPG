@@ -41,6 +41,8 @@ type EventMap = {
   "events:updated": PlayerEvent[];
   "inventory:pickup": { itemId: string; quantity: number };
   "quest:objective": QuestObjectiveEvent;
+  "tutorial:quest-accepted": { questId: string };
+  "tutorial:manual-save": undefined;
   "chat:open-private": SocialProfileSummary;
   "chat:open-guild": undefined;
 };

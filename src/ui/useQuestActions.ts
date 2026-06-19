@@ -8,6 +8,7 @@ import {
 } from "../systems/questSystem";
 import { useGameStore } from "../store/useGameStore";
 import type { QuestObjectiveEvent, QuestState } from "../data/types";
+import { gameEvents } from "../game/events";
 
 export function useQuestActions() {
   const player = useGameStore((state) => state.player);
@@ -50,6 +51,7 @@ export function useQuestActions() {
       const nextState: QuestState = areQuestObjectivesComplete(definition, nextQuest) ? "completed" : "active";
       const response = await updateQuest(quest.questId, nextState, progress);
       setQuests(replaceQuest(quests, response.quest));
+      gameEvents.emit("tutorial:quest-accepted", { questId: quest.questId });
     } catch {
       addWarning("Không nhận được nhiệm vụ. Nhiệm vụ chưa được lưu vào cơ sở dữ liệu.");
     }

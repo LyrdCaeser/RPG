@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { continueAsGuest, loginAccount, registerAccount, savePlayer } from "../api/client";
 import { useGameStore } from "../store/useGameStore";
+import { gameEvents } from "../game/events";
 
 interface AccountPanelProps {
   onReady?: () => void;
@@ -56,6 +57,7 @@ export function AccountPanel({ onReady }: AccountPanelProps) {
     try {
       await savePlayer(player);
       setSaveStatus("saved");
+      gameEvents.emit("tutorial:manual-save", undefined);
     } catch {
       setSaveStatus("failed");
       addWarning("Không lưu được nhân vật. Dữ liệu chưa được lưu lên máy chủ.");

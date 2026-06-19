@@ -16,6 +16,7 @@ import {
   collectGatheringNode,
   chooseGuidanceLevel,
   completeStoryIntro,
+  saveTutorialProgress,
   recordPartyExpEvent,
   recordPartyLootEvent,
   saveBattleResult,
@@ -26,6 +27,7 @@ import {
   savePlayerMapChange,
   savePetCombatResult,
   saveSkillCastResult,
+  skipTutorial,
   saveAchievementProgress,
   saveCollectionProgress,
   updateInventoryItem
@@ -53,8 +55,10 @@ import { ChatPanel } from "./ui/ChatPanel";
 import { SettingsPanel } from "./ui/SettingsPanel";
 import { IntroStoryPanel } from "./ui/IntroStoryPanel";
 import { GuidanceLevelPanel } from "./ui/GuidanceLevelPanel";
+import { TutorialPanel } from "./ui/TutorialPanel";
 import { useGameStore } from "./store/useGameStore";
-import type { GuidanceLevel, PlayerSnapshot } from "./data/types";
+import type { GuidanceLevel, PlayerOnboarding, PlayerSnapshot, TutorialStepId } from "./data/types";
+import { getCurrentTutorialStep } from "./data/tutorial";
 import { clearRuntimeContentDefinitions, getRuntimeQuestDefinitions, setRuntimeContentDefinitions } from "./data/runtimeContent";
 import { getObjectiveCount } from "./systems/questSystem";
 
@@ -74,6 +78,8 @@ export default function App() {
   const [pvpPanelLoaded, setPvpPanelLoaded] = useState(false);
   const [introSaving, setIntroSaving] = useState(false);
   const [guidanceSaving, setGuidanceSaving] = useState<GuidanceLevel | null>(null);
+  const [tutorialBusyStep, setTutorialBusyStep] = useState<TutorialStepId | "skip" | null>(null);
+  const [tutorialCollapsed, setTutorialCollapsed] = useState(false);
   const player = useGameStore((state) => state.player);
   const account = useGameStore((state) => state.account);
   const onboarding = useGameStore((state) => state.onboarding);
@@ -98,6 +104,7 @@ export default function App() {
   const guildPanelOpen = useGameStore((state) => state.guildPanelOpen);
   const pvpPanelOpen = useGameStore((state) => state.pvpPanelOpen);
   const latestPlayerRef = useRef<PlayerSnapshot | null>(null);
+  const onboardingRef = useRef<PlayerOnboarding | null>(null);
   const lastSavedSignatureRef = useRef<string>("");
   const autosaveTimerRef = useRef<number | null>(null);
   const isAdmin = account?.role === "admin" || account?.role === "owner";
@@ -105,6 +112,10 @@ export default function App() {
   useEffect(() => {
     latestPlayerRef.current = player;
   }, [player]);
+
+  useEffect(() => {
+    onboardingRef.current = onboarding;
+  }, [onboarding]);
 
   useEffect(() => {
     if (!sessionReady || !account) return;
@@ -234,12 +245,54 @@ export default function App() {
     (guidanceLevel: GuidanceLevel) => {
       setGuidanceSaving(guidanceLevel);
       void chooseGuidanceLevel(guidanceLevel)
-        .then((response) => setOnboarding(response.onboarding))
+        .then((response) => {
+          setOnboarding(response.onboarding);
+          onboardingRef.current = response.onboarding;
+          setTutorialCollapsed(false);
+        })
         .catch(() => addWarning("Không lưu được cấp hướng dẫn. Vui lòng thử lại."))
         .finally(() => setGuidanceSaving(null));
     },
     [addWarning, setOnboarding]
   );
+
+  const advanceTutorial = useCallback(
+    (stepId: TutorialStepId) => {
+      const current = onboardingRef.current;
+      if (!current?.guidanceLevel || current.tutorialStatus === "completed" || current.tutorialStatus === "skipped") return;
+      const completedSteps = current.tutorialCompletedSteps ?? [];
+      const expectedStep = current.tutorialStepId ?? getCurrentTutorialStep(completedSteps);
+      if (expectedStep !== stepId && !completedSteps.includes(stepId)) return;
+
+      setTutorialBusyStep(stepId);
+      void saveTutorialProgress(stepId)
+        .then((response) => {
+          setOnboarding(response.onboarding);
+          onboardingRef.current = response.onboarding;
+        })
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : "Không lưu được tiến trình hướng dẫn.";
+          addWarning(message);
+        })
+        .finally(() => setTutorialBusyStep(null));
+    },
+    [addWarning, setOnboarding]
+  );
+
+  const skipCurrentTutorial = useCallback(() => {
+    setTutorialBusyStep("skip");
+    void skipTutorial()
+      .then((response) => {
+        setOnboarding(response.onboarding);
+        onboardingRef.current = response.onboarding;
+        setTutorialCollapsed(false);
+      })
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : "Không bỏ qua được hướng dẫn.";
+        addWarning(message);
+      })
+      .finally(() => setTutorialBusyStep(null));
+  }, [addWarning, setOnboarding]);
 
   const persistPlayer = useCallback(
     async (reason: string, snapshot?: PlayerSnapshot | null) => {
@@ -253,12 +306,13 @@ export default function App() {
         lastSavedSignatureRef.current = playerSaveSignature(response.player);
         setPlayer(response.player);
         setSaveStatus("saved");
+        advanceTutorial("save_progress");
       } catch {
         setSaveStatus("failed");
         addWarning(`Lưu thất bại sau ${reason}. Tiến trình chỉ còn trong bộ nhớ của phiên này.`);
       }
     },
-    [addWarning, setPlayer, setSaveStatus]
+    [addWarning, advanceTutorial, setPlayer, setSaveStatus]
   );
 
   const reportAchievementProgress = useCallback(
@@ -293,6 +347,11 @@ export default function App() {
     const offPlayerChanged = gameEvents.on("player:changed", (nextPlayer) => {
       latestPlayerRef.current = nextPlayer;
       setPlayer(nextPlayer);
+      advanceTutorial("move");
+    });
+
+    const offDialogueOpen = gameEvents.on("dialogue:open", (npc) => {
+      if (npc.id === "elder-mira" || npc.name.includes("Mira")) advanceTutorial("talk_to_mira");
     });
 
     const offMapChanged = gameEvents.on("map:changed", (nextPlayer) => {
@@ -316,6 +375,7 @@ export default function App() {
     const offBattleResult = gameEvents.on("battle:result", (result) => {
       latestPlayerRef.current = result.player;
       setPlayer(result.player);
+      if (result.enemyId === "slime-01") advanceTutorial("defeat_green_slime");
       void saveBattleResult(result.enemyId, result.player)
         .then((response) => {
           latestPlayerRef.current = response.player;
@@ -381,6 +441,7 @@ export default function App() {
     });
 
     const offInventoryPickup = gameEvents.on("inventory:pickup", (pickup) => {
+      advanceTutorial("collect_item");
       void updateInventoryItem(pickup.itemId, pickup.quantity)
         .then((snapshot) => {
           setInventorySnapshot(snapshot);
@@ -419,6 +480,7 @@ export default function App() {
     const offSkillCastResult = gameEvents.on("skill:cast-result", (result) => {
       latestPlayerRef.current = result.player;
       setPlayer(result.player);
+      advanceTutorial("use_first_skill");
       void saveSkillCastResult(result)
         .then((response) => {
           latestPlayerRef.current = response.player;
@@ -452,6 +514,7 @@ export default function App() {
     const offGatheringCollect = gameEvents.on("gathering:collect", (node) => {
       const playerToSave = latestPlayerRef.current;
       if (!playerToSave) return;
+      advanceTutorial("collect_item");
       void collectGatheringNode(node.nodeId, playerToSave)
         .then((response) => {
           latestPlayerRef.current = response.player;
@@ -479,8 +542,17 @@ export default function App() {
         });
     });
 
+    const offTutorialQuestAccepted = gameEvents.on("tutorial:quest-accepted", (event) => {
+      if (event.questId === "first-steps") advanceTutorial("accept_first_quest");
+    });
+
+    const offTutorialManualSave = gameEvents.on("tutorial:manual-save", () => {
+      advanceTutorial("save_progress");
+    });
+
     return () => {
       offPlayerChanged();
+      offDialogueOpen();
       offMapChanged();
       offBattleResult();
       offBossResult();
@@ -490,10 +562,13 @@ export default function App() {
       offSkillCastResult();
       offPetCombatResult();
       offGatheringCollect();
+      offTutorialQuestAccepted();
+      offTutorialManualSave();
     };
   }, [
     addWarning,
     addNotice,
+    advanceTutorial,
     persistPlayer,
     reportAchievementProgress,
     reportCollectionProgress,
@@ -534,9 +609,10 @@ export default function App() {
 
   const openPanel = useCallback(
     (panel: Exclude<ActivePanel, null>) => {
+      if (panel === "inventory") advanceTutorial("open_inventory");
       setActivePanel((current) => (current === panel ? null : panel));
     },
-    []
+    [advanceTutorial]
   );
 
   const closeActivePanel = useCallback(() => {
@@ -559,6 +635,16 @@ export default function App() {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        const currentOnboarding = onboardingRef.current;
+        if (
+          currentOnboarding?.guidanceLevel &&
+          currentOnboarding.guidanceLevel !== "newbie" &&
+          currentOnboarding.tutorialStatus !== "completed" &&
+          currentOnboarding.tutorialStatus !== "skipped"
+        ) {
+          setTutorialCollapsed(true);
+          return;
+        }
         closeActivePanel();
       }
       if (event.key.toLowerCase() === "i" && !event.ctrlKey && !event.metaKey && !event.altKey) {
@@ -618,6 +704,8 @@ export default function App() {
   }
 
   const classSelectionOpen = Boolean(player && !player.classId);
+  const tutorialActive =
+    Boolean(onboarding.guidanceLevel) && onboarding.tutorialStatus !== "completed" && onboarding.tutorialStatus !== "skipped";
 
   return (
     <main className="shell">
@@ -636,6 +724,17 @@ export default function App() {
             <QuestTracker />
             <ChatPanel />
             <HotbarPanel />
+            {tutorialActive && (
+              <TutorialPanel
+                onboarding={onboarding}
+                collapsed={tutorialCollapsed}
+                busyStep={tutorialBusyStep}
+                onSkip={skipCurrentTutorial}
+                onFinish={() => advanceTutorial("complete_newbie")}
+                onExpand={() => setTutorialCollapsed(false)}
+                onCollapse={() => setTutorialCollapsed(true)}
+              />
+            )}
             <QuestProgressController />
             {activePanel && (
               <section className="major-panel-shell" data-panel={activePanel} aria-label={`Bảng ${panelTitle(activePanel)}`}>

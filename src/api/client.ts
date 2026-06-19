@@ -89,6 +89,7 @@ import type {
   PlayerPet,
   PlayerQuest,
   PlayerSettings,
+  TutorialStepId,
   PvPMatchState,
   PvPPenalty,
   PvPPenaltyAppealStatus,
@@ -243,6 +244,20 @@ export function chooseGuidanceLevel(guidanceLevel: GuidanceLevel) {
   return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/onboarding/guidance-level", {
     method: "POST",
     body: JSON.stringify({ guidanceLevel })
+  });
+}
+
+export function saveTutorialProgress(stepId: TutorialStepId) {
+  return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/tutorial/progress", {
+    method: "POST",
+    body: JSON.stringify({ stepId })
+  });
+}
+
+export function skipTutorial() {
+  return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/tutorial/skip", {
+    method: "POST",
+    body: JSON.stringify({})
   });
 }
 

@@ -1,7 +1,17 @@
 import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { Router } from "express";
-import type { AccountSession, GuidanceLevel, PlayerOnboarding, PlayerSettings, UiLanguage, UserAccount } from "../../data/types.js";
+import { getCurrentTutorialStep, isTutorialStepId, tutorialStepOrder } from "../../data/tutorial.js";
+import type {
+  AccountSession,
+  GuidanceLevel,
+  PlayerOnboarding,
+  PlayerSettings,
+  TutorialStatus,
+  TutorialStepId,
+  UiLanguage,
+  UserAccount
+} from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { query } from "../db.js";
 
@@ -14,7 +24,9 @@ const defaultSettings: PlayerSettings = {
   language: "vi"
 };
 const defaultOnboarding: PlayerOnboarding = {
-  introCompleted: false
+  introCompleted: false,
+  tutorialStatus: "not_started",
+  tutorialCompletedSteps: []
 };
 
 interface UserRow {
@@ -192,10 +204,90 @@ router.post("/onboarding/guidance-level", async (req, res, next) => {
       res.status(400).json({ error: "Cần hoàn thành phần mở đầu trước." });
       return;
     }
-    const onboarding = {
+    const onboarding: PlayerOnboarding = {
       ...current,
       guidanceLevel,
+      tutorialStatus: current.tutorialStatus === "completed" || current.tutorialStatus === "skipped" ? current.tutorialStatus : "active",
+      tutorialStepId: current.tutorialStepId ?? "move",
+      tutorialCompletedSteps: current.tutorialCompletedSteps ?? [],
       updatedAt: new Date().toISOString()
+    };
+    await saveOnboarding(userId, onboarding);
+    res.json({ onboarding });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/tutorial/progress", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    const stepId = normalizeTutorialStepId(req.body.stepId);
+    if (!stepId) {
+      res.status(400).json({ error: "Bước hướng dẫn không hợp lệ." });
+      return;
+    }
+
+    const current = await getOnboarding(userId);
+    if (!current.guidanceLevel) {
+      res.status(400).json({ error: "Cần chọn cấp hướng dẫn trước." });
+      return;
+    }
+    if (current.tutorialStatus === "completed" || current.tutorialStatus === "skipped") {
+      res.json({ onboarding: current });
+      return;
+    }
+
+    const completedSteps = normalizeTutorialCompletedSteps(current.tutorialCompletedSteps);
+    const expectedStep = getCurrentTutorialStep(completedSteps);
+    if (!completedSteps.includes(stepId) && stepId !== expectedStep) {
+      res.status(400).json({ error: "Cần hoàn thành bước hướng dẫn hiện tại trước." });
+      return;
+    }
+
+    const nextCompletedSteps = completedSteps.includes(stepId) ? completedSteps : [...completedSteps, stepId];
+    const nextStep = getCurrentTutorialStep(nextCompletedSteps);
+    const tutorialStatus: TutorialStatus = stepId === "complete_newbie" ? "completed" : "active";
+    const now = new Date().toISOString();
+    const onboarding: PlayerOnboarding = {
+      ...current,
+      tutorialStatus,
+      tutorialStepId: tutorialStatus === "completed" ? "complete_newbie" : nextStep,
+      tutorialCompletedSteps: nextCompletedSteps,
+      tutorialRewardClaimed: Boolean(current.tutorialRewardClaimed),
+      tutorialUpdatedAt: now,
+      updatedAt: now
+    };
+    await saveOnboarding(userId, onboarding);
+    res.json({ onboarding });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/tutorial/skip", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    const current = await getOnboarding(userId);
+    if (!current.guidanceLevel) {
+      res.status(400).json({ error: "Cần chọn cấp hướng dẫn trước." });
+      return;
+    }
+    if (current.guidanceLevel === "newbie") {
+      res.status(403).json({ error: "Người Mới cần hoàn thành hướng dẫn." });
+      return;
+    }
+    if (current.tutorialStatus === "completed" || current.tutorialStatus === "skipped") {
+      res.json({ onboarding: current });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const onboarding: PlayerOnboarding = {
+      ...current,
+      tutorialStatus: "skipped",
+      tutorialUpdatedAt: now,
+      updatedAt: now
     };
     await saveOnboarding(userId, onboarding);
     res.json({ onboarding });
@@ -349,12 +441,43 @@ function normalizeGuidanceLevel(value: unknown): GuidanceLevel | null {
   return null;
 }
 
+function normalizeTutorialStatus(value: unknown, guidanceLevel?: GuidanceLevel): TutorialStatus {
+  if (value === "not_started" || value === "active" || value === "skipped" || value === "completed") return value;
+  return guidanceLevel ? "active" : "not_started";
+}
+
+function normalizeTutorialStepId(value: unknown): TutorialStepId | null {
+  return isTutorialStepId(value) ? value : null;
+}
+
+function normalizeTutorialCompletedSteps(value: unknown): TutorialStepId[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<TutorialStepId>();
+  for (const step of value) {
+    if (isTutorialStepId(step)) seen.add(step);
+  }
+  return tutorialStepOrder.filter((step) => seen.has(step));
+}
+
 function normalizeOnboarding(value: unknown, updatedAt?: Date): PlayerOnboarding {
   const raw = typeof value === "object" && value ? (value as Partial<PlayerOnboarding>) : {};
   const guidanceLevel = normalizeGuidanceLevel(raw.guidanceLevel);
+  const tutorialCompletedSteps = normalizeTutorialCompletedSteps(raw.tutorialCompletedSteps);
+  const tutorialStatus = normalizeTutorialStatus(raw.tutorialStatus, guidanceLevel ?? undefined);
+  const tutorialStepId =
+    tutorialStatus === "completed"
+      ? "complete_newbie"
+      : tutorialStatus === "active"
+        ? normalizeTutorialStepId(raw.tutorialStepId) ?? getCurrentTutorialStep(tutorialCompletedSteps)
+        : undefined;
   return {
     introCompleted: Boolean(raw.introCompleted),
     ...(guidanceLevel ? { guidanceLevel } : {}),
+    tutorialStatus,
+    ...(tutorialStepId ? { tutorialStepId } : {}),
+    tutorialCompletedSteps,
+    tutorialRewardClaimed: Boolean(raw.tutorialRewardClaimed),
+    ...(raw.tutorialUpdatedAt ? { tutorialUpdatedAt: String(raw.tutorialUpdatedAt) } : {}),
     ...(updatedAt ? { updatedAt: updatedAt.toISOString() } : raw.updatedAt ? { updatedAt: String(raw.updatedAt) } : {})
   };
 }

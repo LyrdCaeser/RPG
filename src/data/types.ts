@@ -27,6 +27,17 @@ export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
 export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
+export type TutorialStatus = "not_started" | "active" | "skipped" | "completed";
+export type TutorialStepId =
+  | "move"
+  | "talk_to_mira"
+  | "accept_first_quest"
+  | "collect_item"
+  | "defeat_green_slime"
+  | "open_inventory"
+  | "use_first_skill"
+  | "save_progress"
+  | "complete_newbie";
 export type LeaderboardCategory = "level" | "exp" | "gold" | "boss_kills" | "event_points" | "combat_power";
 export type AchievementCategory =
   | "combat"
@@ -1543,6 +1554,11 @@ export interface PlayerSettings {
 export interface PlayerOnboarding {
   introCompleted: boolean;
   guidanceLevel?: GuidanceLevel;
+  tutorialStatus?: TutorialStatus;
+  tutorialStepId?: TutorialStepId;
+  tutorialCompletedSteps?: TutorialStepId[];
+  tutorialRewardClaimed?: boolean;
+  tutorialUpdatedAt?: string;
   updatedAt?: string;
 }
 
