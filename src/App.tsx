@@ -6,6 +6,7 @@ import {
   getMapDefinitions,
   getMountsMe,
   getPetsMe,
+  getPlayerOnboarding,
   getPlayerMe,
   getPlayerSettings,
   getQuestsMe,
@@ -13,6 +14,8 @@ import {
   getTitlesMe,
   getContentDefinitions,
   collectGatheringNode,
+  chooseGuidanceLevel,
+  completeStoryIntro,
   recordPartyExpEvent,
   recordPartyLootEvent,
   saveBattleResult,
@@ -48,8 +51,10 @@ import { HotbarPanel } from "./ui/HotbarPanel";
 import { MailboxPanel } from "./ui/MailboxPanel";
 import { ChatPanel } from "./ui/ChatPanel";
 import { SettingsPanel } from "./ui/SettingsPanel";
+import { IntroStoryPanel } from "./ui/IntroStoryPanel";
+import { GuidanceLevelPanel } from "./ui/GuidanceLevelPanel";
 import { useGameStore } from "./store/useGameStore";
-import type { PlayerSnapshot } from "./data/types";
+import type { GuidanceLevel, PlayerSnapshot } from "./data/types";
 import { clearRuntimeContentDefinitions, getRuntimeQuestDefinitions, setRuntimeContentDefinitions } from "./data/runtimeContent";
 import { getObjectiveCount } from "./systems/questSystem";
 
@@ -67,8 +72,11 @@ export default function App() {
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [guildPanelLoaded, setGuildPanelLoaded] = useState(false);
   const [pvpPanelLoaded, setPvpPanelLoaded] = useState(false);
+  const [introSaving, setIntroSaving] = useState(false);
+  const [guidanceSaving, setGuidanceSaving] = useState<GuidanceLevel | null>(null);
   const player = useGameStore((state) => state.player);
   const account = useGameStore((state) => state.account);
+  const onboarding = useGameStore((state) => state.onboarding);
   const setPlayer = useGameStore((state) => state.setPlayer);
   const setQuests = useGameStore((state) => state.setQuests);
   const setInventorySnapshot = useGameStore((state) => state.setInventorySnapshot);
@@ -80,6 +88,7 @@ export default function App() {
   const setTitles = useGameStore((state) => state.setTitles);
   const setCollections = useGameStore((state) => state.setCollections);
   const setSettings = useGameStore((state) => state.setSettings);
+  const setOnboarding = useGameStore((state) => state.setOnboarding);
   const updateStoredEvent = useGameStore((state) => state.updateEvent);
   const setSaveStatus = useGameStore((state) => state.setSaveStatus);
   const addWarning = useGameStore((state) => state.addWarning);
@@ -125,7 +134,8 @@ export default function App() {
           achievementsResponse,
           titlesResponse,
           collectionsResponse,
-          settingsResponse
+          settingsResponse,
+          onboardingResponse
         ] = await Promise.all([
           getPlayerMe(),
           getQuestsMe(),
@@ -165,7 +175,8 @@ export default function App() {
                 language: "vi" as const
               }
             };
-          })
+          }),
+          getPlayerOnboarding()
         ]);
         if (!mounted) return;
         setPlayer(playerResponse.player);
@@ -180,6 +191,7 @@ export default function App() {
         setTitles(titlesResponse.titles);
         setCollections(collectionsResponse.collections, collectionsResponse.claimedSetIds);
         setSettings(settingsResponse.settings);
+        setOnboarding(onboardingResponse.onboarding);
         setLoading(false);
       } catch (error) {
         if (!mounted) return;
@@ -206,8 +218,28 @@ export default function App() {
     setQuests,
     setSkills,
     setSettings,
+    setOnboarding,
     setTitles
   ]);
+
+  const completeIntro = useCallback(() => {
+    setIntroSaving(true);
+    void completeStoryIntro()
+      .then((response) => setOnboarding(response.onboarding))
+      .catch(() => addWarning("Không lưu được phần mở đầu. Vui lòng thử lại."))
+      .finally(() => setIntroSaving(false));
+  }, [addWarning, setOnboarding]);
+
+  const chooseGuidance = useCallback(
+    (guidanceLevel: GuidanceLevel) => {
+      setGuidanceSaving(guidanceLevel);
+      void chooseGuidanceLevel(guidanceLevel)
+        .then((response) => setOnboarding(response.onboarding))
+        .catch(() => addWarning("Không lưu được cấp hướng dẫn. Vui lòng thử lại."))
+        .finally(() => setGuidanceSaving(null));
+    },
+    [addWarning, setOnboarding]
+  );
 
   const persistPlayer = useCallback(
     async (reason: string, snapshot?: PlayerSnapshot | null) => {
@@ -563,6 +595,24 @@ export default function App() {
           <p>{loadError ?? "Không có dữ liệu nhân vật."}</p>
           <p>Hãy khởi động máy chủ API với PostgreSQL `DATABASE_URL` hợp lệ, rồi tải lại trang.</p>
         </section>
+      </main>
+    );
+  }
+
+  if (!onboarding?.introCompleted) {
+    return (
+      <main className="shell shell-centered story-shell">
+        <IntroStoryPanel busy={introSaving} onComplete={completeIntro} />
+        <WarningToast />
+      </main>
+    );
+  }
+
+  if (!onboarding.guidanceLevel) {
+    return (
+      <main className="shell shell-centered story-shell">
+        <GuidanceLevelPanel busyLevel={guidanceSaving} onChoose={chooseGuidance} />
+        <WarningToast />
       </main>
     );
   }

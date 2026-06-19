@@ -13,6 +13,7 @@ import type {
   PlayerEvent,
   PlayerHotbarSlot,
   PlayerMount,
+  PlayerOnboarding,
   PlayerPet,
   PlayerQuest,
   PlayerSettings,
@@ -33,6 +34,7 @@ interface GameState {
   account: UserAccount | null;
   saveStatus: SaveStatus;
   settings: PlayerSettings;
+  onboarding: PlayerOnboarding | null;
   quests: PlayerQuest[];
   nearbyNpc: NpcDefinition | null;
   activeDialogueNpc: NpcDefinition | null;
@@ -65,6 +67,7 @@ interface GameState {
   setAccount: (account: UserAccount | null) => void;
   setSaveStatus: (status: SaveStatus) => void;
   setSettings: (settings: PlayerSettings) => void;
+  setOnboarding: (onboarding: PlayerOnboarding) => void;
   setQuests: (quests: PlayerQuest[]) => void;
   updateQuest: (quest: PlayerQuest) => void;
   setNearbyNpc: (npc: NpcDefinition | null) => void;
@@ -114,6 +117,7 @@ export const useGameStore = create<GameState>((set) => ({
     effectsVolume: 80,
     language: "vi"
   },
+  onboarding: null,
   quests: [],
   nearbyNpc: null,
   activeDialogueNpc: null,
@@ -159,6 +163,7 @@ export const useGameStore = create<GameState>((set) => ({
   setAccount: (account) => set({ account }),
   setSaveStatus: (saveStatus) => set({ saveStatus }),
   setSettings: (settings) => set({ settings }),
+  setOnboarding: (onboarding) => set({ onboarding }),
   setQuests: (quests) => set({ quests }),
   updateQuest: (quest) =>
     set((state) => ({

@@ -76,6 +76,228 @@ button:disabled {
   font-size: 24px;
 }
 
+.story-shell {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(214, 183, 92, 0.2), transparent 30%),
+    radial-gradient(circle at 15% 85%, rgba(74, 122, 89, 0.28), transparent 34%),
+    linear-gradient(180deg, #17231f, #060908);
+}
+
+.story-panel {
+  width: min(960px, calc(100vw - 48px));
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  border: 1px solid #a68a4e;
+  border-radius: 14px;
+  padding: 20px;
+  color: #f6f2dd;
+  background:
+    linear-gradient(180deg, rgba(33, 45, 39, 0.97), rgba(10, 16, 15, 0.98)),
+    radial-gradient(circle at 50% 0, rgba(214, 183, 92, 0.2), transparent 38%);
+  box-shadow: 0 28px 80px #000d, inset 0 1px 0 #fff4c924;
+}
+
+.intro-story-panel {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.story-banner {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid #6d895f;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 68% 18%, #fff3c4 0 22px, transparent 23px),
+    linear-gradient(180deg, #27324b 0%, #33533f 52%, #16231d 100%);
+  box-shadow: inset 0 0 70px #0007;
+}
+
+.story-banner::before {
+  content: "";
+  position: absolute;
+  inset: auto -10% 0;
+  height: 42%;
+  background:
+    linear-gradient(145deg, transparent 0 42%, #213922 43% 60%, transparent 61%),
+    linear-gradient(35deg, transparent 0 34%, #31562f 35% 56%, transparent 57%);
+}
+
+.story-banner::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 28%;
+  background: linear-gradient(180deg, transparent, rgba(5, 10, 8, 0.8));
+}
+
+.story-castle,
+.story-tower {
+  position: absolute;
+  bottom: 108px;
+  background: linear-gradient(180deg, #5d5b66, #2e3438);
+  border: 1px solid #151a1b;
+  box-shadow: inset 0 1px 0 #ffffff20;
+}
+
+.story-castle {
+  left: 50%;
+  width: 120px;
+  height: 78px;
+  border-radius: 8px 8px 0 0;
+  transform: translateX(-50%);
+}
+
+.story-castle::before,
+.story-castle::after {
+  content: "";
+  position: absolute;
+  top: -28px;
+  width: 30px;
+  height: 28px;
+  background: #4d5058;
+  border: 1px solid #151a1b;
+}
+
+.story-castle::before {
+  left: 12px;
+}
+
+.story-castle::after {
+  right: 12px;
+}
+
+.story-tower {
+  width: 42px;
+  height: 112px;
+  border-radius: 10px 10px 0 0;
+}
+
+.story-tower.left {
+  left: 24%;
+}
+
+.story-tower.right {
+  right: 24%;
+}
+
+.story-forest {
+  position: absolute;
+  bottom: 55px;
+  width: 110px;
+  height: 95px;
+  background:
+    radial-gradient(circle at 30% 34%, #4b8757 0 21px, transparent 22px),
+    radial-gradient(circle at 58% 23%, #376c44 0 28px, transparent 29px),
+    radial-gradient(circle at 76% 50%, #2d5c3d 0 24px, transparent 25px);
+}
+
+.story-forest.one {
+  left: 22px;
+}
+
+.story-forest.two {
+  right: 16px;
+}
+
+.story-copy {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+
+.story-copy.compact {
+  text-align: center;
+}
+
+.story-kicker {
+  margin: 0;
+  color: #d6b75c;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.story-copy h1 {
+  margin: 0;
+  color: #fff3c4;
+  font-size: 40px;
+  letter-spacing: 0;
+  text-shadow: 0 3px 0 #0008;
+}
+
+.story-copy p {
+  margin: 0;
+  color: #d8e4dc;
+  line-height: 1.65;
+}
+
+.story-panel footer {
+  align-self: end;
+}
+
+.story-panel footer button,
+.guidance-card button {
+  min-height: 42px;
+}
+
+.guidance-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.guidance-card {
+  display: grid;
+  gap: 10px;
+  min-height: 280px;
+  border: 1px solid #5f765f;
+  border-radius: 12px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(24, 39, 33, 0.95), rgba(9, 16, 14, 0.95));
+  box-shadow: inset 0 1px 0 #fff4c918, 0 16px 34px #0007;
+}
+
+.guidance-card[data-required="true"] {
+  border-color: #d6b75c;
+}
+
+.guidance-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #d6b75c;
+  border-radius: 50%;
+  color: #fff3c4;
+  background: radial-gradient(circle, #6d5528, #182820);
+  font-weight: 800;
+}
+
+.guidance-card h2 {
+  margin: 0;
+  color: #fff3c4;
+  font-size: 22px;
+}
+
+.guidance-card strong {
+  color: #d6b75c;
+}
+
+.guidance-card p {
+  margin: 0;
+  color: #c8d6cf;
+  line-height: 1.5;
+}
+
 .account-start {
   display: grid;
   gap: 14px;
@@ -3756,6 +3978,25 @@ button:disabled {
     width: auto;
     max-height: calc(100% - 118px);
     transform: none;
+  }
+
+  .intro-story-panel,
+  .guidance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .story-panel {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    padding: 14px;
+  }
+
+  .story-banner {
+    min-height: 220px;
+  }
+
+  .story-copy h1 {
+    font-size: 30px;
   }
 
   .pvp-tabs,

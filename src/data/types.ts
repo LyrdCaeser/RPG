@@ -26,6 +26,7 @@ export type AccountType = "guest" | "registered";
 export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
+export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
 export type LeaderboardCategory = "level" | "exp" | "gold" | "boss_kills" | "event_points" | "combat_power";
 export type AchievementCategory =
   | "combat"
@@ -1537,6 +1538,12 @@ export interface PlayerSettings {
   effectsSoundEnabled: boolean;
   effectsVolume: number;
   language: UiLanguage;
+}
+
+export interface PlayerOnboarding {
+  introCompleted: boolean;
+  guidanceLevel?: GuidanceLevel;
+  updatedAt?: string;
 }
 
 export interface LeaderboardResponse {

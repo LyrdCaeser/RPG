@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { Router } from "express";
-import type { AccountSession, PlayerSettings, UiLanguage, UserAccount } from "../../data/types.js";
+import type { AccountSession, GuidanceLevel, PlayerOnboarding, PlayerSettings, UiLanguage, UserAccount } from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { query } from "../db.js";
 
@@ -12,6 +12,9 @@ const defaultSettings: PlayerSettings = {
   effectsSoundEnabled: true,
   effectsVolume: 80,
   language: "vi"
+};
+const defaultOnboarding: PlayerOnboarding = {
+  introCompleted: false
 };
 
 interface UserRow {
@@ -151,6 +154,56 @@ router.post("/settings", async (req, res, next) => {
   }
 });
 
+router.get("/onboarding", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    res.json({ onboarding: await getOnboarding(userId) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/onboarding/intro-complete", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    const current = await getOnboarding(userId);
+    const onboarding = {
+      ...current,
+      introCompleted: true,
+      updatedAt: new Date().toISOString()
+    };
+    await saveOnboarding(userId, onboarding);
+    res.json({ onboarding });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/onboarding/guidance-level", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    const guidanceLevel = normalizeGuidanceLevel(req.body.guidanceLevel);
+    if (!guidanceLevel) {
+      res.status(400).json({ error: "Cấp hướng dẫn không hợp lệ." });
+      return;
+    }
+    const current = await getOnboarding(userId);
+    if (!current.introCompleted) {
+      res.status(400).json({ error: "Cần hoàn thành phần mở đầu trước." });
+      return;
+    }
+    const onboarding = {
+      ...current,
+      guidanceLevel,
+      updatedAt: new Date().toISOString()
+    };
+    await saveOnboarding(userId, onboarding);
+    res.json({ onboarding });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/delete", async (req, res, next) => {
   try {
     const userId = await getCurrentUserId(req);
@@ -249,6 +302,27 @@ async function getSettings(userId: string) {
   return normalizeSettings(result.rows[0]?.flag_value ?? defaultSettings);
 }
 
+async function getOnboarding(userId: string): Promise<PlayerOnboarding> {
+  const result = await query<{ flag_value: PlayerOnboarding; updated_at: Date }>(
+    `select flag_value, updated_at
+     from player_flags
+     where user_id = $1 and flag_key = 'story_onboarding'`,
+    [userId]
+  );
+  const row = result.rows[0];
+  return normalizeOnboarding(row?.flag_value ?? defaultOnboarding, row?.updated_at);
+}
+
+async function saveOnboarding(userId: string, onboarding: PlayerOnboarding) {
+  await query(
+    `insert into player_flags (user_id, flag_key, flag_value)
+     values ($1, 'story_onboarding', $2::jsonb)
+     on conflict (user_id, flag_key)
+     do update set flag_value = excluded.flag_value, updated_at = now()`,
+    [userId, JSON.stringify(onboarding)]
+  );
+}
+
 function normalizeSettings(value: unknown): PlayerSettings {
   const raw = typeof value === "object" && value ? (value as Partial<PlayerSettings>) : {};
   return {
@@ -268,6 +342,21 @@ function clampVolume(value: unknown) {
 
 function normalizeLanguage(value: unknown): UiLanguage {
   return value === "en" || value === "zh" || value === "ja" ? value : "vi";
+}
+
+function normalizeGuidanceLevel(value: unknown): GuidanceLevel | null {
+  if (value === "newbie" || value === "trainer" || value === "master_cg") return value;
+  return null;
+}
+
+function normalizeOnboarding(value: unknown, updatedAt?: Date): PlayerOnboarding {
+  const raw = typeof value === "object" && value ? (value as Partial<PlayerOnboarding>) : {};
+  const guidanceLevel = normalizeGuidanceLevel(raw.guidanceLevel);
+  return {
+    introCompleted: Boolean(raw.introCompleted),
+    ...(guidanceLevel ? { guidanceLevel } : {}),
+    ...(updatedAt ? { updatedAt: updatedAt.toISOString() } : raw.updatedAt ? { updatedAt: String(raw.updatedAt) } : {})
+  };
 }
 
 export default router;

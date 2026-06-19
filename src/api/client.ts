@@ -56,6 +56,7 @@ import type {
   DuelResult,
   FriendRequest,
   FriendSummary,
+  GuidanceLevel,
   Guild,
   GuildApplication,
   GuildBossDefinition,
@@ -84,6 +85,7 @@ import type {
   PlayerEvent,
   MailboxMessage,
   PlayerMount,
+  PlayerOnboarding,
   PlayerPet,
   PlayerQuest,
   PlayerSettings,
@@ -223,6 +225,24 @@ export function savePlayerSettings(settings: PlayerSettings) {
   return requestJson<{ settings: PlayerSettings }>("/api/account/settings", {
     method: "POST",
     body: JSON.stringify({ settings })
+  });
+}
+
+export function getPlayerOnboarding() {
+  return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/onboarding");
+}
+
+export function completeStoryIntro() {
+  return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/onboarding/intro-complete", {
+    method: "POST",
+    body: JSON.stringify({})
+  });
+}
+
+export function chooseGuidanceLevel(guidanceLevel: GuidanceLevel) {
+  return requestJson<{ onboarding: PlayerOnboarding }>("/api/account/onboarding/guidance-level", {
+    method: "POST",
+    body: JSON.stringify({ guidanceLevel })
   });
 }
 
