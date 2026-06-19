@@ -43,7 +43,7 @@ export function AccountPanel({ onReady }: AccountPanelProps) {
   if (!account) {
     return (
       <section className="account-start" aria-label="Bắt đầu tài khoản">
-        <h1>Phaser RPG</h1>
+        <h1>RPG Phiêu Lưu</h1>
         <button type="button" disabled={busy} onClick={startGuest}>
           Chơi bằng tài khoản khách
         </button>

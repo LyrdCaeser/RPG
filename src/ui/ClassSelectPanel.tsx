@@ -43,12 +43,17 @@ export function ClassSelectPanel() {
           <h2>Chọn Lớp</h2>
           <span>Chọn phong cách chiến đấu để bước vào thế giới.</span>
         </header>
-        <div>
+        <div className="class-select-grid">
           {classes.map((definition) => (
-            <button type="button" key={definition.classId} onClick={() => selectClass(definition.classId)} disabled={busy}>
-              <strong>{definition.name}</strong>
-              <span>{definition.description}</span>
-            </button>
+            <article className="class-card" key={definition.classId}>
+              <div>
+                <strong>{definition.name}</strong>
+                <span>{definition.description}</span>
+              </div>
+              <button type="button" onClick={() => selectClass(definition.classId)} disabled={busy}>
+                Chọn lớp này
+              </button>
+            </article>
           ))}
         </div>
       </section>
