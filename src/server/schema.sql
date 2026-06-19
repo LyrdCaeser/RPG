@@ -246,6 +246,32 @@ create table if not exists player_admin_grants (
   created_at timestamptz not null default now()
 );
 
+create table if not exists player_wallets (
+  user_id uuid primary key references users(id) on delete cascade,
+  red_ruby bigint not null default 0 check (red_ruby >= 0),
+  gold bigint not null default 0 check (gold >= 0),
+  blue_diamond bigint not null default 0 check (blue_diamond >= 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists wallet_transactions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  currency text not null check (currency in ('red_ruby', 'gold', 'blue_diamond')),
+  amount bigint not null check (amount <> 0),
+  balance_after bigint not null check (balance_after >= 0),
+  reason text not null,
+  source text not null,
+  reference_id text,
+  created_by uuid references users(id) on delete set null,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  check (length(trim(reason)) > 0 and length(reason) <= 240),
+  check (length(source) > 0 and length(source) <= 80),
+  check (reference_id is null or length(reference_id) <= 160)
+);
+
 create table if not exists player_map_progress (
   user_id uuid not null references users(id) on delete cascade,
   map_id text not null,
@@ -1414,6 +1440,9 @@ create index if not exists player_bans_user_active_idx on player_bans (user_id, 
 create index if not exists giftcodes_code_idx on giftcodes (code);
 create index if not exists giftcode_redemptions_user_idx on giftcode_redemptions (user_id, redeemed_at desc);
 create index if not exists player_admin_grants_user_created_idx on player_admin_grants (user_id, created_at desc);
+create index if not exists wallet_transactions_user_created_idx on wallet_transactions (user_id, created_at desc);
+create index if not exists wallet_transactions_currency_created_idx on wallet_transactions (currency, created_at desc);
+create index if not exists wallet_transactions_created_by_idx on wallet_transactions (created_by, created_at desc);
 create index if not exists player_map_progress_user_visited_idx on player_map_progress (user_id, visited_at desc);
 create index if not exists dungeon_results_user_created_idx on dungeon_results (user_id, created_at desc);
 create index if not exists dungeon_clears_user_idx on dungeon_clears (user_id, clear_count desc);

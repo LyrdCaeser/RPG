@@ -127,8 +127,10 @@ import type {
   SocialProfileSummary,
   EventReward,
   TitleDefinition,
-  RuntimeContentDefinitions
-  , UpgradeRuleDefinition
+  RuntimeContentDefinitions,
+  UpgradeRuleDefinition,
+  WalletCurrency,
+  WalletSnapshot
 } from "../data/types";
 
 let sessionToken: string | null = null;
@@ -275,8 +277,29 @@ export function logoutAccount() {
   setSessionToken(null);
 }
 
+export function getWalletMe() {
+  return requestJson<WalletSnapshot>("/api/wallet/me");
+}
+
 export function getAdminMe() {
   return requestJson<AdminMe>("/api/admin/me");
+}
+
+export function getAdminWalletForPlayer(userId: string) {
+  return requestJson<WalletSnapshot>(`/api/admin/wallet/player/${encodeURIComponent(userId)}`);
+}
+
+export function adjustAdminWallet(payload: {
+  userId: string;
+  currency: WalletCurrency;
+  amount: number;
+  reason: string;
+  referenceId?: string;
+}) {
+  return requestJson<{ balances: WalletSnapshot["balances"]; transaction: WalletSnapshot["transactions"][number] }>("/api/admin/wallet/adjust", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
 }
 
 export function getAdminDashboard() {

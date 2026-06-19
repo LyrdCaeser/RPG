@@ -22,7 +22,8 @@ import type {
   PlayerTitle,
   CutsceneDefinition,
   SaveStatus,
-  UserAccount
+  UserAccount,
+  WalletSnapshot
 } from "../data/types";
 
 interface BattleState {
@@ -35,6 +36,7 @@ interface GameState {
   saveStatus: SaveStatus;
   settings: PlayerSettings;
   onboarding: PlayerOnboarding | null;
+  wallet: WalletSnapshot | null;
   quests: PlayerQuest[];
   nearbyNpc: NpcDefinition | null;
   activeDialogueNpc: NpcDefinition | null;
@@ -68,6 +70,7 @@ interface GameState {
   setSaveStatus: (status: SaveStatus) => void;
   setSettings: (settings: PlayerSettings) => void;
   setOnboarding: (onboarding: PlayerOnboarding) => void;
+  setWallet: (wallet: WalletSnapshot) => void;
   setQuests: (quests: PlayerQuest[]) => void;
   updateQuest: (quest: PlayerQuest) => void;
   setNearbyNpc: (npc: NpcDefinition | null) => void;
@@ -118,6 +121,7 @@ export const useGameStore = create<GameState>((set) => ({
     language: "vi"
   },
   onboarding: null,
+  wallet: null,
   quests: [],
   nearbyNpc: null,
   activeDialogueNpc: null,
@@ -164,6 +168,7 @@ export const useGameStore = create<GameState>((set) => ({
   setSaveStatus: (saveStatus) => set({ saveStatus }),
   setSettings: (settings) => set({ settings }),
   setOnboarding: (onboarding) => set({ onboarding }),
+  setWallet: (wallet) => set({ wallet }),
   setQuests: (quests) => set({ quests }),
   updateQuest: (quest) =>
     set((state) => ({

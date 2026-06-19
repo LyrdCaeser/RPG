@@ -9,6 +9,7 @@ import {
   getPlayerOnboarding,
   getPlayerMe,
   getPlayerSettings,
+  getWalletMe,
   getQuestsMe,
   getSkillsMe,
   getTitlesMe,
@@ -53,6 +54,7 @@ import { HotbarPanel } from "./ui/HotbarPanel";
 import { MailboxPanel } from "./ui/MailboxPanel";
 import { ChatPanel } from "./ui/ChatPanel";
 import { SettingsPanel } from "./ui/SettingsPanel";
+import { WalletPanel } from "./ui/WalletPanel";
 import { IntroStoryPanel } from "./ui/IntroStoryPanel";
 import { GuidanceLevelPanel } from "./ui/GuidanceLevelPanel";
 import { TutorialPanel } from "./ui/TutorialPanel";
@@ -67,7 +69,7 @@ const AUTOSAVE_INTERVAL_MS = 20000;
 const AdminPanel = lazy(() => import("./ui/admin/AdminPanel").then((module) => ({ default: module.AdminPanel })));
 const GuildPanel = lazy(() => import("./ui/GuildPanel").then((module) => ({ default: module.GuildPanel })));
 const PvPPanel = lazy(() => import("./ui/PvPPanel").then((module) => ({ default: module.PvPPanel })));
-type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "settings" | "admin" | null;
+type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "wallet" | "settings" | "admin" | null;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -95,6 +97,7 @@ export default function App() {
   const setCollections = useGameStore((state) => state.setCollections);
   const setSettings = useGameStore((state) => state.setSettings);
   const setOnboarding = useGameStore((state) => state.setOnboarding);
+  const setWallet = useGameStore((state) => state.setWallet);
   const updateStoredEvent = useGameStore((state) => state.updateEvent);
   const setSaveStatus = useGameStore((state) => state.setSaveStatus);
   const addWarning = useGameStore((state) => state.addWarning);
@@ -146,7 +149,8 @@ export default function App() {
           titlesResponse,
           collectionsResponse,
           settingsResponse,
-          onboardingResponse
+          onboardingResponse,
+          walletResponse
         ] = await Promise.all([
           getPlayerMe(),
           getQuestsMe(),
@@ -187,7 +191,11 @@ export default function App() {
               }
             };
           }),
-          getPlayerOnboarding()
+          getPlayerOnboarding(),
+          getWalletMe().catch(() => {
+            addWarning("Không tải được ví tiền.");
+            return null;
+          })
         ]);
         if (!mounted) return;
         setPlayer(playerResponse.player);
@@ -203,6 +211,7 @@ export default function App() {
         setCollections(collectionsResponse.collections, collectionsResponse.claimedSetIds);
         setSettings(settingsResponse.settings);
         setOnboarding(onboardingResponse.onboarding);
+        if (walletResponse) setWallet(walletResponse);
         setLoading(false);
       } catch (error) {
         if (!mounted) return;
@@ -230,6 +239,7 @@ export default function App() {
     setSkills,
     setSettings,
     setOnboarding,
+    setWallet,
     setTitles
   ]);
 
@@ -755,6 +765,7 @@ export default function App() {
                   {activePanel === "quests" && <QuestPanel onQuestSaved={() => persistPlayer("quest update")} />}
                   {activePanel === "map" && <MinimapPanel />}
                   {activePanel === "mail" && <MailboxPanel />}
+                  {activePanel === "wallet" && <WalletPanel />}
                   {activePanel === "settings" && <SettingsPanel onClose={closeActivePanel} />}
                   {activePanel === "admin" && isAdmin && (
                     <Suspense fallback={<div className="admin-loading">Đang tải khu quản trị</div>}>
@@ -800,6 +811,7 @@ function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
     { panel: "quests", label: "Nhiệm vụ" },
     { panel: "map", label: "Bản đồ" },
     { panel: "mail", label: "Thư" },
+    { panel: "wallet", label: "Ví tiền" },
     { panel: "guild", label: "Bang hội" },
     { panel: "pvp", label: "Đấu trường" },
     { panel: "settings", label: "Cài đặt" },
@@ -872,6 +884,7 @@ function panelTitle(panel: Exclude<ActivePanel, null>) {
     quests: "Nhiệm vụ",
     map: "Bản đồ",
     mail: "Thư",
+    wallet: "Ví tiền",
     guild: "Bang hội",
     pvp: "Đấu trường",
     settings: "Cài đặt",

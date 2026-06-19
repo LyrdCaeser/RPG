@@ -26,6 +26,7 @@ export type AccountType = "guest" | "registered";
 export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
+export type WalletCurrency = "red_ruby" | "gold" | "blue_diamond";
 export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
 export type TutorialStatus = "not_started" | "active" | "skipped" | "completed";
 export type TutorialStepId =
@@ -1551,6 +1552,31 @@ export interface PlayerSettings {
   effectsSoundEnabled: boolean;
   effectsVolume: number;
   language: UiLanguage;
+}
+
+export interface WalletBalances {
+  redRuby: number;
+  gold: number;
+  blueDiamond: number;
+}
+
+export interface WalletTransaction {
+  id: string;
+  userId: string;
+  currency: WalletCurrency;
+  amount: number;
+  balanceAfter: number;
+  reason: string;
+  source: string;
+  referenceId?: string;
+  createdBy?: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface WalletSnapshot {
+  balances: WalletBalances;
+  transactions: WalletTransaction[];
 }
 
 export interface PlayerOnboarding {
