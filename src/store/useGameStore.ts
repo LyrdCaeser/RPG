@@ -15,6 +15,7 @@ import type {
   PlayerMount,
   PlayerPet,
   PlayerQuest,
+  PlayerSettings,
   PlayerSkillState,
   PlayerSnapshot,
   PlayerTitle,
@@ -31,6 +32,7 @@ interface GameState {
   player: PlayerSnapshot | null;
   account: UserAccount | null;
   saveStatus: SaveStatus;
+  settings: PlayerSettings;
   quests: PlayerQuest[];
   nearbyNpc: NpcDefinition | null;
   activeDialogueNpc: NpcDefinition | null;
@@ -62,6 +64,7 @@ interface GameState {
   setPlayer: (player: PlayerSnapshot) => void;
   setAccount: (account: UserAccount | null) => void;
   setSaveStatus: (status: SaveStatus) => void;
+  setSettings: (settings: PlayerSettings) => void;
   setQuests: (quests: PlayerQuest[]) => void;
   updateQuest: (quest: PlayerQuest) => void;
   setNearbyNpc: (npc: NpcDefinition | null) => void;
@@ -104,6 +107,13 @@ export const useGameStore = create<GameState>((set) => ({
   player: null,
   account: null,
   saveStatus: "idle",
+  settings: {
+    gameSoundEnabled: true,
+    musicVolume: 70,
+    effectsSoundEnabled: true,
+    effectsVolume: 80,
+    language: "vi"
+  },
   quests: [],
   nearbyNpc: null,
   activeDialogueNpc: null,
@@ -148,6 +158,7 @@ export const useGameStore = create<GameState>((set) => ({
     })),
   setAccount: (account) => set({ account }),
   setSaveStatus: (saveStatus) => set({ saveStatus }),
+  setSettings: (settings) => set({ settings }),
   setQuests: (quests) => set({ quests }),
   updateQuest: (quest) =>
     set((state) => ({

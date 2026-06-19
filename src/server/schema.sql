@@ -7,9 +7,14 @@ create table if not exists users (
   display_name text not null default 'Adventurer',
   account_type text not null default 'guest' check (account_type in ('guest', 'registered')),
   role text not null default 'player' check (role in ('player', 'moderator', 'admin', 'owner')),
+  password_hash text,
+  deleted_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table users add column if not exists password_hash text;
+alter table users add column if not exists deleted_at timestamptz;
 
 create table if not exists player_sessions (
   id uuid primary key default gen_random_uuid(),

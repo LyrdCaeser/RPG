@@ -196,28 +196,38 @@ export class RpgScene extends Phaser.Scene {
   private createPlayerTexture(key: string, accent: number) {
     if (this.textures.exists(key)) return;
     const graphics = this.make.graphics({ x: 0, y: 0 }, false);
-    graphics.fillStyle(0x07110f, 0.36);
-    graphics.fillEllipse(18, 38, 26, 8);
-    graphics.fillStyle(0x1a2220, 1);
-    graphics.fillRoundedRect(10, 17, 16, 18, 4);
+    graphics.fillStyle(0x07110f, 0.38);
+    graphics.fillEllipse(20, 42, 30, 9);
+    graphics.lineStyle(3, 0x07110f, 0.85);
+    graphics.strokeRoundedRect(11, 17, 18, 20, 7);
+    graphics.strokeCircle(20, 12, 9);
+    graphics.fillStyle(0x202826, 1);
+    graphics.fillRoundedRect(11, 17, 18, 20, 7);
     graphics.fillStyle(accent, 1);
-    graphics.fillRoundedRect(12, 18, 12, 13, 3);
-    graphics.fillStyle(0xf2c39b, 1);
-    graphics.fillCircle(18, 12, 8);
-    graphics.fillStyle(0x493026, 1);
-    graphics.fillRect(11, 6, 14, 5);
-    graphics.fillStyle(0xf7fbf8, 1);
-    graphics.fillRect(15, 12, 2, 2);
-    graphics.fillRect(20, 12, 2, 2);
-    graphics.fillStyle(0x1b211f, 1);
-    graphics.fillRect(12, 32, 5, 7);
-    graphics.fillRect(20, 32, 5, 7);
+    graphics.fillRoundedRect(14, 18, 12, 15, 5);
+    graphics.fillStyle(0xf4c79f, 1);
+    graphics.fillCircle(20, 12, 8);
+    graphics.fillStyle(0x4f3226, 1);
+    graphics.fillCircle(15, 7, 5);
+    graphics.fillCircle(22, 6, 6);
+    graphics.fillRect(13, 5, 15, 6);
+    graphics.fillStyle(0xfff8e6, 1);
+    graphics.fillCircle(17, 13, 1.4);
+    graphics.fillCircle(23, 13, 1.4);
+    graphics.fillStyle(0x2a1712, 1);
+    graphics.fillCircle(17, 13, 0.7);
+    graphics.fillCircle(23, 13, 0.7);
+    graphics.lineStyle(3, 0x141c1a, 1);
+    graphics.strokeLineShape(new Phaser.Geom.Line(12, 23, 6, 31));
+    graphics.strokeLineShape(new Phaser.Geom.Line(28, 23, 34, 31));
+    graphics.fillStyle(0x151918, 1);
+    graphics.fillRoundedRect(13, 34, 6, 8, 2);
+    graphics.fillRoundedRect(21, 34, 6, 8, 2);
     graphics.lineStyle(2, 0xf8e7b0, 1);
-    graphics.strokeLineShape(new Phaser.Geom.Line(27, 18, 32, 10));
-    graphics.lineStyle(2, 0x09100e, 0.75);
-    graphics.strokeRoundedRect(10, 17, 16, 18, 4);
-    graphics.strokeCircle(18, 12, 8);
-    graphics.generateTexture(key, 36, 44);
+    graphics.strokeLineShape(new Phaser.Geom.Line(30, 19, 36, 9));
+    graphics.lineStyle(1, 0xffffff, 0.28);
+    graphics.strokeRoundedRect(15, 19, 10, 11, 4);
+    graphics.generateTexture(key, 40, 48);
     graphics.destroy();
   }
 
@@ -225,44 +235,63 @@ export class RpgScene extends Phaser.Scene {
     if (this.textures.exists(key)) return;
     const graphics = this.make.graphics({ x: 0, y: 0 }, false);
     graphics.fillStyle(0x07110f, 0.32);
-    graphics.fillEllipse(18, 38, 24, 8);
-    graphics.fillStyle(0x2c463b, 1);
-    graphics.fillRoundedRect(10, 16, 16, 19, 4);
-    graphics.fillStyle(0xd6b75c, 1);
-    graphics.fillRect(12, 18, 12, 5);
+    graphics.fillEllipse(20, 42, 28, 8);
+    graphics.lineStyle(3, 0x0e1714, 0.8);
+    graphics.strokeRoundedRect(10, 16, 20, 22, 7);
+    graphics.fillStyle(0x2d5748, 1);
+    graphics.fillRoundedRect(10, 16, 20, 22, 7);
+    graphics.fillStyle(0xd8bd6a, 1);
+    graphics.fillRoundedRect(13, 19, 14, 6, 3);
     graphics.fillStyle(0xf0c7a0, 1);
-    graphics.fillCircle(18, 11, 8);
-    graphics.fillStyle(0x5c3a22, 1);
-    graphics.fillRect(11, 6, 14, 4);
-    graphics.lineStyle(2, 0x101917, 0.85);
-    graphics.strokeRoundedRect(10, 16, 16, 19, 4);
-    graphics.strokeCircle(18, 11, 8);
-    graphics.generateTexture(key, 36, 44);
+    graphics.fillCircle(20, 11, 8);
+    graphics.fillStyle(0x6a4323, 1);
+    graphics.fillCircle(15, 7, 4);
+    graphics.fillCircle(23, 7, 5);
+    graphics.fillRect(12, 5, 16, 5);
+    graphics.fillStyle(0xffffff, 0.92);
+    graphics.fillCircle(17, 12, 1.2);
+    graphics.fillCircle(23, 12, 1.2);
+    graphics.lineStyle(2, 0xe7d390, 1);
+    graphics.strokeLineShape(new Phaser.Geom.Line(9, 17, 3, 13));
+    graphics.strokeLineShape(new Phaser.Geom.Line(31, 17, 37, 13));
+    graphics.fillStyle(0x16221d, 1);
+    graphics.fillRoundedRect(14, 36, 5, 7, 2);
+    graphics.fillRoundedRect(22, 36, 5, 7, 2);
+    graphics.generateTexture(key, 40, 48);
     graphics.destroy();
   }
 
   private createEnemyTexture(key: string) {
     if (this.textures.exists(key)) return;
     const graphics = this.make.graphics({ x: 0, y: 0 }, false);
-    graphics.fillStyle(0x070909, 0.36);
-    graphics.fillEllipse(18, 36, 28, 9);
-    graphics.fillStyle(0x481f24, 1);
-    graphics.fillCircle(18, 19, 13);
-    graphics.fillStyle(0x7a2e35, 1);
-    graphics.fillRoundedRect(8, 18, 20, 16, 5);
-    graphics.fillStyle(0xffe19a, 1);
-    graphics.fillTriangle(10, 8, 13, 2, 16, 10);
-    graphics.fillTriangle(20, 10, 24, 2, 26, 9);
-    graphics.fillStyle(0xffd5d5, 1);
-    graphics.fillRect(13, 17, 3, 3);
-    graphics.fillRect(21, 17, 3, 3);
-    graphics.fillStyle(0x15100f, 1);
-    graphics.fillRect(12, 32, 5, 6);
-    graphics.fillRect(21, 32, 5, 6);
-    graphics.lineStyle(2, 0x160b0c, 0.9);
-    graphics.strokeCircle(18, 19, 13);
-    graphics.strokeRoundedRect(8, 18, 20, 16, 5);
-    graphics.generateTexture(key, 36, 42);
+    graphics.fillStyle(0x070909, 0.4);
+    graphics.fillEllipse(22, 42, 34, 10);
+    graphics.lineStyle(3, 0x130909, 0.95);
+    graphics.strokeCircle(22, 19, 15);
+    graphics.strokeRoundedRect(8, 18, 28, 20, 9);
+    graphics.fillStyle(0x4c2029, 1);
+    graphics.fillCircle(22, 19, 15);
+    graphics.fillStyle(0x7f3340, 1);
+    graphics.fillRoundedRect(8, 18, 28, 20, 9);
+    graphics.fillStyle(0xffdf8d, 1);
+    graphics.fillTriangle(8, 9, 13, 1, 18, 11);
+    graphics.fillTriangle(26, 11, 32, 1, 36, 10);
+    graphics.fillStyle(0xfff0c2, 1);
+    graphics.fillCircle(16, 18, 2.2);
+    graphics.fillCircle(28, 18, 2.2);
+    graphics.fillStyle(0x2a0707, 1);
+    graphics.fillCircle(16, 18, 1);
+    graphics.fillCircle(28, 18, 1);
+    graphics.fillStyle(0xf6d6c2, 1);
+    graphics.fillTriangle(18, 25, 20, 31, 22, 25);
+    graphics.fillTriangle(24, 25, 26, 31, 28, 25);
+    graphics.lineStyle(4, 0x2a1015, 1);
+    graphics.strokeLineShape(new Phaser.Geom.Line(9, 29, 2, 37));
+    graphics.strokeLineShape(new Phaser.Geom.Line(35, 29, 42, 37));
+    graphics.fillStyle(0x170d0f, 1);
+    graphics.fillRoundedRect(13, 36, 7, 7, 3);
+    graphics.fillRoundedRect(25, 36, 7, 7, 3);
+    graphics.generateTexture(key, 44, 48);
     graphics.destroy();
   }
 
@@ -426,7 +455,7 @@ export class RpgScene extends Phaser.Scene {
 
   private createPlayer() {
     this.player = this.physics.add.sprite(this.snapshot.x, this.snapshot.y, this.playerTextureKey());
-    this.player.setCircle(12, 6, 12);
+    this.player.setCircle(12, 8, 14);
     this.player.setDepth(this.snapshot.y + 10);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.walls);
@@ -546,7 +575,7 @@ export class RpgScene extends Phaser.Scene {
 
   private createEnemyRuntime(definition: EnemyDefinition): EnemyRuntime {
       const sprite = this.physics.add.sprite(definition.x, definition.y, "enemy");
-      sprite.setCircle(13, 5, 7);
+      sprite.setCircle(15, 7, 11);
       sprite.setCollideWorldBounds(true);
       sprite.setDepth(definition.y + 8);
 
@@ -963,7 +992,7 @@ export class RpgScene extends Phaser.Scene {
       attacking: true,
       attackCooldownMs: PLAYER_ATTACK_COOLDOWN_MS,
       lastDamageDealt: damage,
-      lastMessage: `Hit ${target.definition.name}`
+      lastMessage: `Đánh trúng ${target.definition.name}`
     });
 
     if (target.hp <= 0) {
@@ -1078,7 +1107,7 @@ export class RpgScene extends Phaser.Scene {
     enemy.hpText.setVisible(false);
     enemy.hpBarBg.setVisible(false);
     enemy.hpBarFill.setVisible(false);
-    this.showFloatingText(enemy.spawnX, enemy.spawnY - 32, "Defeated", "#b8f2bd");
+    this.showFloatingText(enemy.spawnX, enemy.spawnY - 32, "Đã hạ gục", "#b8f2bd");
     this.spawnDrops(enemy);
 
     const expReward = bossDefinition ? 0 : enemy.definition.expReward;
@@ -1231,24 +1260,24 @@ export class RpgScene extends Phaser.Scene {
     const state = useGameStore.getState();
     for (const requirement of portal.requirements ?? []) {
       if (requirement.type === "minimum_level" && this.snapshot.level < (requirement.level ?? 1)) {
-        return `${portal.name} requires level ${requirement.level ?? 1}.`;
+        return `${portal.name} yêu cầu cấp ${requirement.level ?? 1}.`;
       }
       if (requirement.type === "quest_state") {
         const quest = state.quests.find((candidate) => candidate.questId === requirement.questId);
         if (!quest || quest.state !== requirement.questState) {
-          return `${portal.name} requires quest ${requirement.questId} to be ${requirement.questState}.`;
+          return `${portal.name} yêu cầu nhiệm vụ ${requirement.questId}: ${requirement.questState}.`;
         }
       }
       if (requirement.type === "event_state") {
         const event = state.events.find((candidate) => candidate.eventId === requirement.eventId);
         if (!event || event.state !== requirement.eventState) {
-          return `${portal.name} requires event ${requirement.eventId} to be ${requirement.eventState}.`;
+          return `${portal.name} yêu cầu sự kiện ${requirement.eventId}: ${requirement.eventState}.`;
         }
       }
       if (requirement.type === "item_required") {
         const owned = state.inventory.find((item) => item.itemId === requirement.itemId)?.quantity ?? 0;
         if (owned < (requirement.quantity ?? 1)) {
-          return `${portal.name} requires ${requirement.itemId}.`;
+          return `${portal.name} yêu cầu vật phẩm ${requirement.itemId}.`;
         }
       }
     }
@@ -1373,7 +1402,7 @@ export class RpgScene extends Phaser.Scene {
       cleared: true,
       player: this.snapshot
     });
-    this.showFloatingText(this.player.x, this.player.y - 36, "Dungeon Clear", "#b8f2bd");
+    this.showFloatingText(this.player.x, this.player.y - 36, "Hoàn thành hầm ngục", "#b8f2bd");
   }
 
   private emitMapState(time = 0) {

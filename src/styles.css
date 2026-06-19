@@ -78,26 +78,111 @@ button:disabled {
 
 .account-start {
   display: grid;
-  gap: 10px;
-  width: min(360px, 100%);
+  gap: 14px;
+  width: min(460px, 100%);
   border: 1px solid #9b875b;
-  border-radius: 10px;
-  padding: 22px;
+  border-radius: 12px;
+  padding: 26px;
   background:
-    linear-gradient(180deg, rgba(33, 48, 42, 0.97), rgba(14, 22, 20, 0.97)),
-    radial-gradient(circle at 20% 0, #d6b75c33, transparent 34%);
-  box-shadow: 0 22px 58px #000a, inset 0 1px 0 #fff4c91a;
+    radial-gradient(circle at 50% 0, #d6b75c30, transparent 34%),
+    linear-gradient(180deg, rgba(35, 50, 43, 0.98), rgba(10, 17, 15, 0.98));
+  box-shadow: 0 28px 76px #000c, inset 0 1px 0 #fff4c924;
 }
 
 .account-start h1 {
-  margin: 0 0 8px;
-  font-size: 24px;
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: 0;
+  color: #fff3c4;
+  text-shadow: 0 2px 0 #0008;
 }
 
 .account-start p {
   margin: 0;
+  color: #d8cfae;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+
+.account-start small,
+.account-message {
   color: #a7b9b3;
   font-size: 12px;
+  line-height: 1.45;
+}
+
+.account-hero {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  text-align: center;
+}
+
+.account-crest {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid #d6b75c;
+  border-radius: 50%;
+  color: #fff3c4;
+  background: radial-gradient(circle, #5a4825, #1d2f28);
+  box-shadow: 0 10px 24px #0008, inset 0 1px 0 #fff4c944;
+}
+
+.account-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.account-tabs button {
+  min-height: 34px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.account-tabs button[data-active="true"] {
+  border-color: #f1d17b;
+  background: linear-gradient(180deg, rgba(98, 77, 37, 0.98), rgba(41, 61, 50, 0.98));
+}
+
+.account-start label,
+.settings-panel label {
+  display: grid;
+  gap: 6px;
+  color: #dce7df;
+  font-size: 12px;
+}
+
+.account-start input,
+.settings-panel input,
+.settings-panel select {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #5f765f;
+  border-radius: 7px;
+  padding: 0 10px;
+  color: #f6fff8;
+  background: rgba(8, 15, 13, 0.78);
+  font: inherit;
+}
+
+.account-actions {
+  display: grid;
+}
+
+.account-actions button {
+  min-height: 42px;
+}
+
+.account-message {
+  border: 1px solid #9a6c54;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #ffd6c8;
+  background: #3b211c99;
 }
 
 .account-panel {
@@ -2999,6 +3084,66 @@ button:disabled {
   min-height: 30px;
   padding: 0 8px;
   font-size: 12px;
+}
+
+.settings-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #4d684f;
+  border-radius: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(19, 31, 27, 0.92), rgba(9, 15, 14, 0.88));
+  box-shadow: inset 0 1px 0 #fff4c914;
+}
+
+.settings-card h3 {
+  margin: 0;
+  color: #fff3c4;
+  font-size: 15px;
+}
+
+.settings-card p {
+  margin: 0;
+  color: #a7b9b3;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.settings-toggle {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.settings-toggle input {
+  width: auto;
+  min-height: auto;
+}
+
+.settings-panel input[type="range"] {
+  accent-color: #d6b75c;
+  padding: 0;
+}
+
+.settings-panel .panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.danger-zone {
+  border-color: #8e4f42;
+  background: linear-gradient(180deg, rgba(52, 24, 20, 0.86), rgba(18, 12, 11, 0.88));
+}
+
+.danger-zone button {
+  border-color: #b86954;
+  color: #ffe1d8;
 }
 
 .equipment-list {

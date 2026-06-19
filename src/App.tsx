@@ -7,6 +7,7 @@ import {
   getMountsMe,
   getPetsMe,
   getPlayerMe,
+  getPlayerSettings,
   getQuestsMe,
   getSkillsMe,
   getTitlesMe,
@@ -46,16 +47,18 @@ import { SkillPanel } from "./ui/SkillPanel";
 import { HotbarPanel } from "./ui/HotbarPanel";
 import { MailboxPanel } from "./ui/MailboxPanel";
 import { ChatPanel } from "./ui/ChatPanel";
+import { SettingsPanel } from "./ui/SettingsPanel";
 import { useGameStore } from "./store/useGameStore";
 import type { PlayerSnapshot } from "./data/types";
 import { clearRuntimeContentDefinitions, getRuntimeQuestDefinitions, setRuntimeContentDefinitions } from "./data/runtimeContent";
 import { getObjectiveCount } from "./systems/questSystem";
 
-const AUTOSAVE_MS = 15000;
+const AUTOSAVE_DEBOUNCE_MS = 5000;
+const AUTOSAVE_INTERVAL_MS = 20000;
 const AdminPanel = lazy(() => import("./ui/admin/AdminPanel").then((module) => ({ default: module.AdminPanel })));
 const GuildPanel = lazy(() => import("./ui/GuildPanel").then((module) => ({ default: module.GuildPanel })));
 const PvPPanel = lazy(() => import("./ui/PvPPanel").then((module) => ({ default: module.PvPPanel })));
-type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "admin" | null;
+type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "settings" | "admin" | null;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -76,6 +79,7 @@ export default function App() {
   const setAchievements = useGameStore((state) => state.setAchievements);
   const setTitles = useGameStore((state) => state.setTitles);
   const setCollections = useGameStore((state) => state.setCollections);
+  const setSettings = useGameStore((state) => state.setSettings);
   const updateStoredEvent = useGameStore((state) => state.updateEvent);
   const setSaveStatus = useGameStore((state) => state.setSaveStatus);
   const addWarning = useGameStore((state) => state.addWarning);
@@ -85,6 +89,8 @@ export default function App() {
   const guildPanelOpen = useGameStore((state) => state.guildPanelOpen);
   const pvpPanelOpen = useGameStore((state) => state.pvpPanelOpen);
   const latestPlayerRef = useRef<PlayerSnapshot | null>(null);
+  const lastSavedSignatureRef = useRef<string>("");
+  const autosaveTimerRef = useRef<number | null>(null);
   const isAdmin = account?.role === "admin" || account?.role === "owner";
 
   useEffect(() => {
@@ -92,7 +98,7 @@ export default function App() {
   }, [player]);
 
   useEffect(() => {
-    if (!sessionReady) return;
+    if (!sessionReady || !account) return;
     let mounted = true;
     setLoading(true);
 
@@ -118,7 +124,8 @@ export default function App() {
           mountsResponse,
           achievementsResponse,
           titlesResponse,
-          collectionsResponse
+          collectionsResponse,
+          settingsResponse
         ] = await Promise.all([
           getPlayerMe(),
           getQuestsMe(),
@@ -146,10 +153,23 @@ export default function App() {
           getCollectionsMe().catch(() => {
             addWarning("Không tải được bộ sưu tập.");
             return { collections: [], claimedSetIds: [] };
+          }),
+          getPlayerSettings().catch(() => {
+            addWarning("Không tải được cài đặt tài khoản.");
+            return {
+              settings: {
+                gameSoundEnabled: true,
+                musicVolume: 70,
+                effectsSoundEnabled: true,
+                effectsVolume: 80,
+                language: "vi" as const
+              }
+            };
           })
         ]);
         if (!mounted) return;
         setPlayer(playerResponse.player);
+        lastSavedSignatureRef.current = playerSaveSignature(playerResponse.player);
         setQuests(questsResponse.quests);
         setInventorySnapshot(inventoryResponse);
         setSkills(skillsResponse.skills);
@@ -159,6 +179,7 @@ export default function App() {
         setAchievements(achievementsResponse.achievements);
         setTitles(titlesResponse.titles);
         setCollections(collectionsResponse.collections, collectionsResponse.claimedSetIds);
+        setSettings(settingsResponse.settings);
         setLoading(false);
       } catch (error) {
         if (!mounted) return;
@@ -173,6 +194,7 @@ export default function App() {
     };
   }, [
     addWarning,
+    account?.id,
     sessionReady,
     setAchievements,
     setCollections,
@@ -183,6 +205,7 @@ export default function App() {
     setPlayer,
     setQuests,
     setSkills,
+    setSettings,
     setTitles
   ]);
 
@@ -193,14 +216,17 @@ export default function App() {
 
       try {
         setSaveStatus("saving");
-        await savePlayer(playerToSave);
+        const response = await savePlayer(playerToSave);
+        latestPlayerRef.current = response.player;
+        lastSavedSignatureRef.current = playerSaveSignature(response.player);
+        setPlayer(response.player);
         setSaveStatus("saved");
       } catch {
         setSaveStatus("failed");
         addWarning(`Lưu thất bại sau ${reason}. Tiến trình chỉ còn trong bộ nhớ của phiên này.`);
       }
     },
-    [addWarning, setSaveStatus]
+    [addWarning, setPlayer, setSaveStatus]
   );
 
   const reportAchievementProgress = useCallback(
@@ -449,16 +475,30 @@ export default function App() {
   ]);
 
   useEffect(() => {
-    if (!player) return;
-
-    const intervalId = window.setInterval(() => {
-      void persistPlayer("autosave");
-    }, AUTOSAVE_MS);
-
+    if (!player || !sessionReady) return;
+    const signature = playerSaveSignature(player);
+    if (signature === lastSavedSignatureRef.current) return;
+    if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = window.setTimeout(() => {
+      autosaveTimerRef.current = null;
+      void persistPlayer("tự động lưu", player);
+    }, AUTOSAVE_DEBOUNCE_MS);
     return () => {
-      window.clearInterval(intervalId);
+      if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
     };
-  }, [persistPlayer, player?.id]);
+  }, [persistPlayer, player, sessionReady]);
+
+  useEffect(() => {
+    if (!sessionReady) return;
+    const intervalId = window.setInterval(() => {
+      const currentPlayer = latestPlayerRef.current;
+      if (!currentPlayer) return;
+      if (playerSaveSignature(currentPlayer) === lastSavedSignatureRef.current) return;
+      void persistPlayer("tự động lưu định kỳ", currentPlayer);
+    }, AUTOSAVE_INTERVAL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [persistPlayer, sessionReady]);
 
   const openPanel = useCallback(
     (panel: Exclude<ActivePanel, null>) => {
@@ -566,17 +606,18 @@ export default function App() {
                   {activePanel === "quests" && <QuestPanel onQuestSaved={() => persistPlayer("quest update")} />}
                   {activePanel === "map" && <MinimapPanel />}
                   {activePanel === "mail" && <MailboxPanel />}
+                  {activePanel === "settings" && <SettingsPanel onClose={closeActivePanel} />}
                   {activePanel === "admin" && isAdmin && (
                     <Suspense fallback={<div className="admin-loading">Đang tải khu quản trị</div>}>
                       <AdminPanel initialOpen showToggle={false} onClose={closeActivePanel} />
                     </Suspense>
                   )}
-                  {guildPanelLoaded && (
+                  {activePanel === "guild" && guildPanelLoaded && (
                     <Suspense fallback={<div className="admin-loading">Đang tải bang hội</div>}>
                       <GuildPanel />
                     </Suspense>
                   )}
-                  {pvpPanelLoaded && (
+                  {activePanel === "pvp" && pvpPanelLoaded && (
                     <Suspense fallback={<div className="admin-loading">Đang tải đấu trường</div>}>
                       <PvPPanel />
                     </Suspense>
@@ -612,6 +653,7 @@ function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
     { panel: "mail", label: "Thư" },
     { panel: "guild", label: "Bang hội" },
     { panel: "pvp", label: "Đấu trường" },
+    { panel: "settings", label: "Cài đặt" },
     { panel: "admin", label: "Quản trị", adminOnly: true }
   ];
 
@@ -683,6 +725,7 @@ function panelTitle(panel: Exclude<ActivePanel, null>) {
     mail: "Thư",
     guild: "Bang hội",
     pvp: "Đấu trường",
+    settings: "Cài đặt",
     admin: "Quản trị"
   };
   return titles[panel];
@@ -697,4 +740,25 @@ function formatQuestState(state: string) {
     claimed: "Đã nhận"
   };
   return states[state] ?? state;
+}
+
+function playerSaveSignature(player: PlayerSnapshot) {
+  return JSON.stringify({
+    id: player.id,
+    name: player.name,
+    classId: player.classId ?? null,
+    activePetId: player.activePetId ?? null,
+    activeMountId: player.activeMountId ?? null,
+    activeTitleId: player.activeTitleId ?? null,
+    mapId: player.mapId,
+    x: Math.round(player.x),
+    y: Math.round(player.y),
+    hp: player.hp,
+    maxHp: player.maxHp,
+    mp: player.mp,
+    maxMp: player.maxMp,
+    level: player.level,
+    exp: player.exp,
+    gold: player.gold
+  });
 }

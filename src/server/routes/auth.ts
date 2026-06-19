@@ -18,7 +18,7 @@ router.get("/me", async (req, res, next) => {
     const result = await query<AuthUserRow>(
       `select id, username, display_name, account_type, role
        from users
-       where id = $1`,
+       where id = $1 and deleted_at is null`,
       [userId]
     );
     const user = result.rows[0];

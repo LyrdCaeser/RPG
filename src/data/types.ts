@@ -25,6 +25,7 @@ export type EventTriggerCondition =
 export type AccountType = "guest" | "registered";
 export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
+export type UiLanguage = "vi" | "en" | "zh" | "ja";
 export type LeaderboardCategory = "level" | "exp" | "gold" | "boss_kills" | "event_points" | "combat_power";
 export type AchievementCategory =
   | "combat"
@@ -1528,6 +1529,14 @@ export interface UserAccount {
 export interface AccountSession {
   token: string;
   user: UserAccount;
+}
+
+export interface PlayerSettings {
+  gameSoundEnabled: boolean;
+  musicVolume: number;
+  effectsSoundEnabled: boolean;
+  effectsVolume: number;
+  language: UiLanguage;
 }
 
 export interface LeaderboardResponse {

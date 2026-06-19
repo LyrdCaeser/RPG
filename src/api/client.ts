@@ -86,6 +86,7 @@ import type {
   PlayerMount,
   PlayerPet,
   PlayerQuest,
+  PlayerSettings,
   PvPMatchState,
   PvPPenalty,
   PvPPenaltyAppealStatus,
@@ -192,6 +193,51 @@ export function continueAsGuest(displayName = "Guest Adventurer") {
     setSessionToken(session.token);
     return session;
   });
+}
+
+export function registerAccount(payload: { username: string; password: string; displayName?: string }) {
+  return requestJson<AccountSession>("/api/account/register", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then((session) => {
+    setSessionToken(session.token);
+    return session;
+  });
+}
+
+export function loginAccount(payload: { username: string; password: string }) {
+  return requestJson<AccountSession>("/api/account/login", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then((session) => {
+    setSessionToken(session.token);
+    return session;
+  });
+}
+
+export function getPlayerSettings() {
+  return requestJson<{ settings: PlayerSettings }>("/api/account/settings");
+}
+
+export function savePlayerSettings(settings: PlayerSettings) {
+  return requestJson<{ settings: PlayerSettings }>("/api/account/settings", {
+    method: "POST",
+    body: JSON.stringify({ settings })
+  });
+}
+
+export function deleteAccount(confirmation: string) {
+  return requestJson<{ ok: true }>("/api/account/delete", {
+    method: "POST",
+    body: JSON.stringify({ confirmation })
+  }).then((response) => {
+    setSessionToken(null);
+    return response;
+  });
+}
+
+export function logoutAccount() {
+  setSessionToken(null);
 }
 
 export function getAdminMe() {

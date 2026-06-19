@@ -27,9 +27,12 @@ export async function getCurrentUserId(req: Request) {
 
   if (sessionToken) {
     const session = await query<UserRow>(
-      `select user_id as id
-       from player_sessions
-       where token = $1 and expires_at > now()`,
+      `select ps.user_id as id
+       from player_sessions ps
+       join users u on u.id = ps.user_id
+       where ps.token = $1
+         and ps.expires_at > now()
+         and u.deleted_at is null`,
       [sessionToken]
     );
     if (session.rows[0]) {
