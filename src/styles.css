@@ -3108,6 +3108,7 @@ button:disabled {
 .major-panel-body .minimap-panel,
 .major-panel-body .mailbox-panel,
 .major-panel-body .wallet-panel,
+.major-panel-body .topup-panel,
 .major-panel-body .guild-panel,
 .major-panel-body .pvp-panel,
 .major-panel-body .admin-panel {
@@ -3610,6 +3611,124 @@ button:disabled {
   margin-bottom: 10px;
   color: #b9c7c1;
   overflow-wrap: anywhere;
+}
+
+.topup-panel {
+  display: grid;
+  gap: 14px;
+  color: #edf7ef;
+}
+
+.topup-panel header,
+.topup-history article {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.topup-panel h2,
+.topup-panel h3 {
+  margin: 0;
+  color: #fff1b8;
+}
+
+.topup-panel p,
+.topup-panel span,
+.topup-panel small {
+  color: #b9c7c1;
+}
+
+.topup-instruction,
+.topup-message,
+.topup-empty {
+  border: 1px solid #5f765f;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(8, 15, 13, 0.66);
+}
+
+.topup-note {
+  display: grid;
+  gap: 6px;
+  color: #dce7df;
+  font-size: 12px;
+}
+
+.topup-note input,
+.admin-note-field textarea {
+  width: 100%;
+  border: 1px solid #5f765f;
+  border-radius: 7px;
+  padding: 9px 10px;
+  color: #f6fff8;
+  background: rgba(8, 15, 13, 0.78);
+  font: inherit;
+}
+
+.topup-package-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.topup-package-card {
+  display: grid;
+  gap: 9px;
+  border: 1px solid #8b6d42;
+  border-radius: 9px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(231, 91, 91, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(36, 51, 42, 0.92), rgba(13, 22, 20, 0.92));
+  box-shadow: inset 0 1px 0 #fff4c91a;
+}
+
+.topup-package-card strong {
+  color: #ffb9b9;
+  font-size: 18px;
+}
+
+.topup-history {
+  display: grid;
+  gap: 8px;
+}
+
+.topup-history article {
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(14, 24, 21, 0.74);
+}
+
+.topup-history article > div {
+  display: grid;
+  gap: 3px;
+}
+
+.topup-history b {
+  color: #fff3c4;
+}
+
+.topup-history article[data-status="approved"] b {
+  color: #b7f0c0;
+}
+
+.topup-history article[data-status="rejected"] b,
+.topup-history article[data-status="cancelled"] b {
+  color: #ffb0a4;
+}
+
+.admin-note-field {
+  display: grid;
+  gap: 6px;
+  color: #dce7df;
+  font-size: 12px;
+}
+
+.admin-note-field textarea {
+  min-height: 88px;
+  resize: vertical;
 }
 
 .danger-zone {

@@ -27,6 +27,7 @@ export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
 export type WalletCurrency = "red_ruby" | "gold" | "blue_diamond";
+export type TopupRequestStatus = "pending" | "approved" | "rejected" | "cancelled";
 export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
 export type TutorialStatus = "not_started" | "active" | "skipped" | "completed";
 export type TutorialStepId =
@@ -1577,6 +1578,39 @@ export interface WalletTransaction {
 export interface WalletSnapshot {
   balances: WalletBalances;
   transactions: WalletTransaction[];
+}
+
+export interface TopupPackage {
+  packageId: string;
+  name: string;
+  priceVnd: number;
+  redRubyAmount: number;
+  bonusRedRuby: number;
+  enabled: boolean;
+  displayOrder: number;
+}
+
+export interface TopupRequest {
+  id: string;
+  userId: string;
+  packageId: string;
+  packageName: string | null;
+  priceVnd: number;
+  redRubyAmount: number;
+  bonusRedRuby: number;
+  status: TopupRequestStatus;
+  playerNote: string;
+  adminNote: string;
+  createdAt: string;
+  updatedAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+  walletTransactionId: string | null;
+}
+
+export interface AdminTopupRequest extends TopupRequest {
+  username: string;
+  displayName: string;
 }
 
 export interface PlayerOnboarding {

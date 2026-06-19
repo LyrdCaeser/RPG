@@ -16,6 +16,7 @@ import shopRouter from "./routes/shop.js";
 import eventsRouter from "./routes/events.js";
 import cutscenesRouter from "./routes/cutscenes.js";
 import adminRouter from "./routes/admin.js";
+import adminTopupRouter from "./routes/adminTopup.js";
 import adminWalletRouter from "./routes/adminWallet.js";
 import giftcodesRouter from "./routes/giftcodes.js";
 import contentRouter from "./routes/content.js";
@@ -40,6 +41,7 @@ import chatRouter from "./routes/chat.js";
 import partyRouter from "./routes/party.js";
 import guildRouter from "./routes/guild.js";
 import pvpRouter from "./routes/pvp.js";
+import topupRouter from "./routes/topup.js";
 import walletRouter from "./routes/wallet.js";
 import { isAuthError } from "./auth.js";
 
@@ -76,6 +78,7 @@ app.use("/api/shop", shopRouter);
 app.use("/api/events", eventsRouter);
 app.use("/api/cutscenes", cutscenesRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/admin", adminTopupRouter);
 app.use("/api/admin", adminWalletRouter);
 app.use("/api/admin", adminContentRouter);
 app.use("/api/giftcodes", giftcodesRouter);
@@ -100,6 +103,7 @@ app.use("/api/chat", chatRouter);
 app.use("/api/party", partyRouter);
 app.use("/api/guild", guildRouter);
 app.use("/api/pvp", pvpRouter);
+app.use("/api/topup", topupRouter);
 app.use("/api/wallet", walletRouter);
 
 app.use("/api", (_req, res) => {

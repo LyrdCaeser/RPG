@@ -90,6 +90,10 @@ import type {
   PlayerQuest,
   PlayerSettings,
   TutorialStepId,
+  AdminTopupRequest,
+  TopupPackage,
+  TopupRequest,
+  TopupRequestStatus,
   PvPMatchState,
   PvPPenalty,
   PvPPenaltyAppealStatus,
@@ -281,6 +285,28 @@ export function getWalletMe() {
   return requestJson<WalletSnapshot>("/api/wallet/me");
 }
 
+export function getTopupPackages() {
+  return requestJson<{ packages: TopupPackage[] }>("/api/topup/packages");
+}
+
+export function getMyTopupRequests() {
+  return requestJson<{ requests: TopupRequest[] }>("/api/topup/me");
+}
+
+export function createTopupRequest(payload: { packageId: string; playerNote?: string }) {
+  return requestJson<{ request: TopupRequest }>("/api/topup/request", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function cancelTopupRequest(requestId: string) {
+  return requestJson<{ request: TopupRequest }>("/api/topup/cancel", {
+    method: "POST",
+    body: JSON.stringify({ requestId })
+  });
+}
+
 export function getAdminMe() {
   return requestJson<AdminMe>("/api/admin/me");
 }
@@ -297,6 +323,24 @@ export function adjustAdminWallet(payload: {
   referenceId?: string;
 }) {
   return requestJson<{ balances: WalletSnapshot["balances"]; transaction: WalletSnapshot["transactions"][number] }>("/api/admin/wallet/adjust", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function getAdminTopupRequests(status: TopupRequestStatus | "all" = "pending") {
+  return requestJson<{ requests: AdminTopupRequest[] }>(`/api/admin/topup/requests?status=${encodeURIComponent(status)}`);
+}
+
+export function approveAdminTopupRequest(payload: { requestId: string; adminNote?: string }) {
+  return requestJson<{ request: AdminTopupRequest; transaction: WalletSnapshot["transactions"][number] }>("/api/admin/topup/approve", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function rejectAdminTopupRequest(payload: { requestId: string; adminNote?: string }) {
+  return requestJson<{ request: AdminTopupRequest }>("/api/admin/topup/reject", {
     method: "POST",
     body: JSON.stringify(payload)
   });

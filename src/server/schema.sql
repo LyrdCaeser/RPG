@@ -272,6 +272,50 @@ create table if not exists wallet_transactions (
   check (reference_id is null or length(reference_id) <= 160)
 );
 
+create table if not exists topup_packages (
+  package_id text primary key,
+  name text not null,
+  price_vnd integer not null check (price_vnd > 0),
+  red_ruby_amount integer not null check (red_ruby_amount > 0),
+  bonus_red_ruby integer not null default 0 check (bonus_red_ruby >= 0),
+  enabled boolean not null default true,
+  display_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (length(trim(package_id)) > 0 and length(package_id) <= 80),
+  check (length(trim(name)) > 0 and length(name) <= 120)
+);
+
+create table if not exists topup_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  package_id text not null references topup_packages(package_id),
+  price_vnd integer not null check (price_vnd > 0),
+  red_ruby_amount integer not null check (red_ruby_amount > 0),
+  bonus_red_ruby integer not null default 0 check (bonus_red_ruby >= 0),
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected', 'cancelled')),
+  player_note text,
+  admin_note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  reviewed_by uuid references users(id) on delete set null,
+  wallet_transaction_id uuid references wallet_transactions(id) on delete set null,
+  check (player_note is null or length(player_note) <= 240),
+  check (admin_note is null or length(admin_note) <= 240)
+);
+
+insert into topup_packages (package_id, name, price_vnd, red_ruby_amount, bonus_red_ruby, enabled, display_order)
+values
+  ('ruby_25000', 'Gói Ruby Đỏ 25.000đ', 25000, 250, 0, true, 10),
+  ('ruby_50000', 'Gói Ruby Đỏ 50.000đ', 50000, 520, 0, true, 20),
+  ('ruby_100000', 'Gói Ruby Đỏ 100.000đ', 100000, 1080, 0, true, 30),
+  ('ruby_200000', 'Gói Ruby Đỏ 200.000đ', 200000, 2250, 0, true, 40),
+  ('ruby_500000', 'Gói Ruby Đỏ 500.000đ', 500000, 5800, 0, true, 50),
+  ('ruby_1000000', 'Gói Ruby Đỏ 1.000.000đ', 1000000, 12000, 0, true, 60),
+  ('ruby_2650000', 'Gói Ruby Đỏ 2.650.000đ', 2650000, 33000, 0, true, 70)
+on conflict (package_id) do nothing;
+
 create table if not exists player_map_progress (
   user_id uuid not null references users(id) on delete cascade,
   map_id text not null,
@@ -1443,6 +1487,11 @@ create index if not exists player_admin_grants_user_created_idx on player_admin_
 create index if not exists wallet_transactions_user_created_idx on wallet_transactions (user_id, created_at desc);
 create index if not exists wallet_transactions_currency_created_idx on wallet_transactions (currency, created_at desc);
 create index if not exists wallet_transactions_created_by_idx on wallet_transactions (created_by, created_at desc);
+create index if not exists topup_packages_enabled_order_idx on topup_packages (enabled, display_order);
+create index if not exists topup_requests_user_created_idx on topup_requests (user_id, created_at desc);
+create index if not exists topup_requests_status_created_idx on topup_requests (status, created_at desc);
+create index if not exists topup_requests_package_idx on topup_requests (package_id, created_at desc);
+create unique index if not exists topup_requests_wallet_transaction_unique_idx on topup_requests (wallet_transaction_id) where wallet_transaction_id is not null;
 create index if not exists player_map_progress_user_visited_idx on player_map_progress (user_id, visited_at desc);
 create index if not exists dungeon_results_user_created_idx on dungeon_results (user_id, created_at desc);
 create index if not exists dungeon_clears_user_idx on dungeon_clears (user_id, clear_count desc);
