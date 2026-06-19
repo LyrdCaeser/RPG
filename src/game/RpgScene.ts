@@ -71,7 +71,7 @@ export class RpgScene extends Phaser.Scene {
   private keys!: Record<"W" | "A" | "S" | "D" | "E" | "M" | "SPACE" | "ONE" | "TWO" | "THREE" | "FOUR", CursorKey>;
   private walls!: Phaser.Physics.Arcade.StaticGroup;
   private currentMap!: MapDefinition;
-  private portalSprites: Array<{ portal: MapPortalDefinition; sprite: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text }> = [];
+  private portalSprites: Array<{ portal: MapPortalDefinition; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text }> = [];
   private npcSprites: Array<{ npc: NpcDefinition; sprite: Phaser.GameObjects.Container }> = [];
   private enemies: EnemyRuntime[] = [];
   private collectibleSprites: Array<{
@@ -86,7 +86,7 @@ export class RpgScene extends Phaser.Scene {
   }> = [];
   private gatheringSprites: Array<{
     node: GatheringNodeDefinition;
-    sprite: Phaser.GameObjects.Rectangle;
+    sprite: Phaser.GameObjects.Sprite;
     label: Phaser.GameObjects.Text;
     readyAt: number;
   }> = [];
@@ -164,28 +164,141 @@ export class RpgScene extends Phaser.Scene {
   }
 
   private createTextures() {
-    this.createCircleTexture("player", 12, 0x3fb7ff, 0xffffff);
-    this.createCircleTexture("npc", 11, 0xf2c94c, 0x2d3436);
-    this.createCircleTexture("enemy", 12, 0xd94f4f, 0xffd5d5);
-    this.createCircleTexture("portal", 14, 0x70d36b, 0xf5fff5);
-    this.createCircleTexture("collectible", 9, 0x9fd36b, 0xf5fff5);
-    this.createCircleTexture("drop", 8, 0xd6b75c, 0xfff1b8);
+    this.createPlayerTexture(this.playerTextureKey(), this.classAccentColor());
+    this.createPlayerTexture("player-adventurer", 0x3fb7ff);
+    this.createNpcTexture("npc");
+    this.createEnemyTexture("enemy");
+    this.createPortalTexture("portal");
+    this.createCollectibleTexture("collectible", 0x9fd36b, 0x254f2e);
+    this.createCollectibleTexture("drop", 0xd6b75c, 0x5b421d);
+    this.createCollectibleTexture("gather-herb", 0x78d36b, 0x234a29);
+    this.createCollectibleTexture("gather-ore", 0x9aa4aa, 0x3d474d);
+    this.createCollectibleTexture("gather-wood", 0xb98145, 0x553418);
+    this.createCollectibleTexture("gather-crystal", 0x7fdcff, 0x1d5263);
+    this.createCollectibleTexture("gather-treasure", 0xd6b75c, 0x5b421d);
   }
 
-  private createCircleTexture(key: string, radius: number, fill: number, stroke: number) {
+  private playerTextureKey() {
+    return `player-${this.snapshot.classId ?? "adventurer"}`;
+  }
+
+  private classAccentColor() {
+    const accents: Record<string, number> = {
+      warrior: 0xd84f45,
+      mage: 0x7f8cff,
+      ranger: 0x52bf6d,
+      priest: 0xf3d879,
+      assassin: 0xb26dff
+    };
+    return accents[this.snapshot.classId ?? ""] ?? 0x3fb7ff;
+  }
+
+  private createPlayerTexture(key: string, accent: number) {
     if (this.textures.exists(key)) return;
-    const size = radius * 2 + 4;
     const graphics = this.make.graphics({ x: 0, y: 0 }, false);
+    graphics.fillStyle(0x07110f, 0.36);
+    graphics.fillEllipse(18, 38, 26, 8);
+    graphics.fillStyle(0x1a2220, 1);
+    graphics.fillRoundedRect(10, 17, 16, 18, 4);
+    graphics.fillStyle(accent, 1);
+    graphics.fillRoundedRect(12, 18, 12, 13, 3);
+    graphics.fillStyle(0xf2c39b, 1);
+    graphics.fillCircle(18, 12, 8);
+    graphics.fillStyle(0x493026, 1);
+    graphics.fillRect(11, 6, 14, 5);
+    graphics.fillStyle(0xf7fbf8, 1);
+    graphics.fillRect(15, 12, 2, 2);
+    graphics.fillRect(20, 12, 2, 2);
+    graphics.fillStyle(0x1b211f, 1);
+    graphics.fillRect(12, 32, 5, 7);
+    graphics.fillRect(20, 32, 5, 7);
+    graphics.lineStyle(2, 0xf8e7b0, 1);
+    graphics.strokeLineShape(new Phaser.Geom.Line(27, 18, 32, 10));
+    graphics.lineStyle(2, 0x09100e, 0.75);
+    graphics.strokeRoundedRect(10, 17, 16, 18, 4);
+    graphics.strokeCircle(18, 12, 8);
+    graphics.generateTexture(key, 36, 44);
+    graphics.destroy();
+  }
+
+  private createNpcTexture(key: string) {
+    if (this.textures.exists(key)) return;
+    const graphics = this.make.graphics({ x: 0, y: 0 }, false);
+    graphics.fillStyle(0x07110f, 0.32);
+    graphics.fillEllipse(18, 38, 24, 8);
+    graphics.fillStyle(0x2c463b, 1);
+    graphics.fillRoundedRect(10, 16, 16, 19, 4);
+    graphics.fillStyle(0xd6b75c, 1);
+    graphics.fillRect(12, 18, 12, 5);
+    graphics.fillStyle(0xf0c7a0, 1);
+    graphics.fillCircle(18, 11, 8);
+    graphics.fillStyle(0x5c3a22, 1);
+    graphics.fillRect(11, 6, 14, 4);
+    graphics.lineStyle(2, 0x101917, 0.85);
+    graphics.strokeRoundedRect(10, 16, 16, 19, 4);
+    graphics.strokeCircle(18, 11, 8);
+    graphics.generateTexture(key, 36, 44);
+    graphics.destroy();
+  }
+
+  private createEnemyTexture(key: string) {
+    if (this.textures.exists(key)) return;
+    const graphics = this.make.graphics({ x: 0, y: 0 }, false);
+    graphics.fillStyle(0x070909, 0.36);
+    graphics.fillEllipse(18, 36, 28, 9);
+    graphics.fillStyle(0x481f24, 1);
+    graphics.fillCircle(18, 19, 13);
+    graphics.fillStyle(0x7a2e35, 1);
+    graphics.fillRoundedRect(8, 18, 20, 16, 5);
+    graphics.fillStyle(0xffe19a, 1);
+    graphics.fillTriangle(10, 8, 13, 2, 16, 10);
+    graphics.fillTriangle(20, 10, 24, 2, 26, 9);
+    graphics.fillStyle(0xffd5d5, 1);
+    graphics.fillRect(13, 17, 3, 3);
+    graphics.fillRect(21, 17, 3, 3);
+    graphics.fillStyle(0x15100f, 1);
+    graphics.fillRect(12, 32, 5, 6);
+    graphics.fillRect(21, 32, 5, 6);
+    graphics.lineStyle(2, 0x160b0c, 0.9);
+    graphics.strokeCircle(18, 19, 13);
+    graphics.strokeRoundedRect(8, 18, 20, 16, 5);
+    graphics.generateTexture(key, 36, 42);
+    graphics.destroy();
+  }
+
+  private createPortalTexture(key: string) {
+    if (this.textures.exists(key)) return;
+    const graphics = this.make.graphics({ x: 0, y: 0 }, false);
+    graphics.fillStyle(0x11291f, 0.85);
+    graphics.fillEllipse(20, 28, 34, 12);
+    graphics.lineStyle(4, 0x70d36b, 1);
+    graphics.strokeCircle(20, 18, 13);
+    graphics.lineStyle(2, 0xe7fff0, 0.9);
+    graphics.strokeCircle(20, 18, 8);
+    graphics.fillStyle(0xb8ffd4, 0.65);
+    graphics.fillCircle(20, 18, 5);
+    graphics.generateTexture(key, 40, 38);
+    graphics.destroy();
+  }
+
+  private createCollectibleTexture(key: string, fill: number, stroke: number) {
+    if (this.textures.exists(key)) return;
+    const graphics = this.make.graphics({ x: 0, y: 0 }, false);
+    graphics.fillStyle(0x07110f, 0.3);
+    graphics.fillEllipse(13, 22, 20, 6);
     graphics.fillStyle(fill, 1);
-    graphics.fillCircle(size / 2, size / 2, radius);
+    graphics.fillRoundedRect(7, 6, 12, 13, 3);
+    graphics.fillStyle(0xffffff, 0.28);
+    graphics.fillRect(10, 8, 3, 4);
     graphics.lineStyle(2, stroke, 1);
-    graphics.strokeCircle(size / 2, size / 2, radius);
-    graphics.generateTexture(key, size, size);
+    graphics.strokeRoundedRect(7, 6, 12, 13, 3);
+    graphics.generateTexture(key, 26, 26);
     graphics.destroy();
   }
 
   private buildMap() {
     this.walls = this.physics.add.staticGroup();
+    this.cameras.main.setBackgroundColor("#243f35");
     const columns = Math.floor(this.currentMap.width / TILE_SIZE);
     const rows = Math.floor(this.currentMap.height / TILE_SIZE);
 
@@ -202,19 +315,102 @@ export class RpgScene extends Phaser.Scene {
         );
 
         if (isBoundary || isGeneratedWall || isMapWall) {
-          const wall = this.add.rectangle(x, y, TILE_SIZE, TILE_SIZE, 0x394942).setStrokeStyle(1, 0x5f796e);
+          const wallColor = this.currentMap.type === "dungeon" ? 0x3b3941 : 0x2e4b3e;
+          const wall = this.add.rectangle(x, y, TILE_SIZE, TILE_SIZE, wallColor).setStrokeStyle(1, 0x6d8b79, 0.78);
+          this.add.rectangle(x, y - 9, TILE_SIZE - 6, 5, 0xffffff, 0.08);
           this.walls.add(wall);
         } else {
-          const color = (row + column) % 2 === 0 ? 0x263934 : 0x2c4039;
-          this.add.rectangle(x, y, TILE_SIZE, TILE_SIZE, color).setStrokeStyle(1, 0x30463f, 0.28);
+          const isPath = this.isPathTile(column, row, x, y);
+          const color = this.tileColor(column, row, isPath);
+          this.add.rectangle(x, y, TILE_SIZE, TILE_SIZE, color);
+          this.addTileDetails(column, row, x, y, isPath);
         }
       }
     }
   }
 
+  private isPathTile(column: number, row: number, x: number, y: number) {
+    const nearSpawnX = Math.abs(x - this.currentMap.spawn.x) < TILE_SIZE * 1.2;
+    const nearSpawnY = Math.abs(y - this.currentMap.spawn.y) < TILE_SIZE * 1.2;
+    const routeToPortal = this.currentMap.portals.some((portal) => {
+      const horizontal = Math.abs(y - this.currentMap.spawn.y) < TILE_SIZE * 1.2 && x > Math.min(this.currentMap.spawn.x, portal.x) - TILE_SIZE && x < Math.max(this.currentMap.spawn.x, portal.x) + TILE_SIZE;
+      const vertical = Math.abs(x - portal.x) < TILE_SIZE * 1.2 && y > Math.min(this.currentMap.spawn.y, portal.y) - TILE_SIZE && y < Math.max(this.currentMap.spawn.y, portal.y) + TILE_SIZE;
+      return horizontal || vertical;
+    });
+    return routeToPortal || (nearSpawnX && row % 2 === 0) || (nearSpawnY && column % 2 === 0);
+  }
+
+  private tileColor(column: number, row: number, isPath: boolean) {
+    if (this.currentMap.type === "dungeon") {
+      const stones = [0x343a42, 0x3b4448, 0x2f373a, 0x43484d];
+      return stones[(column * 5 + row * 3) % stones.length];
+    }
+    if (isPath) {
+      const dirt = [0x745736, 0x80613c, 0x6a4d31, 0x8b6b42];
+      return dirt[(column * 3 + row * 7) % dirt.length];
+    }
+    const grass = [0x2f5a3a, 0x356743, 0x284e34, 0x3b7047, 0x315f3e];
+    return grass[(column * 11 + row * 7) % grass.length];
+  }
+
+  private addTileDetails(column: number, row: number, x: number, y: number, isPath: boolean) {
+    const seed = Math.abs((column * 92821 + row * 68917 + this.currentMap.mapId.length * 31) % 100);
+    if (this.currentMap.type === "dungeon") {
+      if (seed < 18) this.add.rectangle(x + ((seed % 3) - 1) * 6, y + (((seed + 1) % 3) - 1) * 5, 8, 2, 0xffffff, 0.08);
+      if (seed > 88) this.add.circle(x + 7, y - 5, 2, 0x7fdcff, 0.35);
+      return;
+    }
+    if (isPath) {
+      if (seed < 22) this.add.circle(x - 8 + (seed % 5) * 4, y + 4, 2, 0x4d3928, 0.45);
+      if (seed > 82) this.add.rectangle(x + 4, y - 6, 9, 3, 0xb09661, 0.34);
+      return;
+    }
+    if (seed < 10) this.addTree(x, y);
+    else if (seed < 19) this.addBush(x, y);
+    else if (seed < 25) this.addRock(x, y);
+    else if (seed < 34) this.addFlowers(x, y, seed);
+    else if (seed > 95) this.addTorch(x, y);
+  }
+
+  private addTree(x: number, y: number) {
+    this.add.ellipse(x + 2, y + 10, 28, 9, 0x07110f, 0.22);
+    this.add.rectangle(x, y + 7, 7, 16, 0x68431f).setStrokeStyle(1, 0x35210f, 0.7);
+    this.add.circle(x - 7, y - 5, 12, 0x234f32);
+    this.add.circle(x + 7, y - 7, 13, 0x2d6b3f);
+    this.add.circle(x, y - 16, 12, 0x3d8050);
+    this.add.circle(x + 2, y - 9, 15, 0x2f6d42);
+  }
+
+  private addBush(x: number, y: number) {
+    this.add.ellipse(x, y + 8, 22, 7, 0x07110f, 0.18);
+    this.add.circle(x - 6, y, 7, 0x3d8050);
+    this.add.circle(x + 1, y - 3, 9, 0x2f6d42);
+    this.add.circle(x + 8, y + 1, 6, 0x4c9460);
+  }
+
+  private addRock(x: number, y: number) {
+    this.add.ellipse(x, y + 7, 20, 6, 0x07110f, 0.18);
+    this.add.polygon(x, y, [-9, 4, -4, -7, 8, -6, 11, 4, 3, 8], 0x7d8582).setStrokeStyle(1, 0x3f4844, 0.65);
+  }
+
+  private addFlowers(x: number, y: number, seed: number) {
+    const color = seed % 2 === 0 ? 0xffd1ef : 0xffe28a;
+    for (let i = 0; i < 3; i += 1) {
+      this.add.circle(x - 7 + i * 7, y + ((seed + i) % 5) - 2, 2, color, 0.9);
+      this.add.rectangle(x - 7 + i * 7, y + 4, 1, 5, 0x2b6c3a, 0.8);
+    }
+  }
+
+  private addTorch(x: number, y: number) {
+    this.add.rectangle(x, y + 4, 4, 15, 0x5b351b);
+    const flame = this.add.circle(x, y - 5, 5, 0xffb84c, 0.85);
+    this.add.circle(x, y - 7, 2, 0xffffc8, 0.9);
+    this.tweens.add({ targets: flame, scale: 1.18, yoyo: true, repeat: -1, duration: 680 });
+  }
+
   private createPortals() {
     this.portalSprites = this.currentMap.portals.map((portal) => {
-      const sprite = this.add.rectangle(portal.x, portal.y, 30, 30, 0x70d36b).setStrokeStyle(2, 0xf5fff5);
+      const sprite = this.add.sprite(portal.x, portal.y, "portal").setDepth(portal.y - 2);
       const label = this.add
         .text(portal.x, portal.y - 34, portal.name, {
           fontFamily: "Arial",
@@ -229,8 +425,9 @@ export class RpgScene extends Phaser.Scene {
   }
 
   private createPlayer() {
-    this.player = this.physics.add.sprite(this.snapshot.x, this.snapshot.y, "player");
-    this.player.setCircle(12);
+    this.player = this.physics.add.sprite(this.snapshot.x, this.snapshot.y, this.playerTextureKey());
+    this.player.setCircle(12, 6, 12);
+    this.player.setDepth(this.snapshot.y + 10);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.walls);
 
@@ -278,6 +475,7 @@ export class RpgScene extends Phaser.Scene {
     }
     this.petSprite.x = Phaser.Math.Linear(this.petSprite.x, this.player.x - 28, 0.045);
     this.petSprite.y = Phaser.Math.Linear(this.petSprite.y, this.player.y + 20, 0.045);
+    this.petSprite.setDepth(this.petSprite.y + 4);
   }
 
   private syncActiveMountDisplay() {
@@ -313,6 +511,7 @@ export class RpgScene extends Phaser.Scene {
     this.syncActiveMountDisplay();
     if (!this.mountSprite) return;
     this.mountSprite.setPosition(this.player.x, this.player.y + 12);
+    this.mountSprite.setDepth(this.player.y + 2);
   }
 
   private createNpcs() {
@@ -331,7 +530,7 @@ export class RpgScene extends Phaser.Scene {
           padding: { x: 4, y: 2 }
         })
         .setOrigin(0.5);
-      const container = this.add.container(npc.x, npc.y, [sprite, label]);
+      const container = this.add.container(npc.x, npc.y, [sprite, label]).setDepth(npc.y);
       return [{ npc, sprite: container }];
     });
   }
@@ -347,8 +546,9 @@ export class RpgScene extends Phaser.Scene {
 
   private createEnemyRuntime(definition: EnemyDefinition): EnemyRuntime {
       const sprite = this.physics.add.sprite(definition.x, definition.y, "enemy");
-      sprite.setCircle(12);
+      sprite.setCircle(13, 5, 7);
       sprite.setCollideWorldBounds(true);
+      sprite.setDepth(definition.y + 8);
 
       const label = this.add
         .text(definition.x, definition.y - 38, `${definition.name} Lv ${definition.level}`, {
@@ -368,8 +568,8 @@ export class RpgScene extends Phaser.Scene {
           padding: { x: 4, y: 1 }
         })
         .setOrigin(0.5);
-      const hpBarBg = this.add.rectangle(definition.x, definition.y - 10, 42, 5, 0x1d1111).setStrokeStyle(1, 0x795a5a);
-      const hpBarFill = this.add.rectangle(definition.x - 20, definition.y - 10, 40, 3, 0xd94f4f).setOrigin(0, 0.5);
+      const hpBarBg = this.add.rectangle(definition.x, definition.y - 10, 42, 6, 0x1d1111).setStrokeStyle(1, 0x9f6464);
+      const hpBarFill = this.add.rectangle(definition.x - 20, definition.y - 10, 40, 4, 0xd94f4f).setOrigin(0, 0.5);
 
       return {
         definition,
@@ -414,7 +614,7 @@ export class RpgScene extends Phaser.Scene {
     this.gatheringSprites = gatheringNodes
       .filter((node) => node.enabled && node.mapId === this.currentMap.mapId)
       .map((node) => {
-        const sprite = this.add.rectangle(node.x, node.y, 24, 24, colorByType[node.type]).setStrokeStyle(2, 0xf7fbf8);
+        const sprite = this.add.sprite(node.x, node.y, `gather-${node.type}`).setDepth(node.y);
         const label = this.add
           .text(node.x, node.y - 28, node.type, {
             fontFamily: "Arial",
@@ -632,7 +832,7 @@ export class RpgScene extends Phaser.Scene {
     }
   }
 
-  private tryGatherNode(entry: { node: GatheringNodeDefinition; sprite: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text; readyAt: number }, time: number) {
+  private tryGatherNode(entry: { node: GatheringNodeDefinition; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; readyAt: number }, time: number) {
     if (this.snapshot.level < (entry.node.requiredLevel ?? 1)) {
       gameEvents.emit("portal:warning", `Gathering requires level ${entry.node.requiredLevel ?? 1}.`);
       return;
@@ -723,6 +923,8 @@ export class RpgScene extends Phaser.Scene {
       ...this.snapshot,
       hp: Math.max(0, this.snapshot.hp - damage)
     };
+    this.flashSprite(this.player, 0xffd5d5);
+    this.showHitBurst(this.player.x, this.player.y, 0xff6767);
     this.showFloatingText(this.player.x, this.player.y - 20, `-${damage}`, "#ff9999");
     gameEvents.emit("player:changed", this.snapshot);
     gameEvents.emit("combat:status", {
@@ -752,6 +954,8 @@ export class RpgScene extends Phaser.Scene {
     const damage = Math.max(1, 8 + this.snapshot.level * 3 - target.definition.defense);
     target.hp = Math.max(0, target.hp - damage);
     this.targetEnemy = target;
+    this.flashSprite(target.sprite, 0xfff0a8);
+    this.showHitBurst(target.sprite.x, target.sprite.y, 0xffdc73);
     this.showFloatingText(target.sprite.x, target.sprite.y - 18, `-${damage}`, "#ffe28a");
     this.syncEnemyLabels(target);
     this.emitTarget(target);
@@ -781,6 +985,8 @@ export class RpgScene extends Phaser.Scene {
         const damage = this.calculatePetDamage(definition, activePet.level, target);
         target.hp = Math.max(0, target.hp - damage);
         this.targetEnemy = target;
+        this.flashSprite(target.sprite, 0xc8f7ff);
+        this.showHitBurst(target.sprite.x, target.sprite.y, 0x7fdcff);
         this.showFloatingText(target.sprite.x, target.sprite.y - 34, `${definition.name} -${damage}`, "#c8f7ff");
         this.syncEnemyLabels(target);
         this.emitTarget(target);
@@ -987,6 +1193,7 @@ export class RpgScene extends Phaser.Scene {
       x: Math.round(this.player.x),
       y: Math.round(this.player.y)
     };
+    this.player.setDepth(this.player.y + 10);
     gameEvents.emit("player:changed", this.snapshot);
   }
 
@@ -1116,6 +1323,7 @@ export class RpgScene extends Phaser.Scene {
     enemy.hpBarBg.setPosition(enemy.sprite.x, enemy.sprite.y - 10);
     enemy.hpBarFill.setPosition(enemy.sprite.x - 20, enemy.sprite.y - 10);
     enemy.hpBarFill.width = Math.max(1, 40 * (enemy.hp / enemy.definition.maxHp));
+    enemy.sprite.setDepth(enemy.sprite.y + 8);
   }
 
   private syncWorldEvents(events: PlayerEvent[]) {
@@ -1230,14 +1438,33 @@ export class RpgScene extends Phaser.Scene {
     });
   }
 
+  private flashSprite(sprite: Phaser.GameObjects.Sprite, color: number) {
+    sprite.setTintFill(color);
+    this.time.delayedCall(95, () => sprite.clearTint());
+  }
+
+  private showHitBurst(x: number, y: number, color: number) {
+    const ring = this.add.circle(x, y, 5, color, 0.24).setStrokeStyle(2, color, 0.85);
+    this.tweens.add({
+      targets: ring,
+      scale: 2.4,
+      alpha: 0,
+      duration: 220,
+      onComplete: () => ring.destroy()
+    });
+  }
+
   private showFloatingText(x: number, y: number, text: string, color: string) {
     const label = this.add
       .text(x, y, text, {
         fontFamily: "Arial",
-        fontSize: "14px",
+        fontSize: "15px",
+        fontStyle: "bold",
         color,
-        backgroundColor: "#101614cc",
-        padding: { x: 4, y: 2 }
+        stroke: "#0d1110",
+        strokeThickness: 3,
+        backgroundColor: "#101614b8",
+        padding: { x: 6, y: 2 }
       })
       .setOrigin(0.5);
 

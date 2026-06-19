@@ -64,6 +64,9 @@ export function ClassSelectPanel() {
             const selecting = selectingClassId === definition.classId;
             return (
               <article className="class-card" key={definition.classId}>
+                <span className="class-card-icon" aria-hidden="true">
+                  {classIcon(definition.classId)}
+                </span>
                 <div>
                   <strong>{definition.name}</strong>
                   <span>{definition.description}</span>
@@ -78,4 +81,15 @@ export function ClassSelectPanel() {
       </section>
     </>
   );
+}
+
+function classIcon(classId: CharacterClassId) {
+  const icons: Record<CharacterClassId, string> = {
+    warrior: "⚔",
+    mage: "✦",
+    ranger: "➳",
+    priest: "✚",
+    assassin: "☾"
+  };
+  return icons[classId];
 }
