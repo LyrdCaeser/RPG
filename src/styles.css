@@ -789,6 +789,7 @@ button:disabled {
   position: absolute;
   inset: 0;
   z-index: 40;
+  pointer-events: auto;
   background: rgba(3, 6, 5, 0.46);
   backdrop-filter: blur(1px);
 }
@@ -804,6 +805,7 @@ button:disabled {
   width: min(900px, calc(100vw - 48px));
   max-height: calc(100vh - 80px);
   overflow: hidden;
+  pointer-events: auto;
   transform: translate(-50%, -50%);
   border: 1px solid #9eb2aa;
   border-radius: 8px;
@@ -862,6 +864,8 @@ button:disabled {
 }
 
 .class-card button {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-height: 34px;
   justify-content: center;

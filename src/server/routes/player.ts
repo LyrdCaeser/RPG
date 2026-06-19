@@ -97,6 +97,10 @@ router.post("/class-select", async (req, res, next) => {
 
     const existing = await query<{ class_id: string }>(`select class_id from player_classes where user_id = $1`, [userId]);
     if (existing.rows[0]) {
+      if (existing.rows[0].class_id === classId) {
+        res.json({ player: await ensurePlayer(userId) });
+        return;
+      }
       res.status(400).json({ error: "Class is already selected." });
       return;
     }
