@@ -28,7 +28,7 @@ export function CutsceneOverlay() {
     try {
       await completeCutscene(cutsceneId);
     } catch {
-      addWarning("Cutscene save failed. Completion was not persisted.");
+      addWarning("Không lưu được hoạt cảnh. Tiến trình hoàn thành chưa được lưu.");
     } finally {
       gameEvents.emit("cutscene:lock", false);
       closeCutscene();
@@ -44,17 +44,17 @@ export function CutsceneOverlay() {
   }
 
   return (
-    <section className="cutscene-overlay" aria-label="Cutscene">
+    <section className="cutscene-overlay" aria-label="Hoạt cảnh">
       <div>
         <h2>{cutscene.title}</h2>
         <p>{line}</p>
         <footer>
           <span>{lineIndex + 1}/{cutsceneLinesLength}</span>
           <button type="button" onClick={() => void finish()}>
-            Skip
+            Bỏ qua
           </button>
           <button type="button" onClick={next}>
-            {lineIndex >= cutsceneLinesLength - 1 ? "Finish" : "Next"}
+            {lineIndex >= cutsceneLinesLength - 1 ? "Hoàn tất" : "Tiếp"}
           </button>
         </footer>
       </div>

@@ -12,7 +12,7 @@ export function AdminAuditLogsPanel() {
     setBusy(true);
     void getAdminAuditLogs()
       .then((response) => setLogs(response.logs))
-      .catch(() => addWarning("Admin audit log load failed."))
+      .catch(() => addWarning("Tải nhật ký kiểm toán thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -21,7 +21,7 @@ export function AdminAuditLogsPanel() {
   return (
     <div className="admin-tool">
       <button type="button" onClick={loadLogs} disabled={busy}>
-        Refresh
+        Làm mới
       </button>
       <div className="admin-table">
         {logs.map((log) => (
@@ -29,7 +29,7 @@ export function AdminAuditLogsPanel() {
             <strong>{log.action}</strong>
             <span>{new Date(log.createdAt).toLocaleString()}</span>
             <span>
-              {log.targetType ?? "system"} {log.targetId ?? ""}
+              {log.targetType ?? "hệ thống"} {log.targetId ?? ""}
             </span>
             <code>{JSON.stringify(log.metadata)}</code>
           </article>

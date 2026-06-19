@@ -3,11 +3,11 @@ import type { CollectibleDefinition, ItemDefinition, ShopDefinition } from "./ty
 export const itemDefinitions: ItemDefinition[] = [
   {
     id: "hp-potion",
-    name: "HP Potion",
+    name: "Bình máu",
     icon: "+",
     type: "consumable",
     rarity: "common",
-    description: "Restores 25 HP.",
+    description: "Hồi 25 máu.",
     sellPrice: 8,
     buyPrice: 20,
     stackable: true,
@@ -15,11 +15,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "mp-potion",
-    name: "MP Potion",
+    name: "Bình nội lực",
     icon: "*",
     type: "consumable",
     rarity: "common",
-    description: "Restores 15 MP.",
+    description: "Hồi 15 nội lực.",
     sellPrice: 10,
     buyPrice: 24,
     stackable: true,
@@ -27,11 +27,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "rusted-sword",
-    name: "Rusted Sword",
+    name: "Kiếm gỉ",
     icon: "/",
     type: "weapon",
     rarity: "common",
-    description: "A worn blade with a reliable edge.",
+    description: "Lưỡi kiếm cũ nhưng vẫn sắc đáng tin cậy.",
     sellPrice: 18,
     buyPrice: 45,
     stackable: false,
@@ -40,11 +40,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "scout-bow",
-    name: "Scout Bow",
+    name: "Cung trinh sát",
     icon: ")",
     type: "weapon",
     rarity: "uncommon",
-    description: "Light enough for patrol work.",
+    description: "Đủ nhẹ để dùng khi tuần tra.",
     sellPrice: 35,
     buyPrice: 90,
     stackable: false,
@@ -53,11 +53,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "padded-armor",
-    name: "Padded Armor",
+    name: "Giáp đệm",
     icon: "A",
     type: "armor",
     rarity: "common",
-    description: "Soft layers that blunt weak strikes.",
+    description: "Nhiều lớp mềm giúp giảm các đòn đánh yếu.",
     sellPrice: 16,
     buyPrice: 42,
     stackable: false,
@@ -66,11 +66,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "iron-ring",
-    name: "Iron Ring",
+    name: "Nhẫn sắt",
     icon: "o",
     type: "accessory",
     rarity: "uncommon",
-    description: "A simple ring etched with guard marks.",
+    description: "Chiếc nhẫn đơn giản khắc dấu của lính gác.",
     sellPrice: 25,
     buyPrice: 65,
     stackable: false,
@@ -79,11 +79,11 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "moon-necklace",
-    name: "Moon Necklace",
+    name: "Dây chuyền trăng",
     icon: "U",
     type: "accessory",
     rarity: "rare",
-    description: "A quiet charm that steadies spell focus.",
+    description: "Bùa hộ mệnh trầm lặng giúp tập trung phép thuật.",
     sellPrice: 48,
     buyPrice: 120,
     stackable: false,
@@ -92,91 +92,91 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "slime-gel",
-    name: "Slime Gel",
+    name: "Gel slime",
     icon: "~",
     type: "material",
     rarity: "common",
-    description: "Sticky crafting material from slimes.",
+    description: "Nguyên liệu chế tạo dính lấy từ slime.",
     sellPrice: 4,
     stackable: true
   },
   {
     id: "wisp-dust",
-    name: "Wisp Dust",
+    name: "Bụi ma trơi",
     icon: ".",
     type: "material",
     rarity: "uncommon",
-    description: "Faintly glowing dust from a Dust Wisp.",
+    description: "Lớp bụi phát sáng nhẹ lấy từ ma trơi bụi.",
     sellPrice: 9,
     stackable: true
   },
   {
     id: "sentinel-core",
-    name: "Sentinel Core",
+    name: "Lõi hộ vệ",
     icon: "#",
     type: "material",
     rarity: "rare",
-    description: "A compact mechanism from the Old Sentinel.",
+    description: "Cơ cấu nhỏ gọn lấy từ Hộ vệ cổ.",
     sellPrice: 28,
     stackable: true
   },
   {
     id: "marker-stone",
-    name: "Marker Stone",
+    name: "Đá mốc",
     icon: "s",
     type: "quest_item",
     rarity: "common",
-    description: "A boundary stone used by Elder Mira.",
+    description: "Viên đá đánh dấu ranh giới do Trưởng lão Mira dùng.",
     sellPrice: 0,
     stackable: true
   },
   {
     id: "iron-ore",
-    name: "Iron Ore",
+    name: "Quặng sắt",
     icon: "r",
     type: "material",
     rarity: "common",
-    description: "Ore for Oro's forge.",
+    description: "Quặng dùng cho lò rèn của Oro.",
     sellPrice: 5,
     stackable: true
   },
   {
     id: "scout-tag",
-    name: "Scout Tag",
+    name: "Thẻ trinh sát",
     icon: "t",
     type: "quest_item",
     rarity: "common",
-    description: "A route tag from Lyra's scouts.",
+    description: "Thẻ tuyến đường của đội trinh sát Lyra.",
     sellPrice: 0,
     stackable: true
   },
   {
     id: "wild-herb",
-    name: "Wild Herb",
+    name: "Thảo dược hoang",
     icon: "~",
     type: "material",
     rarity: "common",
-    description: "A clean herb used in field medicine.",
+    description: "Thảo dược sạch dùng trong y dược dã ngoại.",
     sellPrice: 3,
     stackable: true
   },
   {
     id: "moonwood",
-    name: "Moonwood",
+    name: "Gỗ trăng",
     icon: "|",
     type: "material",
     rarity: "common",
-    description: "Pale wood gathered from moonlit trees.",
+    description: "Gỗ nhạt màu thu từ những cây dưới ánh trăng.",
     sellPrice: 4,
     stackable: true
   },
   {
     id: "moon-crystal",
-    name: "Moon Crystal",
+    name: "Pha lê trăng",
     icon: "^",
     type: "material",
     rarity: "uncommon",
-    description: "A bright crystal used for magic equipment.",
+    description: "Pha lê sáng dùng cho trang bị phép thuật.",
     sellPrice: 12,
     stackable: true
   }
@@ -185,7 +185,7 @@ export const itemDefinitions: ItemDefinition[] = [
 export const shopDefinitions: ShopDefinition[] = [
   {
     npcId: "blacksmith-oro",
-    name: "Oro's Field Shop",
+    name: "Cửa hàng dã ngoại của Oro",
     items: [
       { itemId: "hp-potion", quantity: 1 },
       { itemId: "mp-potion", quantity: 1 },
@@ -203,43 +203,43 @@ export function findItemDefinition(itemId: string) {
 export const collectibleDefinitions: CollectibleDefinition[] = [
   {
     id: "marker-stone",
-    name: "Marker Stone",
+    name: "Đá mốc",
     x: 320,
     y: 192
   },
   {
     id: "marker-stone",
-    name: "Marker Stone",
+    name: "Đá mốc",
     x: 192,
     y: 448
   },
   {
     id: "iron-ore",
-    name: "Iron Ore",
+    name: "Quặng sắt",
     x: 768,
     y: 448
   },
   {
     id: "iron-ore",
-    name: "Iron Ore",
+    name: "Quặng sắt",
     x: 832,
     y: 512
   },
   {
     id: "iron-ore",
-    name: "Iron Ore",
+    name: "Quặng sắt",
     x: 640,
     y: 576
   },
   {
     id: "scout-tag",
-    name: "Scout Tag",
+    name: "Thẻ trinh sát",
     x: 352,
     y: 768
   },
   {
     id: "scout-tag",
-    name: "Scout Tag",
+    name: "Thẻ trinh sát",
     x: 480,
     y: 832
   }

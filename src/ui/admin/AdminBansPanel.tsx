@@ -13,7 +13,7 @@ export function AdminBansPanel() {
     setBusy(true);
     void getAdminBans()
       .then((response) => setBans(response.bans))
-      .catch(() => addWarning("Admin ban list load failed."))
+      .catch(() => addWarning("Tải danh sách cấm thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -26,7 +26,7 @@ export function AdminBansPanel() {
         setForm({ userId: "", reason: "", expiresAt: "" });
         loadBans();
       })
-      .catch(() => addWarning("Admin ban create failed."))
+      .catch(() => addWarning("Tạo lệnh cấm thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -34,7 +34,7 @@ export function AdminBansPanel() {
     setBusy(true);
     void revokeAdminBan(banId)
       .then(loadBans)
-      .catch(() => addWarning("Admin unban failed."))
+      .catch(() => addWarning("Gỡ cấm thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -42,15 +42,15 @@ export function AdminBansPanel() {
     <div className="admin-tool">
       <div className="admin-form-grid">
         <label>
-          Player ID
+          ID người chơi
           <input value={form.userId} onChange={(event) => setForm((current) => ({ ...current, userId: event.target.value }))} />
         </label>
         <label>
-          Reason
+          Lý do
           <input value={form.reason} onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))} />
         </label>
         <label>
-          Expires
+          Hết hạn
           <input
             type="datetime-local"
             value={form.expiresAt}
@@ -60,10 +60,10 @@ export function AdminBansPanel() {
       </div>
       <div className="admin-actions">
         <button type="button" onClick={createBan} disabled={busy || !form.userId || !form.reason}>
-          Ban Player
+          Cấm người chơi
         </button>
         <button type="button" onClick={loadBans} disabled={busy}>
-          Refresh
+          Làm mới
         </button>
       </div>
       <div className="admin-table">
@@ -71,10 +71,10 @@ export function AdminBansPanel() {
           <article key={ban.id} data-revoked={Boolean(ban.revokedAt)}>
             <strong>{ban.displayName}</strong>
             <span>{ban.reason}</span>
-            <span>{ban.expiresAt ? `Expires ${new Date(ban.expiresAt).toLocaleString()}` : "No expiration"}</span>
-            <span>{ban.revokedAt ? `Revoked ${new Date(ban.revokedAt).toLocaleString()}` : `Created ${new Date(ban.createdAt).toLocaleString()}`}</span>
+            <span>{ban.expiresAt ? `Hết hạn ${new Date(ban.expiresAt).toLocaleString()}` : "Không hết hạn"}</span>
+            <span>{ban.revokedAt ? `Đã gỡ ${new Date(ban.revokedAt).toLocaleString()}` : `Tạo lúc ${new Date(ban.createdAt).toLocaleString()}`}</span>
             <button type="button" onClick={() => revokeBan(ban.id)} disabled={busy || Boolean(ban.revokedAt)}>
-              Unban
+              Gỡ cấm
             </button>
           </article>
         ))}

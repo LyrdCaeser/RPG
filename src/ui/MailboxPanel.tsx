@@ -25,23 +25,23 @@ export function MailboxPanel() {
   function refresh() {
     return getMailboxMe()
       .then((response) => setMail(response.mail))
-      .catch(() => addWarning("Mailbox load failed."));
+      .catch(() => addWarning("Không tải được thư."));
   }
 
   function read(mailId: string) {
     void markMailboxRead(mailId)
       .then((response) => setMail(response.mail))
-      .catch(() => addWarning("Mailbox read failed."));
+      .catch(() => addWarning("Không đánh dấu đọc được thư."));
   }
 
   function claim(mailItem: MailboxMessage) {
     if (!player) return;
     if (mailItem.expiresAt && new Date(mailItem.expiresAt).getTime() <= Date.now()) {
-      addWarning("Mail expired.");
+      addWarning("Thư đã hết hạn.");
       return;
     }
     if (mailItem.claimed) {
-      addWarning("Mail already claimed.");
+      addWarning("Thư đã được nhận.");
       return;
     }
     void claimMailboxMail(mailItem.id, player)
@@ -58,10 +58,10 @@ export function MailboxPanel() {
         for (const title of response.titles ?? []) reportCollection("titles", title.titleId);
       })
       .catch((error) => {
-        const message = error instanceof Error ? error.message : "Mailbox claim failed.";
-        if (message.toLowerCase().includes("expired")) addWarning("Mail expired.");
-        else if (message.toLowerCase().includes("already")) addWarning("Mail already claimed.");
-        else addWarning("Mailbox claim failed.");
+        const message = error instanceof Error ? error.message : "Không nhận được thư.";
+        if (message.toLowerCase().includes("expired")) addWarning("Thư đã hết hạn.");
+        else if (message.toLowerCase().includes("already")) addWarning("Thư đã được nhận.");
+        else addWarning("Không nhận được thư.");
       });
   }
 
@@ -72,16 +72,16 @@ export function MailboxPanel() {
   }
 
   return (
-    <section className="mailbox-panel" aria-label="Mailbox">
+    <section className="mailbox-panel" aria-label="Thư">
       <header>
-        <h2>Mailbox</h2>
-        <button type="button" onClick={() => void refresh()}>Refresh</button>
+        <h2>Thư</h2>
+        <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
       <div className="mailbox-list">
         {mail.map((item) => (
           <button type="button" key={item.id} data-active={selected?.id === item.id} data-read={item.read} onClick={() => setSelectedId(item.id)}>
             <strong>{item.title}</strong>
-            <span>{item.read ? "read" : "unread"} - {item.claimed ? "claimed" : "unclaimed"}</span>
+            <span>{item.read ? "đã đọc" : "chưa đọc"} - {item.claimed ? "đã nhận" : "chưa nhận"}</span>
           </button>
         ))}
       </div>
@@ -92,13 +92,13 @@ export function MailboxPanel() {
             <span>{selected.senderName}</span>
           </header>
           <small>
-            {new Date(selected.createdAt).toLocaleString()} {selected.expiresAt ? `- expires ${new Date(selected.expiresAt).toLocaleString()}` : ""}
+            {new Date(selected.createdAt).toLocaleString()} {selected.expiresAt ? `- hết hạn ${new Date(selected.expiresAt).toLocaleString()}` : ""}
           </small>
           <p>{selected.message}</p>
           <em>{formatReward(selected.rewards)}</em>
           <div>
-            <button type="button" disabled={selected.read} onClick={() => read(selected.id)}>Mark Read</button>
-            <button type="button" disabled={selected.claimed || !hasReward(selected.rewards)} onClick={() => claim(selected)}>Claim</button>
+            <button type="button" disabled={selected.read} onClick={() => read(selected.id)}>Đánh dấu đã đọc</button>
+            <button type="button" disabled={selected.claimed || !hasReward(selected.rewards)} onClick={() => claim(selected)}>Nhận</button>
           </div>
         </article>
       )}
@@ -112,11 +112,11 @@ function hasReward(reward: EventReward) {
 
 function formatReward(reward: EventReward) {
   const parts: string[] = [];
-  if (reward.exp) parts.push(`${reward.exp} EXP`);
-  if (reward.gold) parts.push(`${reward.gold} gold`);
+  if (reward.exp) parts.push(`${reward.exp} kinh nghiệm`);
+  if (reward.gold) parts.push(`${reward.gold} vàng`);
   for (const item of reward.items ?? []) parts.push(`${item.quantity} ${item.itemId}`);
-  for (const pet of reward.pets ?? []) parts.push(`pet ${pet.petId}`);
-  for (const mount of reward.mounts ?? []) parts.push(`mount ${mount.mountId}`);
-  for (const title of reward.titles ?? []) parts.push(`title ${title.titleId}`);
-  return parts.length ? parts.join(", ") : "No attachments";
+  for (const pet of reward.pets ?? []) parts.push(`thú đồng hành ${pet.petId}`);
+  for (const mount of reward.mounts ?? []) parts.push(`thú cưỡi ${mount.mountId}`);
+  for (const title of reward.titles ?? []) parts.push(`danh hiệu ${title.titleId}`);
+  return parts.length ? parts.join(", ") : "Không có đính kèm";
 }

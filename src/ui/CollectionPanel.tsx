@@ -25,7 +25,7 @@ export function CollectionPanel() {
   const refresh = () => {
     void getCollectionsMe()
       .then((response) => setCollections(response.collections, response.claimedSetIds))
-      .catch(() => addWarning("Collection load failed."));
+      .catch(() => addWarning("Tải bộ sưu tập thất bại."));
   };
 
   const claim = (setId: string) => {
@@ -39,22 +39,22 @@ export function CollectionPanel() {
         if (response.titles) setTitles(response.titles);
       })
       .catch(() => {
-        addWarning("Collection claim failed.");
-        addWarning("Collection reward failed.");
+        addWarning("Nhận bộ sưu tập thất bại.");
+        addWarning("Lưu thưởng bộ sưu tập thất bại.");
       });
   };
 
   return (
-    <section className="collection-panel" aria-label="Collection book">
+    <section className="collection-panel" aria-label="Sổ bộ sưu tập">
       <header>
-        <h2>Collection</h2>
-        <button type="button" onClick={refresh}>Refresh</button>
+        <h2>Bộ sưu tập</h2>
+        <button type="button" onClick={refresh}>Làm mới</button>
       </header>
-      <span className="collection-progress">{completedCount}/{collectionEntries.length} entries</span>
+      <span className="collection-progress">{completedCount}/{collectionEntries.length} mục</span>
       <div className="collection-list">
         {categories.map((category) => (
           <section key={category}>
-            <h3>{category}</h3>
+            <h3>{formatCollectionCategory(category)}</h3>
             {collectionEntries
               .filter((entry) => entry.category === category && entry.enabled)
               .map((entry) => {
@@ -62,9 +62,9 @@ export function CollectionPanel() {
                 const visible = state !== "hidden";
                 return (
                   <article key={entry.collectionId} data-state={state}>
-                    <strong>{visible ? `${entry.icon ?? ""} ${entry.name}` : "Hidden Entry"}</strong>
-                    <span>{state} - {entry.discoveryType}</span>
-                    <p>{visible ? entry.description : "Discover this entry to reveal it."}</p>
+                    <strong>{visible ? `${entry.icon ?? ""} ${entry.name}` : "Mục ẩn"}</strong>
+                    <span>{formatCollectionState(state)} - {formatDiscoveryType(entry.discoveryType)}</span>
+                    <p>{visible ? entry.description : "Khám phá mục này để mở nội dung."}</p>
                   </article>
                 );
               })}
@@ -72,7 +72,7 @@ export function CollectionPanel() {
         ))}
       </div>
       <div className="collection-sets">
-        <h3>Sets</h3>
+        <h3>Bộ</h3>
         {collectionSets.map((set) => {
           const complete = set.requiredEntryIds.filter((entryId) =>
             [...byId.values()].some((collection) => collection.entryId === entryId && collection.state === "completed")
@@ -82,11 +82,11 @@ export function CollectionPanel() {
           return (
             <article key={set.setId} data-state={isClaimed ? "claimed" : isComplete ? "claimable" : "active"}>
               <strong>{set.name}</strong>
-              <span>{complete}/{set.requiredEntryIds.length} - {set.points} pts</span>
+              <span>{complete}/{set.requiredEntryIds.length} - {set.points} điểm</span>
               <p>{set.description}</p>
               <small>{formatReward(set.rewards)}</small>
               <button type="button" disabled={!isComplete || isClaimed} onClick={() => claim(set.setId)}>
-                {isClaimed ? "Claimed" : isComplete ? "Claim" : "Incomplete"}
+                {isClaimed ? "Đã nhận" : isComplete ? "Nhận" : "Chưa hoàn tất"}
               </button>
             </article>
           );
@@ -98,11 +98,39 @@ export function CollectionPanel() {
 
 function formatReward(reward: EventReward) {
   const parts: string[] = [];
-  if (reward.exp) parts.push(`${reward.exp} EXP`);
-  if (reward.gold) parts.push(`${reward.gold} gold`);
+  if (reward.exp) parts.push(`${reward.exp} kinh nghiệm`);
+  if (reward.gold) parts.push(`${reward.gold} vàng`);
   for (const item of reward.items ?? []) parts.push(`${item.quantity} ${item.itemId}`);
-  for (const pet of reward.pets ?? []) parts.push(`pet ${pet.petId}`);
-  for (const mount of reward.mounts ?? []) parts.push(`mount ${mount.mountId}`);
-  for (const title of reward.titles ?? []) parts.push(`title ${title.titleId}`);
-  return parts.length ? parts.join(", ") : "No reward";
+  for (const pet of reward.pets ?? []) parts.push(`thú cưng ${pet.petId}`);
+  for (const mount of reward.mounts ?? []) parts.push(`thú cưỡi ${mount.mountId}`);
+  for (const title of reward.titles ?? []) parts.push(`danh hiệu ${title.titleId}`);
+  return parts.length ? parts.join(", ") : "Không có thưởng";
+}
+
+function formatCollectionCategory(category: CollectionCategory) {
+  const labels: Record<CollectionCategory, string> = {
+    pets: "Thú cưng",
+    mounts: "Thú cưỡi",
+    items: "Vật phẩm",
+    enemies: "Kẻ địch",
+    bosses: "Boss",
+    maps: "Bản đồ",
+    titles: "Danh hiệu"
+  };
+  return labels[category] ?? category;
+}
+
+function formatCollectionState(state: string) {
+  const labels: Record<string, string> = {
+    hidden: "Ẩn",
+    undiscovered: "Chưa khám phá",
+    discovered: "Đã khám phá",
+    completed: "Hoàn tất",
+    claimed: "Đã nhận"
+  };
+  return labels[state] ?? state;
+}
+
+function formatDiscoveryType(discoveryType: string) {
+  return discoveryType.replaceAll("_", " ");
 }

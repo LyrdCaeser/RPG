@@ -3,7 +3,7 @@ import type { CraftingRecipeDefinition } from "./types.js";
 export const craftingRecipes: CraftingRecipeDefinition[] = [
   {
     recipeId: "craft-hp-potion",
-    name: "Brew HP Potion",
+    name: "Pha Bình Máu",
     type: "consumable",
     outputItemId: "hp-potion",
     outputQuantity: 1,
@@ -15,7 +15,7 @@ export const craftingRecipes: CraftingRecipeDefinition[] = [
   },
   {
     recipeId: "craft-mp-potion",
-    name: "Brew MP Potion",
+    name: "Pha Bình Nội Lực",
     type: "consumable",
     outputItemId: "mp-potion",
     outputQuantity: 1,
@@ -30,7 +30,7 @@ export const craftingRecipes: CraftingRecipeDefinition[] = [
   },
   {
     recipeId: "craft-scout-bow",
-    name: "Craft Scout Bow",
+    name: "Chế Tạo Cung Trinh Sát",
     type: "weapon",
     outputItemId: "scout-bow",
     outputQuantity: 1,
@@ -45,7 +45,7 @@ export const craftingRecipes: CraftingRecipeDefinition[] = [
   },
   {
     recipeId: "craft-iron-ring",
-    name: "Forge Iron Ring",
+    name: "Rèn Nhẫn Sắt",
     type: "accessory",
     outputItemId: "iron-ring",
     outputQuantity: 1,
@@ -57,7 +57,7 @@ export const craftingRecipes: CraftingRecipeDefinition[] = [
   },
   {
     recipeId: "refine-moon-crystal",
-    name: "Refine Moon Crystal",
+    name: "Tinh Luyện Pha Lê Trăng",
     type: "material_refine",
     outputItemId: "moon-crystal",
     outputQuantity: 1,

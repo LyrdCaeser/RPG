@@ -3,17 +3,17 @@ import type { NpcDefinition } from "./types.js";
 export const npcDefinitions: NpcDefinition[] = [
   {
     id: "elder-mira",
-    name: "Elder Mira",
+    name: "Trưởng lão Mira",
     x: 256,
     y: 224,
     questId: "first-steps",
     dialogue: {
-      locked: ["The wall holds for now. Help the others first."],
-      available: ["The outer wall has started to crack.", "Take this route and check the marker stones."],
-      active: ["The marker stones will show where the ground shifted.", "Return when the slime is gone."],
-      completed: ["That should keep the dusk patrol safe.", "Come back for your reward."],
-      claimed: ["The wall is steadier now. Oro may have work for you."],
-      default: ["Keep your eyes on the boundary."]
+      locked: ["Bức tường vẫn trụ được lúc này. Hãy giúp những người khác trước."],
+      available: ["Bức tường ngoài đã bắt đầu nứt.", "Đi theo tuyến này và kiểm tra các viên đá mốc."],
+      active: ["Đá mốc sẽ cho thấy mặt đất đã dịch chuyển ở đâu.", "Trở lại khi slime đã bị dọn sạch."],
+      completed: ["Như vậy đội tuần tra chiều sẽ an toàn hơn.", "Hãy quay lại nhận thưởng."],
+      claimed: ["Bức tường đã vững hơn. Oro có thể có việc cho con."],
+      default: ["Hãy để mắt tới ranh giới."]
     }
   },
   {
@@ -23,12 +23,12 @@ export const npcDefinitions: NpcDefinition[] = [
     y: 352,
     questId: "iron-memory",
     dialogue: {
-      locked: ["The forge is not ready for you yet. Speak with Mira first."],
-      available: ["A good blade remembers every fight.", "Bring me ore and test your edge on a Dust Wisp."],
-      active: ["Iron ore runs along the broken path.", "The Dust Wisp will not wait politely."],
-      completed: ["That ore will sing in the coals.", "Take your pay before the metal cools."],
-      claimed: ["The forge knows your name now."],
-      default: ["Keep your gear dry and your guard high."]
+      locked: ["Lò rèn chưa sẵn sàng cho cậu. Hãy nói chuyện với Mira trước."],
+      available: ["Một lưỡi kiếm tốt nhớ mọi trận chiến.", "Mang quặng về cho ta và thử lưỡi kiếm với Ma trơi bụi."],
+      active: ["Quặng sắt nằm dọc con đường vỡ.", "Ma trơi bụi sẽ không lịch sự chờ đâu."],
+      completed: ["Số quặng đó sẽ hát trong than hồng.", "Nhận tiền công trước khi kim loại nguội đi."],
+      claimed: ["Giờ lò rèn đã biết tên cậu."],
+      default: ["Giữ trang bị khô ráo và luôn đề phòng."]
     }
   },
   {
@@ -38,12 +38,12 @@ export const npcDefinitions: NpcDefinition[] = [
     y: 672,
     questId: "scout-route",
     dialogue: {
-      locked: ["I cannot send you south until the forge work is done."],
-      available: ["Enemies are nesting near the southern trees.", "Recover our tags and bring down the Old Sentinel."],
-      active: ["The scout tags should still be near the route markers.", "Do not let the Sentinel corner you."],
-      completed: ["The route is ours again.", "Claim the scout purse before you head out."],
-      claimed: ["The scouts can move again because of you."],
-      default: ["Stay low on the southern path."]
+      locked: ["Tôi chưa thể đưa bạn xuống phía nam cho đến khi việc ở lò rèn xong."],
+      available: ["Kẻ địch đang làm tổ gần hàng cây phía nam.", "Thu hồi thẻ của chúng tôi và hạ Hộ vệ cổ."],
+      active: ["Thẻ trinh sát vẫn nên ở gần các mốc tuyến đường.", "Đừng để Hộ vệ dồn bạn vào góc."],
+      completed: ["Tuyến đường lại thuộc về chúng ta.", "Nhận túi thưởng trinh sát trước khi lên đường."],
+      claimed: ["Nhờ bạn mà đội trinh sát có thể di chuyển trở lại."],
+      default: ["Đi thấp người trên đường phía nam."]
     }
   }
 ];

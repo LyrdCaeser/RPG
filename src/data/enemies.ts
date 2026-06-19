@@ -3,7 +3,7 @@ import type { EnemyDefinition } from "./types.js";
 export const enemyDefinitions: EnemyDefinition[] = [
   {
     id: "slime-01",
-    name: "Green Slime",
+    name: "Slime xanh",
     x: 832,
     y: 224,
     maxHp: 28,
@@ -20,7 +20,7 @@ export const enemyDefinitions: EnemyDefinition[] = [
   },
   {
     id: "wisp-01",
-    name: "Dust Wisp",
+    name: "Ma trơi bụi",
     x: 928,
     y: 608,
     maxHp: 36,
@@ -40,7 +40,7 @@ export const enemyDefinitions: EnemyDefinition[] = [
   },
   {
     id: "sentinel-01",
-    name: "Old Sentinel",
+    name: "Hộ vệ cổ",
     x: 576,
     y: 800,
     maxHp: 58,

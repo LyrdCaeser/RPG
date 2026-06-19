@@ -76,7 +76,7 @@ export function AdminPvpReportsPanel() {
         }
       })
       .catch((caught) => {
-        const message = adminPvpReportWarning(caught, "PvP report load failed.");
+        const message = adminPvpReportWarning(caught, "Tải báo cáo đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -90,7 +90,7 @@ export function AdminPvpReportsPanel() {
     void getAdminPvpReportDetail(reportId)
       .then((response) => setDetail(response.report))
       .catch((caught) => {
-        const message = adminPvpReportWarning(caught, "PvP report detail load failed.");
+        const message = adminPvpReportWarning(caught, "Tải chi tiết báo cáo đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -121,12 +121,12 @@ export function AdminPvpReportsPanel() {
       .then((response) => {
         setDetail(response.report);
         setPenaltyForm(emptyPenaltyForm);
-        addNotice("PvP report penalty applied.");
+        addNotice("Đã áp dụng án phạt từ báo cáo đấu trường.");
         notifyAdminPvpModerationRefresh();
         return loadReports(filter);
       })
       .catch((caught) => {
-        const message = adminPvpReportWarning(caught, "PvP report penalty apply failed.");
+        const message = adminPvpReportWarning(caught, "Áp dụng án phạt từ báo cáo thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -137,12 +137,12 @@ export function AdminPvpReportsPanel() {
     if (!detail) return;
     const note =
       action === "review"
-        ? window.prompt("Review note")
+        ? window.prompt("Ghi chú xem xét")
         : action === "resolve"
-          ? window.prompt("Resolution note")
-          : window.prompt("Rejection note");
+          ? window.prompt("Ghi chú giải quyết")
+          : window.prompt("Ghi chú từ chối");
     if (action !== "review" && !note?.trim()) {
-      addWarning(action === "resolve" ? "Resolution note is required." : "Rejection note is required.");
+      addWarning(action === "resolve" ? "Cần nhập ghi chú giải quyết." : "Cần nhập ghi chú từ chối.");
       return;
     }
     setDetailLoading(true);
@@ -157,39 +157,39 @@ export function AdminPvpReportsPanel() {
       .then((response) => {
         setDetail(response.report);
         setReports(response.reports);
-        addNotice(`PvP report ${action} succeeded.`);
+        addNotice("Đã xử lý báo cáo đấu trường.");
         if (action === "resolve" || action === "reject") notifyAdminPvpModerationRefresh();
         return loadReports(filter);
       })
-      .catch((caught) => addWarning(adminPvpReportWarning(caught, `PvP report ${action} failed.`)))
+      .catch((caught) => addWarning(adminPvpReportWarning(caught, "Xử lý báo cáo đấu trường thất bại.")))
       .finally(() => setDetailLoading(false));
   }
 
   return (
     <div className="admin-pvp-reports">
       <div className="admin-table-header">
-        <h3>PvP Reports</h3>
+        <h3>Báo cáo đấu trường</h3>
         <button type="button" onClick={() => loadReports()} disabled={loading}>
-          Refresh
+          Làm mới
         </button>
       </div>
       <div className="admin-actions">
         {filters.map((candidate) => (
           <button type="button" key={candidate} data-active={filter === candidate} onClick={() => setFilter(candidate)}>
-            {candidate}
+            {formatReportFilter(candidate)}
           </button>
         ))}
       </div>
-      {loading ? <span className="admin-loading">Loading</span> : null}
+      {loading ? <span className="admin-loading">Đang tải</span> : null}
       {error ? <div className="admin-denied">{error}</div> : null}
 
       <div className="admin-pvp-report-layout">
         <section className="admin-table admin-pvp-report-table">
           <div className="admin-table-header">
-            <h3>Report List</h3>
+            <h3>Danh sách báo cáo</h3>
           </div>
           {!loaded ? null : reports.length === 0 ? (
-            <p>{filter === "all" ? "No PvP reports recorded." : "No PvP reports for selected status."}</p>
+            <p>{filter === "all" ? "Chưa có báo cáo đấu trường trong cơ sở dữ liệu." : "Không có báo cáo cho trạng thái đã chọn."}</p>
           ) : null}
           {reports.map((report) => (
             <article key={report.reportId} data-revoked={report.status === "resolved" || report.status === "rejected"}>
@@ -200,46 +200,46 @@ export function AdminPvpReportsPanel() {
               <span>{report.reporter.displayName}</span>
               <span>{report.reporter.playerId}</span>
               <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(report.reporter.playerId)}>
-                Open Profile
+                Mở hồ sơ
               </button>
-              <span>{report.targetType}</span>
+              <span>{formatReportTargetType(report.targetType)}</span>
               <span>{report.targetMatchId}</span>
-              <span>{report.status}</span>
-              <span>Created {formatDate(report.createdAt)}</span>
-              <span>Updated {formatDate(report.updatedAt)}</span>
+              <span>{formatReportStatus(report.status)}</span>
+              <span>Tạo lúc {formatDate(report.createdAt)}</span>
+              <span>Cập nhật {formatDate(report.updatedAt)}</span>
             </article>
           ))}
         </section>
 
         <section className="admin-pvp-report-detail">
           <div className="admin-table-header">
-            <h3>Report Detail</h3>
-            {detailLoading ? <span>Loading</span> : null}
+            <h3>Chi tiết báo cáo</h3>
+            {detailLoading ? <span>Đang tải</span> : null}
           </div>
-          {!detail && !detailLoading ? <p>Select a report.</p> : null}
+          {!detail && !detailLoading ? <p>Chọn một báo cáo.</p> : null}
           {detail ? (
             <>
-              <InfoBlock title="Report">
+              <InfoBlock title="Báo cáo">
                 <span>{detail.reportId}</span>
-                <span>{detail.status}</span>
+                <span>{formatReportStatus(detail.status)}</span>
                 <span>{detail.reason}</span>
-                <span>{detail.details || "No details"}</span>
-                <span>Reporter {detail.reporter.displayName}</span>
+                <span>{detail.details || "Không có chi tiết"}</span>
+                <span>Người báo cáo {detail.reporter.displayName}</span>
                 <span>{detail.reporter.playerId}</span>
                 <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(detail.reporter.playerId)}>
-                  Open Reporter Profile
+                  Mở hồ sơ người báo cáo
                 </button>
-                {detail.reviewedBy ? <span>Reviewed by {detail.reviewedBy}</span> : null}
-                {detail.reviewedAt ? <span>Reviewed {formatDate(detail.reviewedAt)}</span> : null}
+                {detail.reviewedBy ? <span>Xem xét bởi {detail.reviewedBy}</span> : null}
+                {detail.reviewedAt ? <span>Đã xem xét {formatDate(detail.reviewedAt)}</span> : null}
                 {detail.resolutionNote ? <span>{detail.resolutionNote}</span> : null}
               </InfoBlock>
 
-              <InfoBlock title="Target Match">
-                {detail.targetMatch ? <TargetMatchView match={detail.targetMatch} /> : <span>Missing target match data from database.</span>}
+              <InfoBlock title="Trận bị báo cáo">
+                {detail.targetMatch ? <TargetMatchView match={detail.targetMatch} /> : <span>Thiếu dữ liệu trận trong cơ sở dữ liệu.</span>}
               </InfoBlock>
 
-              <InfoBlock title="Involved Players">
-                {detail.involvedPlayers.length === 0 ? <span>Missing involved player data from database.</span> : null}
+              <InfoBlock title="Người chơi liên quan">
+                {detail.involvedPlayers.length === 0 ? <span>Thiếu dữ liệu người chơi liên quan trong cơ sở dữ liệu.</span> : null}
                 {detail.involvedPlayers.map((involved) => (
                   <div key={`${involved.playerId}-${involved.role}`}>
                     <button
@@ -252,51 +252,51 @@ export function AdminPvpReportsPanel() {
                       <span>{involved.playerId}</span>
                     </button>
                     <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(involved.playerId)}>
-                      Open Profile
+                      Mở hồ sơ
                     </button>
                   </div>
                 ))}
               </InfoBlock>
 
-              <InfoBlock title="Target Result">
+              <InfoBlock title="Kết quả trận">
                 {detail.targetResult ? (
                   <>
                     <span>{detail.targetResult.resultId}</span>
                     <span>{detail.targetResult.endedReason}</span>
-                    <span>{detail.targetResult.draw ? "Draw" : "Winner/loser recorded"}</span>
-                    <span>{detail.targetResult.playerADamage} / {detail.targetResult.playerBDamage} damage</span>
+                    <span>{detail.targetResult.draw ? "Hòa" : "Đã ghi thắng/thua"}</span>
+                    <span>{detail.targetResult.playerADamage} / {detail.targetResult.playerBDamage} sát thương</span>
                     <span>{detail.targetResult.durationMs} ms</span>
                     <span>{formatDate(detail.targetResult.createdAt)}</span>
                   </>
                 ) : (
-                  <span>Missing target result data from database.</span>
+                  <span>Thiếu dữ liệu kết quả trận trong cơ sở dữ liệu.</span>
                 )}
               </InfoBlock>
 
-              <InfoBlock title="Actions">
+              <InfoBlock title="Hành động">
                 <div className="admin-row-actions">
                   <button type="button" disabled={detailLoading || detail.status !== "open"} onClick={() => runAction("review")}>
-                    Start Review
+                    Bắt đầu xem xét
                   </button>
                   <button
                     type="button"
                     disabled={detailLoading || (detail.status !== "open" && detail.status !== "reviewing")}
                     onClick={() => runAction("resolve")}
                   >
-                    Resolve
+                    Giải quyết
                   </button>
                   <button
                     type="button"
                     disabled={detailLoading || (detail.status !== "open" && detail.status !== "reviewing")}
                     onClick={() => runAction("reject")}
                   >
-                    Reject
+                    Từ chối
                   </button>
                 </div>
               </InfoBlock>
 
-              <InfoBlock title="Linked Penalties">
-                {detail.linkedPenalties.length === 0 ? <span>No linked penalties recorded.</span> : null}
+              <InfoBlock title="Án phạt liên kết">
+                {detail.linkedPenalties.length === 0 ? <span>Chưa có án phạt liên kết trong cơ sở dữ liệu.</span> : null}
                 {detail.linkedPenalties.map((penalty) => (
                   <article key={penalty.penaltyId} className="admin-pvp-linked-penalty">
                     <strong>{penalty.penaltyType}</strong>
@@ -304,36 +304,36 @@ export function AdminPvpReportsPanel() {
                     <span>{penalty.targetDisplayName}</span>
                     <span>{penalty.targetPlayerId}</span>
                     <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(penalty.targetPlayerId)}>
-                      Open Target Profile
+                      Mở hồ sơ mục tiêu
                     </button>
                     <span>{penalty.status}</span>
                     <span>{penalty.reason}</span>
-                    <span>Starts {formatDate(penalty.startsAt)}</span>
-                    <span>{penalty.permanent ? "Permanent" : penalty.expiresAt ? `Expires ${formatDate(penalty.expiresAt)}` : "No expiry"}</span>
-                    <span>Created {formatDate(penalty.createdAt)}</span>
-                    {penalty.liftedAt ? <span>Lifted {formatDate(penalty.liftedAt)}</span> : null}
+                    <span>Bắt đầu {formatDate(penalty.startsAt)}</span>
+                    <span>{penalty.permanent ? "Vĩnh viễn" : penalty.expiresAt ? `Hết hạn ${formatDate(penalty.expiresAt)}` : "Không hết hạn"}</span>
+                    <span>Tạo lúc {formatDate(penalty.createdAt)}</span>
+                    {penalty.liftedAt ? <span>Đã gỡ {formatDate(penalty.liftedAt)}</span> : null}
                   </article>
                 ))}
               </InfoBlock>
 
-              <InfoBlock title="Apply Penalty From This Report">
+              <InfoBlock title="Áp dụng án phạt từ báo cáo này">
                 <div className="admin-form-grid">
                   <label>
-                    Target player ID
+                    ID người chơi mục tiêu
                     <select
                       value={penaltyForm.targetPlayerId}
                       onChange={(event) => setPenaltyForm((current) => ({ ...current, targetPlayerId: event.target.value }))}
                     >
-                      <option value="">Select involved player</option>
+                      <option value="">Chọn người chơi liên quan</option>
                       {detail.involvedPlayers.map((involved) => (
                         <option key={`${involved.playerId}-${involved.role}`} value={involved.playerId}>
-                          {involved.role} - {involved.displayName} - {involved.playerId}
+                      {formatInvolvedRole(involved.role)} - {involved.displayName} - {involved.playerId}
                         </option>
                       ))}
                     </select>
                   </label>
                   <label>
-                    Penalty type
+                    Loại án phạt
                     <select
                       value={penaltyForm.penaltyType}
                       onChange={(event) => {
@@ -347,24 +347,24 @@ export function AdminPvpReportsPanel() {
                     >
                       {penaltyTypes.map((type) => (
                         <option key={type} value={type}>
-                          {type}
+                          {formatPenaltyType(type)}
                         </option>
                       ))}
                     </select>
                   </label>
                   <label>
-                    Duration mode
+                    Kiểu thời hạn
                     <select
                       value={penaltyForm.durationMode}
                       onChange={(event) => setPenaltyForm((current) => ({ ...current, durationMode: event.target.value as ReportPenaltyDurationMode }))}
                     >
-                      <option value="none">warning/no expiry</option>
-                      <option value="expires_at">expires_at datetime</option>
-                      <option value="permanent">permanent</option>
+                      <option value="none">cảnh báo/không hết hạn</option>
+                      <option value="expires_at">thời điểm hết hạn</option>
+                      <option value="permanent">vĩnh viễn</option>
                     </select>
                   </label>
                   <label>
-                    Expires at
+                    Hết hạn lúc
                     <input
                       type="datetime-local"
                       value={penaltyForm.expiresAt}
@@ -373,11 +373,11 @@ export function AdminPvpReportsPanel() {
                     />
                   </label>
                   <label>
-                    Reason
+                    Lý do
                     <input value={penaltyForm.reason} onChange={(event) => setPenaltyForm((current) => ({ ...current, reason: event.target.value }))} />
                   </label>
                   <label>
-                    Details
+                    Chi tiết
                     <input value={penaltyForm.details} onChange={(event) => setPenaltyForm((current) => ({ ...current, details: event.target.value }))} />
                   </label>
                   <label className="admin-check">
@@ -386,10 +386,10 @@ export function AdminPvpReportsPanel() {
                       checked={penaltyForm.resolveReport}
                       onChange={(event) => setPenaltyForm((current) => ({ ...current, resolveReport: event.target.checked }))}
                     />
-                    Resolve report
+                    Giải quyết báo cáo
                   </label>
                   <label>
-                    Resolution note
+                    Ghi chú giải quyết
                     <input
                       value={penaltyForm.resolutionNote}
                       disabled={!penaltyForm.resolveReport}
@@ -403,18 +403,18 @@ export function AdminPvpReportsPanel() {
                     disabled={detailLoading || detail.status === "resolved" || detail.status === "rejected" || Boolean(validateReportPenaltyForm(penaltyForm))}
                     onClick={applyPenaltyFromReport}
                   >
-                    Apply Penalty
+                    Áp dụng án phạt
                   </button>
                 </div>
               </InfoBlock>
 
               <section className="admin-pvp-report-events">
-                <h4>Event Timeline</h4>
-                {detail.events.length === 0 ? <p>No report events recorded.</p> : null}
+                <h4>Dòng thời gian sự kiện</h4>
+                {detail.events.length === 0 ? <p>Chưa có sự kiện báo cáo trong cơ sở dữ liệu.</p> : null}
                 {detail.events.map((event) => (
                   <article key={event.eventId}>
                     <strong>{event.eventType}</strong>
-                    <span>{event.actorPlayerId ? `Actor ${event.actorPlayerId}` : "No actor"}</span>
+                    <span>{event.actorPlayerId ? `Người thực hiện ${event.actorPlayerId}` : "Không có người thực hiện"}</span>
                     <span>{formatDate(event.createdAt)}</span>
                     <code>{JSON.stringify(event.metadata)}</code>
                   </article>
@@ -446,11 +446,11 @@ function TargetMatchView({ match }: { match: AdminPvPRankedMatchEntry | AdminPvP
       <span>{match.playerA.displayName} vs {match.playerB.displayName}</span>
       <span>{match.playerA.playerId} / {match.playerB.playerId}</span>
       <span>{match.mapId}</span>
-      <span>{match.resultRecorded ? "Result recorded" : "No result row"}</span>
-      {ranked ? <span>Ratings {match.playerARating} / {match.playerBRating}</span> : null}
-      {!ranked && match.challengeId ? <span>Challenge {match.challengeId}</span> : null}
-      <span>Created {formatDate(match.createdAt)}</span>
-      <span>Updated {formatDate(match.updatedAt)}</span>
+      <span>{match.resultRecorded ? "Đã ghi kết quả" : "Chưa có dòng kết quả"}</span>
+      {ranked ? <span>Điểm hạng {match.playerARating} / {match.playerBRating}</span> : null}
+      {!ranked && match.challengeId ? <span>Lời thách đấu {match.challengeId}</span> : null}
+      <span>Tạo lúc {formatDate(match.createdAt)}</span>
+      <span>Cập nhật {formatDate(match.updatedAt)}</span>
     </>
   );
 }
@@ -459,25 +459,64 @@ function isRankedMatch(match: AdminPvPRankedMatchEntry | AdminPvPDuelMatchEntry)
   return "playerARating" in match;
 }
 
+function formatReportFilter(filter: ReportFilter) {
+  return filter === "all" ? "Tất cả" : formatReportStatus(filter);
+}
+
+function formatReportStatus(status: PvPReportStatus) {
+  const labels: Record<PvPReportStatus, string> = {
+    open: "Đang mở",
+    reviewing: "Đang xem xét",
+    resolved: "Đã giải quyết",
+    rejected: "Đã từ chối"
+  };
+  return labels[status] ?? status;
+}
+
+function formatReportTargetType(targetType: string) {
+  if (targetType === "ranked_match") return "Trận xếp hạng";
+  if (targetType === "duel_match") return "Trận thách đấu";
+  return targetType;
+}
+
+function formatPenaltyType(type: PvPPenaltyType) {
+  const labels: Record<PvPPenaltyType, string> = {
+    warning: "Cảnh báo",
+    ranked_suspension: "Đình chỉ xếp hạng",
+    duel_suspension: "Đình chỉ thách đấu",
+    pvp_full_ban: "Cấm đấu trường",
+    shop_suspension: "Đình chỉ cửa hàng"
+  };
+  return labels[type] ?? type;
+}
+
+function formatInvolvedRole(role?: string | null) {
+  if (role === "player_a") return "Người chơi A";
+  if (role === "player_b") return "Người chơi B";
+  if (role === "challenger") return "Người thách đấu";
+  if (role === "target") return "Mục tiêu";
+  return role ?? "Không rõ vai trò";
+}
+
 function formatDate(value: string) {
   return new Date(value).toLocaleString();
 }
 
 function validateReportPenaltyForm(form: ReportPenaltyFormState) {
-  if (!form.targetPlayerId.trim()) return "target_player_id is required.";
-  if (!form.reason.trim()) return "Penalty reason is required.";
-  if (form.reason.trim().length > 240) return "Penalty reason is too long.";
-  if (form.details.length > 2000) return "Penalty details are too long.";
+  if (!form.targetPlayerId.trim()) return "Cần chọn người chơi mục tiêu.";
+  if (!form.reason.trim()) return "Cần nhập lý do án phạt.";
+  if (form.reason.trim().length > 240) return "Lý do án phạt quá dài.";
+  if (form.details.length > 2000) return "Chi tiết án phạt quá dài.";
   if (form.penaltyType !== "warning" && form.durationMode === "none") {
-    return "Suspensions and bans require expires_at or permanent.";
+    return "Đình chỉ và cấm cần có thời điểm hết hạn hoặc trạng thái vĩnh viễn.";
   }
   if (form.durationMode === "expires_at") {
     const expiresAt = new Date(form.expiresAt);
-    if (!Number.isFinite(expiresAt.getTime())) return "expires_at must be a valid datetime.";
-    if (expiresAt.getTime() <= Date.now()) return "expires_at must be in the future.";
+    if (!Number.isFinite(expiresAt.getTime())) return "Thời điểm hết hạn phải hợp lệ.";
+    if (expiresAt.getTime() <= Date.now()) return "Thời điểm hết hạn phải nằm trong tương lai.";
   }
-  if (form.resolveReport && !form.resolutionNote.trim()) return "resolution_note is required.";
-  if (form.resolutionNote.length > 1000) return "resolution_note is too long.";
+  if (form.resolveReport && !form.resolutionNote.trim()) return "Cần nhập ghi chú giải quyết.";
+  if (form.resolutionNote.length > 1000) return "Ghi chú giải quyết quá dài.";
   return "";
 }
 
@@ -492,12 +531,12 @@ function adminPvpReportWarning(error: unknown, defaultMessage: string) {
     message.includes("connection timeout") ||
     message.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (message.includes("resolution_note")) return "Resolution note is required.";
-  if (message.includes("rejection_note")) return "Rejection note is required.";
-  if (message.includes("only open reports")) return "Only open reports can move to reviewing.";
-  if (message.includes("only open or reviewing")) return "Only open or reviewing reports can be resolved or rejected.";
-  if (message.includes("not found")) return "PvP report was not found.";
+  if (message.includes("resolution_note")) return "Cần nhập ghi chú giải quyết.";
+  if (message.includes("rejection_note")) return "Cần nhập ghi chú từ chối.";
+  if (message.includes("only open reports")) return "Chỉ báo cáo đang mở mới có thể chuyển sang xem xét.";
+  if (message.includes("only open or reviewing")) return "Chỉ báo cáo đang mở hoặc đang xem xét mới có thể được giải quyết hoặc từ chối.";
+  if (message.includes("not found")) return "Không tìm thấy báo cáo đấu trường.";
   return defaultMessage;
 }

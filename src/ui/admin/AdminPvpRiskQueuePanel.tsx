@@ -47,13 +47,13 @@ export function AdminPvpRiskQueuePanel() {
     const parsedWindowDays = Number(windowDays);
     const parsedLimit = Number(limit);
     if (!Number.isSafeInteger(parsedWindowDays) || parsedWindowDays < 1 || parsedWindowDays > 365) {
-      const message = "window_days must be an integer from 1 to 365.";
+      const message = "Số ngày phải là số nguyên từ 1 đến 365.";
       setError(message);
       addWarning(message);
       return Promise.resolve();
     }
     if (!Number.isSafeInteger(parsedLimit) || parsedLimit < 1 || parsedLimit > 100) {
-      const message = "limit must be an integer from 1 to 100.";
+      const message = "Giới hạn phải là số nguyên từ 1 đến 100.";
       setError(message);
       addWarning(message);
       return Promise.resolve();
@@ -79,10 +79,10 @@ export function AdminPvpRiskQueuePanel() {
           >
         );
         setLoaded(true);
-        addNotice("PvP risk queue refreshed.");
+        addNotice("Đã làm mới hàng đợi rủi ro đấu trường.");
       })
       .catch((caught) => {
-        const message = adminPvpRiskQueueWarning(caught, "PvP risk queue refresh failed.");
+        const message = adminPvpRiskQueueWarning(caught, "Làm mới hàng đợi rủi ro đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -107,7 +107,7 @@ export function AdminPvpRiskQueuePanel() {
   ) {
     const note = (watchlistNotes[row.playerId] ?? row.watchlistNote ?? "").trim();
     if (note.length > 2000) {
-      const message = "Watchlist note must be 2000 characters or fewer.";
+      const message = "Ghi chú theo dõi tối đa 2000 ký tự.";
       setError(message);
       addWarning(message);
       return Promise.resolve();
@@ -121,12 +121,12 @@ export function AdminPvpRiskQueuePanel() {
       note
     })
       .then(() => {
-        addNotice("PvP watchlist row saved.");
+        addNotice("Đã lưu dòng theo dõi đấu trường.");
         notifyAdminPvpModerationRefresh();
         return refreshRiskQueue();
       })
       .catch((caught) => {
-        const message = adminPvpRiskQueueWarning(caught, "PvP watchlist update failed.");
+        const message = adminPvpRiskQueueWarning(caught, "Cập nhật theo dõi đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -136,13 +136,13 @@ export function AdminPvpRiskQueuePanel() {
   function applyBulkWatchlistUpdate() {
     const playerIds = selectedPlayerIds.filter((playerId) => rows.some((row) => row.playerId === playerId));
     if (playerIds.length === 0) {
-      const message = "No rows selected.";
+      const message = "Chưa chọn dòng nào.";
       setError(message);
       addWarning(message);
       return Promise.resolve();
     }
     if (bulkNote.length > 2000) {
-      const message = "Watchlist note must be 2000 characters or fewer.";
+      const message = "Ghi chú theo dõi tối đa 2000 ký tự.";
       setError(message);
       addWarning(message);
       return Promise.resolve();
@@ -157,12 +157,12 @@ export function AdminPvpRiskQueuePanel() {
     })
       .then(() => {
         setSelectedPlayerIds([]);
-        addNotice("PvP bulk watchlist update succeeded.");
+        addNotice("Đã cập nhật theo dõi hàng loạt.");
         notifyAdminPvpModerationRefresh();
         return refreshRiskQueue();
       })
       .catch((caught) => {
-        const message = adminPvpRiskQueueWarning(caught, "PvP bulk watchlist update failed.");
+        const message = adminPvpRiskQueueWarning(caught, "Cập nhật theo dõi hàng loạt thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -172,42 +172,42 @@ export function AdminPvpRiskQueuePanel() {
   return (
     <div className="admin-pvp-risk-queue">
       <section className="admin-form">
-        <h3>PvP Moderation Risk Queue</h3>
+        <h3>Hàng đợi rủi ro điều phối đấu trường</h3>
         <div className="admin-form-grid">
           <label>
-            window_days
+            Số ngày
             <input value={windowDays} onChange={(event) => setWindowDays(event.target.value)} />
           </label>
           <label>
-            status
+            Trạng thái
             <select value={status} onChange={(event) => setStatus(event.target.value as RiskStatusFilter)}>
               {statusFilters.map((filter) => (
                 <option key={filter} value={filter}>
-                  {filter}
+                  {formatRiskStatusFilter(filter)}
                 </option>
               ))}
             </select>
           </label>
           <label>
-            limit
+            Giới hạn
             <input value={limit} onChange={(event) => setLimit(event.target.value)} />
           </label>
           <label>
-            watchlist_status
+            Trạng thái theo dõi
             <select value={watchlistStatus} onChange={(event) => setWatchlistStatus(event.target.value as WatchlistStatusFilter)}>
               {watchlistStatusFilters.map((filter) => (
                 <option key={filter} value={filter}>
-                  {filter}
+                  {formatWatchlistStatusFilter(filter)}
                 </option>
               ))}
             </select>
           </label>
           <label>
-            watchlist_priority
+            Ưu tiên theo dõi
             <select value={watchlistPriority} onChange={(event) => setWatchlistPriority(event.target.value as WatchlistPriorityFilter)}>
               {watchlistPriorityFilters.map((filter) => (
                 <option key={filter} value={filter}>
-                  {filter}
+                  {formatWatchlistPriority(filter)}
                 </option>
               ))}
             </select>
@@ -215,51 +215,51 @@ export function AdminPvpRiskQueuePanel() {
         </div>
         <div className="admin-row-actions">
           <button type="button" onClick={() => void refreshRiskQueue()} disabled={loading}>
-            Refresh
+            Làm mới
           </button>
         </div>
         <section className="admin-pvp-bulk-watchlist">
-          <h4>Bulk Watchlist Update</h4>
-          <span>{selectedPlayerIds.length} selected</span>
+          <h4>Cập nhật theo dõi hàng loạt</h4>
+          <span>Đã chọn {selectedPlayerIds.length}</span>
           <div className="admin-form-grid">
             <label>
-              status
+              Trạng thái
               <select value={bulkStatus} onChange={(event) => setBulkStatus(event.target.value as AdminPvpModerationWatchlistStatus)}>
                 {watchlistStatuses.map((statusOption) => (
                   <option key={statusOption} value={statusOption}>
-                    {statusOption}
+                    {formatWatchlistStatus(statusOption)}
                   </option>
                 ))}
               </select>
             </label>
             <label>
-              priority
+              Ưu tiên
               <select value={bulkPriority} onChange={(event) => setBulkPriority(event.target.value as AdminPvpModerationWatchlistPriority)}>
                 {watchlistPriorities.map((priority) => (
                   <option key={priority} value={priority}>
-                    {priority}
+                    {formatWatchlistPriority(priority)}
                   </option>
                 ))}
               </select>
             </label>
             <label>
-              note
+              Ghi chú
               <textarea value={bulkNote} maxLength={2000} onChange={(event) => setBulkNote(event.target.value)} />
             </label>
           </div>
           <div className="admin-row-actions">
             <button type="button" onClick={() => void applyBulkWatchlistUpdate()} disabled={bulkUpdating || selectedPlayerIds.length === 0}>
-              {bulkUpdating ? "Updating" : "Apply Bulk Watchlist Update"}
+              {bulkUpdating ? "Đang cập nhật" : "Áp dụng cập nhật theo dõi hàng loạt"}
             </button>
           </div>
         </section>
-        {loading ? <span className="admin-loading">Loading</span> : null}
+        {loading ? <span className="admin-loading">Đang tải</span> : null}
         {error ? <div className="admin-denied">{error}</div> : null}
       </section>
 
       <section className="admin-table admin-pvp-risk-table">
         <div className="admin-table-header">
-          <h3>Risk Queue</h3>
+          <h3>Hàng đợi rủi ro</h3>
           <div className="admin-row-actions">
             <label className="admin-pvp-select-all">
               <input
@@ -268,12 +268,12 @@ export function AdminPvpRiskQueuePanel() {
                 disabled={rows.length === 0}
                 onChange={(event) => toggleAllVisible(event.target.checked)}
               />
-              Select visible
+              Chọn các dòng đang hiển thị
             </label>
-            <span>{loaded ? `${rows.length} rows` : "Not loaded"}</span>
+            <span>{loaded ? `${rows.length} dòng` : "Chưa tải"}</span>
           </div>
         </div>
-        {!loaded ? null : rows.length === 0 ? <p>{status === "all" ? "Empty risk queue." : "No rows for selected filter."}</p> : null}
+        {!loaded ? null : rows.length === 0 ? <p>{status === "all" ? "Hàng đợi rủi ro trống." : "Không có dòng cho bộ lọc đã chọn."}</p> : null}
         {rows.map((row) => (
           <article key={row.playerId} data-risk={row.riskLevel}>
             <label className="admin-pvp-row-select">
@@ -282,35 +282,35 @@ export function AdminPvpRiskQueuePanel() {
                 checked={selectedPlayerIds.includes(row.playerId)}
                 onChange={(event) => toggleSelected(row.playerId, event.target.checked)}
               />
-              Select
+              Chọn
             </label>
-            <strong>{row.displayName || "not available"}</strong>
+            <strong>{row.displayName || "Không có"}</strong>
             <span>{row.playerId}</span>
-            <span>Score {row.riskScore}</span>
-            <span>{row.riskLevel}</span>
+            <span>Điểm {row.riskScore}</span>
+            <span>{formatWatchlistPriority(row.riskLevel)}</span>
             <div className="admin-pvp-risk-reasons">
-              {row.reasons.length === 0 ? <span>no reasons</span> : null}
+              {row.reasons.length === 0 ? <span>không có lý do</span> : null}
               {row.reasons.map((reason) => (
-                <span key={reason}>{reason}</span>
+                <span key={reason}>{formatRiskReason(reason)}</span>
               ))}
             </div>
             <div className="admin-pvp-risk-counts">
-              <span>active {row.counts.activePenalties}</span>
-              <span>recent {row.counts.recentPenalties}</span>
-              <span>appeals {row.counts.openAppeals}</span>
-              <span>submitted {row.counts.reportsSubmitted}</span>
-              <span>involving {row.counts.reportsInvolvingPlayer}</span>
-              <span>unresolved {row.counts.unresolvedReports}</span>
-              <span>linked {row.counts.linkedReportPenalties}</span>
+              <span>đang hiệu lực {row.counts.activePenalties}</span>
+              <span>gần đây {row.counts.recentPenalties}</span>
+              <span>kháng cáo {row.counts.openAppeals}</span>
+              <span>đã gửi {row.counts.reportsSubmitted}</span>
+              <span>liên quan {row.counts.reportsInvolvingPlayer}</span>
+              <span>chưa xử lý {row.counts.unresolvedReports}</span>
+              <span>liên kết {row.counts.linkedReportPenalties}</span>
             </div>
             <div className="admin-pvp-risk-watchlist">
-              <strong>Watchlist</strong>
-              <span>{row.watchlistStatus ? `status ${row.watchlistStatus}` : "not watched"}</span>
-              <span>{row.watchlistPriority ? `priority ${row.watchlistPriority}` : "priority not set"}</span>
-              <span>{row.watchlistUpdatedAt ? `Updated ${formatDate(row.watchlistUpdatedAt)}` : "watchlist not updated"}</span>
-              <span>{row.watchlistReviewedAt ? `Reviewed ${formatDate(row.watchlistReviewedAt)}` : "reviewed_at not available"}</span>
+              <strong>Theo dõi</strong>
+              <span>{row.watchlistStatus ? `trạng thái ${formatWatchlistStatus(row.watchlistStatus)}` : "chưa theo dõi"}</span>
+              <span>{row.watchlistPriority ? `ưu tiên ${formatWatchlistPriority(row.watchlistPriority)}` : "chưa đặt ưu tiên"}</span>
+              <span>{row.watchlistUpdatedAt ? `Cập nhật ${formatDate(row.watchlistUpdatedAt)}` : "chưa cập nhật theo dõi"}</span>
+              <span>{row.watchlistReviewedAt ? `Đã xem xét ${formatDate(row.watchlistReviewedAt)}` : "chưa có thời điểm xem xét"}</span>
               <label>
-                priority
+                Ưu tiên
                 <select
                   value={watchlistPriorityByPlayer[row.playerId] ?? row.watchlistPriority ?? row.riskLevel}
                   onChange={(event) =>
@@ -322,7 +322,7 @@ export function AdminPvpRiskQueuePanel() {
                 >
                   {watchlistPriorities.map((priority) => (
                     <option key={priority} value={priority}>
-                      {priority}
+                      {formatWatchlistPriority(priority)}
                     </option>
                   ))}
                 </select>
@@ -339,30 +339,30 @@ export function AdminPvpRiskQueuePanel() {
               />
               <div className="admin-row-actions">
                 <button type="button" onClick={() => void saveWatchlist(row, "watching")} disabled={savingPlayerId === row.playerId}>
-                  Mark Watching
+                  Đánh dấu đang theo dõi
                 </button>
                 <button type="button" onClick={() => void saveWatchlist(row, "reviewed")} disabled={savingPlayerId === row.playerId}>
-                  Mark Reviewed
+                  Đánh dấu đã xem xét
                 </button>
                 <button
                   type="button"
                   onClick={() => void saveWatchlist(row, "cleared")}
                   disabled={savingPlayerId === row.playerId}
                 >
-                  Mark Cleared
+                  Đánh dấu đã xử lý
                 </button>
                 <button
                   type="button"
                   onClick={() => void saveWatchlist(row, row.watchlistStatus ?? "watching")}
                   disabled={savingPlayerId === row.playerId}
                 >
-                  Save Note
+                  Lưu ghi chú
                 </button>
               </div>
             </div>
-            <span>{row.latestEventAt ? `Latest ${formatDate(row.latestEventAt)}` : "latest_event_at not available"}</span>
+            <span>{row.latestEventAt ? `Mới nhất ${formatDate(row.latestEventAt)}` : "chưa có sự kiện mới nhất"}</span>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(row.playerId)}>
-              Open Profile
+              Mở hồ sơ
             </button>
           </article>
         ))}
@@ -373,6 +373,56 @@ export function AdminPvpRiskQueuePanel() {
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString();
+}
+
+function formatRiskStatusFilter(filter: RiskStatusFilter) {
+  const labels: Record<RiskStatusFilter, string> = {
+    all: "Tất cả",
+    needs_review: "Cần xem xét",
+    active_penalty: "Có án phạt hiệu lực",
+    open_appeal: "Có kháng cáo mở",
+    repeat_reports: "Báo cáo lặp lại"
+  };
+  return labels[filter] ?? filter;
+}
+
+function formatWatchlistStatusFilter(filter: WatchlistStatusFilter) {
+  return filter === "all" ? "Tất cả" : filter === "none" ? "Chưa có" : formatWatchlistStatus(filter);
+}
+
+function formatWatchlistStatus(status: AdminPvpModerationWatchlistStatus) {
+  const labels: Record<AdminPvpModerationWatchlistStatus, string> = {
+    watching: "Đang theo dõi",
+    reviewed: "Đã xem xét",
+    cleared: "Đã xử lý"
+  };
+  return labels[status] ?? status;
+}
+
+function formatWatchlistPriority(priority: WatchlistPriorityFilter | AdminPvpModerationWatchlistPriority) {
+  const labels: Record<string, string> = {
+    all: "Tất cả",
+    low: "Thấp",
+    medium: "Trung bình",
+    high: "Cao",
+    critical: "Nghiêm trọng"
+  };
+  return labels[priority] ?? priority;
+}
+
+function formatRiskReason(reason: string) {
+  const labels: Record<string, string> = {
+    active_pvp_full_ban: "Đang bị cấm đấu trường",
+    active_ranked_suspension: "Đang bị đình chỉ xếp hạng",
+    active_duel_suspension: "Đang bị đình chỉ thách đấu",
+    active_shop_suspension: "Đang bị đình chỉ cửa hàng",
+    many_reports_involving_player: "Nhiều báo cáo liên quan",
+    many_reports_submitted: "Gửi nhiều báo cáo",
+    unresolved_reports: "Có báo cáo chưa xử lý",
+    open_penalty_appeal: "Có kháng cáo án phạt đang mở",
+    repeated_penalties: "Án phạt lặp lại"
+  };
+  return labels[reason] ?? reason;
 }
 
 function adminPvpRiskQueueWarning(error: unknown, defaultMessage: string) {
@@ -386,14 +436,14 @@ function adminPvpRiskQueueWarning(error: unknown, defaultMessage: string) {
     lower.includes("connection terminated") ||
     lower.includes("timeout")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (lower.includes("window_days")) return "window_days must be an integer from 1 to 365.";
-  if (lower.includes("limit")) return "limit must be an integer from 1 to 100.";
-  if (lower.includes("player_ids")) return "Selected rows are invalid.";
-  if (lower.includes("player was not found")) return "Selected player was not found.";
-  if (lower.includes("watchlist_status")) return "Risk queue watchlist_status is invalid.";
-  if (lower.includes("watchlist_priority")) return "Risk queue watchlist_priority is invalid.";
-  if (lower.includes("status")) return "Risk queue status is invalid.";
+  if (lower.includes("window_days")) return "Số ngày phải là số nguyên từ 1 đến 365.";
+  if (lower.includes("limit")) return "Giới hạn phải là số nguyên từ 1 đến 100.";
+  if (lower.includes("player_ids")) return "Các dòng đã chọn không hợp lệ.";
+  if (lower.includes("player was not found")) return "Không tìm thấy người chơi đã chọn.";
+  if (lower.includes("watchlist_status")) return "Trạng thái theo dõi của hàng đợi rủi ro không hợp lệ.";
+  if (lower.includes("watchlist_priority")) return "Ưu tiên theo dõi của hàng đợi rủi ro không hợp lệ.";
+  if (lower.includes("status")) return "Trạng thái hàng đợi rủi ro không hợp lệ.";
   return message || defaultMessage;
 }

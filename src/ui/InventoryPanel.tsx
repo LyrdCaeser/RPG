@@ -29,7 +29,7 @@ export function InventoryPanel() {
       setInventorySnapshot(response);
       setPlayer(response.player);
     } catch {
-      addWarning("Use item failed. Player and inventory changes were not persisted.");
+      addWarning("Không dùng được vật phẩm. Thay đổi nhân vật và hành trang chưa được lưu.");
     }
   }
 
@@ -38,7 +38,7 @@ export function InventoryPanel() {
     try {
       setInventorySnapshot(await equipInventoryItem(selectedItem.id, selectedItem.equipmentSlot));
     } catch {
-      addWarning("Equip failed. Equipment changes were not persisted.");
+      addWarning("Không trang bị được. Thay đổi trang bị chưa được lưu.");
     }
   }
 
@@ -46,14 +46,14 @@ export function InventoryPanel() {
     try {
       setInventorySnapshot(await unequipInventoryItem(slot));
     } catch {
-      addWarning("Equip failed. Equipment changes were not persisted.");
+      addWarning("Không tháo trang bị được. Thay đổi trang bị chưa được lưu.");
     }
   }
 
   return (
-    <section className="inventory-panel" aria-label="Inventory">
+    <section className="inventory-panel" aria-label="Hành trang">
       <header>
-        <h2>Inventory</h2>
+        <h2>Hành trang</h2>
         <span>{inventory.length}/{INVENTORY_SLOTS}</span>
       </header>
       <div className="inventory-grid">
@@ -77,24 +77,34 @@ export function InventoryPanel() {
         })}
         {Array.from({ length: emptySlots }, (_, index) => (
           <div className="item-slot empty" key={`empty-${index}`}>
-            Empty
+            Trống
           </div>
         ))}
       </div>
       <ItemTooltip itemId={selectedItemId} />
       <div className="panel-actions">
         <button type="button" disabled={selectedItem?.type !== "consumable"} onClick={useSelectedItem}>
-          Use
+          Dùng
         </button>
         <button type="button" disabled={!selectedItem?.equipmentSlot} onClick={equipSelectedItem}>
-          Equip
+          Trang bị
         </button>
         {(["weapon", "armor", "ring", "necklace"] as EquipmentSlot[]).map((slot) => (
           <button type="button" key={slot} onClick={() => unequip(slot)}>
-            Unequip {slot}
+            Tháo {formatEquipmentSlot(slot)}
           </button>
         ))}
       </div>
     </section>
   );
+}
+
+function formatEquipmentSlot(slot: EquipmentSlot) {
+  const labels: Record<EquipmentSlot, string> = {
+    weapon: "vũ khí",
+    armor: "giáp",
+    ring: "nhẫn",
+    necklace: "dây chuyền"
+  };
+  return labels[slot];
 }

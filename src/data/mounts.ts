@@ -3,8 +3,8 @@ import type { MountDefinition } from "./types.js";
 export const mountDefinitions: MountDefinition[] = [
   {
     mountId: "brown_horse",
-    name: "Brown Horse",
-    description: "A dependable village horse with steady speed.",
+    name: "Ngựa nâu",
+    description: "Ngựa làng đáng tin với tốc độ ổn định.",
     rarity: "common",
     moveSpeedBonus: 45,
     unlockLevel: 1,
@@ -13,8 +13,8 @@ export const mountDefinitions: MountDefinition[] = [
   },
   {
     mountId: "shadow_panther",
-    name: "Shadow Panther",
-    description: "A silent panther suited for fast field travel.",
+    name: "Báo bóng tối",
+    description: "Báo lặng lẽ phù hợp di chuyển nhanh ngoài đồng.",
     rarity: "rare",
     moveSpeedBonus: 70,
     unlockLevel: 3,
@@ -23,8 +23,8 @@ export const mountDefinitions: MountDefinition[] = [
   },
   {
     mountId: "cloud_deer",
-    name: "Cloud Deer",
-    description: "A graceful deer that glides across open paths.",
+    name: "Hươu mây",
+    description: "Chú hươu thanh nhã lướt qua những con đường rộng.",
     rarity: "epic",
     moveSpeedBonus: 85,
     unlockLevel: 4,
@@ -33,8 +33,8 @@ export const mountDefinitions: MountDefinition[] = [
   },
   {
     mountId: "silver_dragon",
-    name: "Silver Dragon",
-    description: "A legendary mount with unmatched movement speed.",
+    name: "Rồng bạc",
+    description: "Thú cưỡi huyền thoại với tốc độ di chuyển vượt trội.",
     rarity: "legendary",
     moveSpeedBonus: 115,
     unlockLevel: 6,

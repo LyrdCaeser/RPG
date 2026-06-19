@@ -3,8 +3,8 @@ import type { GuildBossDefinition } from "./types.js";
 export const guildBossDefinitions: GuildBossDefinition[] = [
   {
     guildBossId: "guild_slime_king",
-    name: "Guild Slime King",
-    description: "A swollen monarch of the slime field, summoned with stored slime gel.",
+    name: "Vua Slime Bang Hội",
+    description: "Quân vương phình to của đồng slime, được triệu hồi bằng gel slime trong kho.",
     level: 5,
     hp: 3200,
     attack: 22,
@@ -26,8 +26,8 @@ export const guildBossDefinitions: GuildBossDefinition[] = [
   },
   {
     guildBossId: "moon_forest_guardian",
-    name: "Moon Forest Guardian",
-    description: "An ancient guardian awakened with moonwood and crystal offerings.",
+    name: "Hộ Vệ Rừng Trăng",
+    description: "Hộ vệ cổ xưa thức tỉnh nhờ nguyệt mộc và pha lê hiến tế.",
     level: 9,
     hp: 7200,
     attack: 38,
@@ -52,8 +52,8 @@ export const guildBossDefinitions: GuildBossDefinition[] = [
   },
   {
     guildBossId: "ancient_silver_dragon",
-    name: "Ancient Silver Dragon",
-    description: "A silver dragon bound beneath the old dungeon, intended for advanced guild raids.",
+    name: "Ngân Long Cổ Đại",
+    description: "Rồng bạc bị phong ấn dưới hầm ngục cũ, dành cho các trận công kích bang hội cấp cao.",
     level: 15,
     hp: 18000,
     attack: 72,

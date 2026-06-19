@@ -3,7 +3,7 @@ import type { MapDefinition } from "./types.js";
 export const mapDefinitions: MapDefinition[] = [
   {
     mapId: "starter_village",
-    name: "Starter Village",
+    name: "Làng khởi đầu",
     type: "town",
     width: 1344,
     height: 1024,
@@ -12,7 +12,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "village-to-forest",
-        name: "Moon Forest Path",
+        name: "Đường rừng trăng",
         x: 1184,
         y: 192,
         targetMapId: "moon_forest",
@@ -21,7 +21,7 @@ export const mapDefinitions: MapDefinition[] = [
       },
       {
         id: "village-to-field",
-        name: "Slime Field Road",
+        name: "Đường cánh đồng slime",
         x: 1184,
         y: 800,
         targetMapId: "slime_field",
@@ -44,7 +44,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "moon_forest",
-    name: "Moon Forest",
+    name: "Rừng trăng",
     type: "field",
     width: 1600,
     height: 1152,
@@ -53,7 +53,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "forest-to-village",
-        name: "Starter Village",
+        name: "Làng khởi đầu",
         x: 96,
         y: 256,
         targetMapId: "starter_village",
@@ -62,7 +62,7 @@ export const mapDefinitions: MapDefinition[] = [
       },
       {
         id: "forest-to-dungeon",
-        name: "Ancient Dungeon",
+        name: "Hầm ngục cổ",
         x: 1408,
         y: 896,
         targetMapId: "ancient_dungeon_1",
@@ -85,7 +85,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "slime_field",
-    name: "Slime Field",
+    name: "Cánh đồng slime",
     type: "field",
     width: 1536,
     height: 1024,
@@ -94,7 +94,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "field-to-village",
-        name: "Starter Village",
+        name: "Làng khởi đầu",
         x: 96,
         y: 736,
         targetMapId: "starter_village",
@@ -103,7 +103,7 @@ export const mapDefinitions: MapDefinition[] = [
       },
       {
         id: "field-to-arena",
-        name: "Boss Arena",
+        name: "Đấu trường boss",
         x: 1376,
         y: 192,
         targetMapId: "boss_arena_1",
@@ -127,7 +127,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "ancient_dungeon_1",
-    name: "Ancient Dungeon I",
+    name: "Hầm ngục cổ I",
     type: "dungeon",
     width: 1280,
     height: 960,
@@ -136,7 +136,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "dungeon-exit",
-        name: "Moon Forest Exit",
+        name: "Lối ra rừng trăng",
         x: 160,
         y: 128,
         targetMapId: "moon_forest",
@@ -145,7 +145,7 @@ export const mapDefinitions: MapDefinition[] = [
       },
       {
         id: "dungeon-to-arena",
-        name: "Sealed Arena",
+        name: "Đấu trường phong ấn",
         x: 1120,
         y: 800,
         targetMapId: "boss_arena_1",
@@ -175,7 +175,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "boss_arena_1",
-    name: "Boss Arena I",
+    name: "Đấu trường boss I",
     type: "boss_area",
     width: 1024,
     height: 768,
@@ -184,7 +184,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "arena-exit",
-        name: "Slime Field Exit",
+        name: "Lối ra cánh đồng slime",
         x: 128,
         y: 512,
         targetMapId: "slime_field",
@@ -210,7 +210,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "duel_arena_1",
-    name: "Duel Arena I",
+    name: "Đấu trường tay đôi I",
     type: "arena",
     width: 1024,
     height: 768,

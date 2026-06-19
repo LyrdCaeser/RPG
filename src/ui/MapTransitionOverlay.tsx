@@ -6,7 +6,7 @@ export function MapTransitionOverlay() {
 
   return (
     <div className="map-transition" aria-live="polite">
-      <strong>{transition.mapName ?? "Loading map"}</strong>
+      <strong>{transition.mapName ?? "Đang tải bản đồ"}</strong>
     </div>
   );
 }

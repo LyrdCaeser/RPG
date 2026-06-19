@@ -24,7 +24,7 @@ export function WarningToast() {
   if (warnings.length === 0 && notices.length === 0) return null;
 
   return (
-    <aside className="warnings" aria-label="Messages">
+    <aside className="warnings" aria-label="Thông báo">
       {notices.map((notice) => (
         <button key={notice} type="button" data-kind="notice" onClick={() => dismissNotice(notice)}>
           {notice}

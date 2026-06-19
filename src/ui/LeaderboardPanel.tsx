@@ -23,35 +23,35 @@ export function LeaderboardPanel() {
       await submitLeaderboard(nextType);
       void saveAchievementProgress({ targetType: "leaderboard_submit", targetValue: nextType, amount: 1 })
         .then((achievementResponse) => setAchievements(achievementResponse.achievements))
-        .catch(() => addWarning("Achievement progress save failed."));
+        .catch(() => addWarning("Lưu tiến độ thành tựu thất bại."));
       const response = await getLeaderboard(nextType);
       setEntries(response.entries);
       setPlayerRank(response.playerRank);
     } catch {
-      addWarning("Leaderboard load failed or submit failed.");
+      addWarning("Tải hoặc gửi bảng xếp hạng thất bại.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <section className="leaderboard-panel" aria-label="Leaderboard">
+    <section className="leaderboard-panel" aria-label="Bảng xếp hạng">
       <header>
-        <h2>Leaderboard</h2>
+        <h2>Bảng xếp hạng</h2>
         <button type="button" onClick={() => void refresh()} disabled={loading}>
-          Refresh
+          Làm mới
         </button>
       </header>
       <select value={type} onChange={(event) => setType(event.target.value as LeaderboardCategory)}>
         {categories.map((category) => (
           <option key={category} value={category}>
-            {category}
+            {formatLeaderboardCategory(category)}
           </option>
         ))}
       </select>
       {playerRank && (
         <p className="player-rank">
-          Your rank: #{playerRank.rank} - {playerRank.score}
+          Hạng của bạn: #{playerRank.rank} - {playerRank.score}
         </p>
       )}
       <div className="leaderboard-list">
@@ -65,4 +65,16 @@ export function LeaderboardPanel() {
       </div>
     </section>
   );
+}
+
+function formatLeaderboardCategory(category: LeaderboardCategory) {
+  const labels: Record<LeaderboardCategory, string> = {
+    level: "Cấp",
+    exp: "Kinh nghiệm",
+    gold: "Vàng",
+    boss_kills: "Hạ boss",
+    event_points: "Điểm sự kiện",
+    combat_power: "Sức chiến đấu"
+  };
+  return labels[category] ?? category;
 }

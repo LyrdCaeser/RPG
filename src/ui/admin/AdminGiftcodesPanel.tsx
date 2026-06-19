@@ -21,7 +21,7 @@ export function AdminGiftcodesPanel() {
     setBusy(true);
     void getAdminGiftcodes()
       .then((response) => setGiftcodes(response.giftcodes))
-      .catch(() => addWarning("Admin giftcode load failed."))
+      .catch(() => addWarning("Tải mã quà thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -42,7 +42,7 @@ export function AdminGiftcodesPanel() {
   const saveGiftcode = () => {
     const rewards = parseRewards(form.rewardsJson);
     if (!rewards) {
-      addWarning("Giftcode rewards JSON is invalid.");
+      addWarning("JSON phần thưởng mã quà không hợp lệ.");
       return;
     }
 
@@ -71,7 +71,7 @@ export function AdminGiftcodesPanel() {
         setForm({ code: "", rewardsJson: emptyRewards, maxUses: 1, startsAt: "", expiresAt: "", enabled: true });
         loadGiftcodes();
       })
-      .catch(() => addWarning("Admin giftcode save failed."))
+      .catch(() => addWarning("Lưu mã quà thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -79,7 +79,7 @@ export function AdminGiftcodesPanel() {
     setBusy(true);
     void disableAdminGiftcode(id)
       .then(loadGiftcodes)
-      .catch(() => addWarning("Admin giftcode disable failed."))
+      .catch(() => addWarning("Tắt mã quà thất bại."))
       .finally(() => setBusy(false));
   };
 
@@ -87,11 +87,11 @@ export function AdminGiftcodesPanel() {
     <div className="admin-tool">
       <div className="admin-form-grid">
         <label>
-          Code
+          Mã
           <input value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value }))} />
         </label>
         <label>
-          Max uses
+          Lượt dùng tối đa
           <input
             type="number"
             value={form.maxUses}
@@ -99,25 +99,25 @@ export function AdminGiftcodesPanel() {
           />
         </label>
         <label>
-          Starts
+          Bắt đầu
           <input type="datetime-local" value={form.startsAt} onChange={(event) => setForm((current) => ({ ...current, startsAt: event.target.value }))} />
         </label>
         <label>
-          Expires
+          Hết hạn
           <input type="datetime-local" value={form.expiresAt} onChange={(event) => setForm((current) => ({ ...current, expiresAt: event.target.value }))} />
         </label>
         <label className="admin-check">
           <input type="checkbox" checked={form.enabled} onChange={(event) => setForm((current) => ({ ...current, enabled: event.target.checked }))} />
-          Enabled
+          Đang bật
         </label>
       </div>
       <label className="admin-json">
-        Rewards JSON
+        JSON phần thưởng
         <textarea value={form.rewardsJson} onChange={(event) => setForm((current) => ({ ...current, rewardsJson: event.target.value }))} />
       </label>
       <div className="admin-actions">
         <button type="button" onClick={saveGiftcode} disabled={busy || !form.code}>
-          {selectedId ? "Update Giftcode" : "Create Giftcode"}
+          {selectedId ? "Cập nhật mã quà" : "Tạo mã quà"}
         </button>
         <button
           type="button"
@@ -126,10 +126,10 @@ export function AdminGiftcodesPanel() {
             setForm({ code: "", rewardsJson: emptyRewards, maxUses: 1, startsAt: "", expiresAt: "", enabled: true });
           }}
         >
-          New
+          Tạo mới
         </button>
         <button type="button" onClick={loadGiftcodes} disabled={busy}>
-          Refresh
+          Làm mới
         </button>
       </div>
       <div className="admin-table">
@@ -138,13 +138,13 @@ export function AdminGiftcodesPanel() {
             <button type="button" onClick={() => selectGiftcode(giftcode)}>
               <strong>{giftcode.code}</strong>
               <span>
-                {giftcode.usedCount}/{giftcode.maxUses} used
+                Đã dùng {giftcode.usedCount}/{giftcode.maxUses}
               </span>
             </button>
-            <span>{giftcode.enabled ? "Enabled" : "Disabled"}</span>
-            <span>{giftcode.expiresAt ? `Expires ${new Date(giftcode.expiresAt).toLocaleString()}` : "No expiration"}</span>
+            <span>{giftcode.enabled ? "Đang bật" : "Đã tắt"}</span>
+            <span>{giftcode.expiresAt ? `Hết hạn ${new Date(giftcode.expiresAt).toLocaleString()}` : "Không hết hạn"}</span>
             <button type="button" onClick={() => disableGiftcode(giftcode.id)} disabled={busy || !giftcode.enabled}>
-              Disable
+              Tắt
             </button>
           </article>
         ))}

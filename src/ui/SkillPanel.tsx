@@ -18,7 +18,7 @@ export function SkillPanel() {
         setSkills(response.skills);
         setHotbar(response.hotbar);
       })
-      .catch(() => addWarning("Skill load failed."));
+      .catch(() => addWarning("Không tải được kỹ năng."));
   }, [addWarning, player?.classId, setHotbar, setSkills]);
 
   if (!player?.classId) return null;
@@ -29,18 +29,18 @@ export function SkillPanel() {
     if (!selected) return;
     const learned = skills.find((entry) => entry.skillId === selected.skillId);
     if (!learned?.unlocked) {
-      addWarning("Skill locked.");
+      addWarning("Kỹ năng đã khóa.");
       return;
     }
     void saveSkillHotbar(slot, selected.skillId)
       .then((response) => setHotbar(response.hotbar))
-      .catch(() => addWarning("Hotbar save failed."));
+      .catch(() => addWarning("Không lưu được thanh kỹ năng."));
   };
 
   return (
-    <section className="skill-panel" aria-label="Skills">
+    <section className="skill-panel" aria-label="Kỹ năng">
       <header>
-        <h2>Skills</h2>
+        <h2>Kỹ năng</h2>
         <span>{player.classId}</span>
       </header>
       <div className="skill-list">
@@ -51,7 +51,7 @@ export function SkillPanel() {
             <button type="button" key={skill.skillId} data-active={selectedSkillId === skill.skillId} data-locked={!unlocked} onClick={() => setSelectedSkillId(skill.skillId)}>
               <strong>{skill.icon}</strong>
               <span>{skill.name}</span>
-              <em>{unlocked ? `${skill.mpCost} MP` : `Lv ${skill.unlockLevel}`}</em>
+              <em>{unlocked ? `${skill.mpCost} nội lực` : `Cấp ${skill.unlockLevel}`}</em>
             </button>
           );
         })}
@@ -60,11 +60,11 @@ export function SkillPanel() {
         <div className="skill-detail">
           <strong>{selected.name}</strong>
           <p>{selected.description}</p>
-          <span>{selected.cooldownMs}ms cooldown</span>
+          <span>Hồi chiêu {selected.cooldownMs}ms</span>
           <div>
             {[1, 2, 3, 4].map((slot) => (
               <button type="button" key={slot} onClick={() => assign(slot)}>
-                Slot {slot}
+                Ô {slot}
               </button>
             ))}
           </div>

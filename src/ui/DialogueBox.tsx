@@ -49,10 +49,10 @@ export function DialogueBox({ onQuestSaved }: DialogueBoxProps) {
   }
 
   return (
-    <section className="dialogue" aria-label="Dialogue">
+    <section className="dialogue" aria-label="Đối thoại">
       <header>
         <h2>{npc.name}</h2>
-        <button type="button" onClick={closeDialogue} aria-label="Close dialogue">
+        <button type="button" onClick={closeDialogue} aria-label="Đóng đối thoại">
           x
         </button>
       </header>

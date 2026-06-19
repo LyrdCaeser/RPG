@@ -26,31 +26,31 @@ export function GiftcodeRedeemPanel() {
         for (const item of response.items) {
           void saveCollectionProgress({ category: "items", entryId: item.itemId, amount: item.quantity })
             .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-            .catch(() => addWarning("Collection progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ bộ sưu tập thất bại."));
         }
         for (const pet of response.pets ?? []) {
           void saveCollectionProgress({ category: "pets", entryId: pet.petId, amount: 1 })
             .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-            .catch(() => addWarning("Collection progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ bộ sưu tập thất bại."));
         }
         for (const mount of response.mounts ?? []) {
           void saveCollectionProgress({ category: "mounts", entryId: mount.mountId, amount: 1 })
             .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-            .catch(() => addWarning("Collection progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ bộ sưu tập thất bại."));
         }
         setCode("");
       })
       .catch((error) => {
-        addWarning(error instanceof Error ? error.message : "Giftcode redeem failed.");
+        addWarning(error instanceof Error ? error.message : "Nhận mã quà thất bại.");
       })
       .finally(() => setBusy(false));
   };
 
   return (
-    <section className="giftcode-panel" aria-label="Giftcode redeem">
-      <input value={code} onChange={(event) => setCode(event.target.value)} aria-label="Giftcode" />
+    <section className="giftcode-panel" aria-label="Nhận mã quà">
+      <input value={code} onChange={(event) => setCode(event.target.value)} aria-label="Mã quà" />
       <button type="button" onClick={redeem} disabled={busy || !code.trim()}>
-        Redeem
+        Nhận
       </button>
     </section>
   );

@@ -20,7 +20,7 @@ export function UpgradePanel() {
   useEffect(() => {
     void getUpgradeRules()
       .then((response) => setRules(response.rules))
-      .catch(() => addWarning("Upgrade rules unavailable."));
+      .catch(() => addWarning("Không tải được quy tắc nâng cấp."));
   }, [addWarning]);
 
   const targets = useMemo(() => {
@@ -35,7 +35,7 @@ export function UpgradePanel() {
       .filter((item) => Boolean(findRuntimeItemDefinition(item.itemId)?.equipmentSlot))
       .map((item: InventoryItem) => ({
         key: `inventory:${item.itemId}`,
-        label: `bag: ${findRuntimeItemDefinition(item.itemId)?.name ?? item.itemId}`,
+        label: `túi: ${findRuntimeItemDefinition(item.itemId)?.name ?? item.itemId}`,
         metadata: item.metadata,
         itemId: item.itemId,
         target: { source: "inventory", itemId: item.itemId } as EquipmentUpgradeTarget
@@ -52,7 +52,7 @@ export function UpgradePanel() {
   const upgrade = () => {
     if (!selected || !rule) return;
     if (player.gold < rule.requiredGold) {
-      addWarning("Not enough gold.");
+      addWarning("Không đủ vàng.");
       return;
     }
     const hasMaterials = rule.requiredMaterials.every((material) => {
@@ -60,28 +60,28 @@ export function UpgradePanel() {
       return owned >= material.quantity;
     });
     if (!hasMaterials) {
-      addWarning("Not enough materials.");
+      addWarning("Không đủ nguyên liệu.");
       return;
     }
     void upgradeEquipment(selected.target, player)
       .then((response) => {
         setPlayer(response.player);
         setInventorySnapshot(response);
-        setResult(response.success ? `Upgrade +${response.upgradeLevel} succeeded.` : "Upgrade failed.");
+        setResult(response.success ? `Nâng cấp +${response.upgradeLevel} thành công.` : "Nâng cấp thất bại.");
         if (response.success) {
           void saveAchievementProgress({ targetType: "upgrade_equipment", targetValue: selected.itemId, amount: 1 })
             .then((achievementResponse) => setAchievements(achievementResponse.achievements))
-            .catch(() => addWarning("Achievement progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ thành tựu thất bại."));
         }
       })
-      .catch((error) => addWarning(error instanceof Error ? error.message : "Upgrade failed."));
+      .catch((error) => addWarning(error instanceof Error ? error.message : "Nâng cấp thất bại."));
   };
 
   return (
-    <section className="upgrade-panel" aria-label="Equipment upgrade">
+    <section className="upgrade-panel" aria-label="Nâng cấp trang bị">
       <header>
-        <h2>Upgrade</h2>
-        <span>{player.gold} gold</span>
+        <h2>Nâng cấp</h2>
+        <span>{player.gold} vàng</span>
       </header>
       <select value={selected?.key ?? ""} onChange={(event) => setTargetKey(event.target.value)}>
         {targets.map((target) => (
@@ -91,10 +91,10 @@ export function UpgradePanel() {
       {selected && item && (
         <div className="upgrade-detail">
           <strong>{item.icon} {item.name} +{currentLevel}</strong>
-          <span>Current x{getUpgradeMultiplier(currentLevel).toFixed(2)} · Next {rule ? `x${rule.statMultiplier.toFixed(2)}` : "max"}</span>
+          <span>Hiện tại x{getUpgradeMultiplier(currentLevel).toFixed(2)} - Tiếp theo {rule ? `x${rule.statMultiplier.toFixed(2)}` : "tối đa"}</span>
           {rule ? (
             <>
-              <span>{Math.round(rule.successRate * 100)}% · {rule.requiredGold} gold</span>
+              <span>{Math.round(rule.successRate * 100)}% - {rule.requiredGold} vàng</span>
               <ul>
                 {rule.requiredMaterials.map((material) => {
                   const owned = inventory.find((candidate) => candidate.itemId === material.itemId)?.quantity ?? 0;
@@ -105,10 +105,10 @@ export function UpgradePanel() {
                   );
                 })}
               </ul>
-              <button type="button" onClick={upgrade}>Upgrade</button>
+              <button type="button" onClick={upgrade}>Nâng cấp</button>
             </>
           ) : (
-            <span>Maximum upgrade level reached.</span>
+            <span>Đã đạt cấp nâng cấp tối đa.</span>
           )}
           {result && <em>{result}</em>}
         </div>

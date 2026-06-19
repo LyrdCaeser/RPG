@@ -48,8 +48,8 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("guild")) addWarning("Not in guild.");
-        else addWarning("Guild boss load failed.");
+        if (text.includes("guild")) addWarning("Bạn chưa ở trong bang hội.");
+        else addWarning("Không tải được boss bang hội.");
       });
   }
 
@@ -59,7 +59,7 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
     void summonGuildBoss(selectedBoss.guildBossId)
       .then((response) => {
         setActiveBoss(response.activeBoss);
-        addNotice("Guild boss summoned.");
+        addNotice("Đã triệu hồi boss bang hội.");
         void refresh();
       })
       .catch((error) => handleBossError(error, "summon"))
@@ -72,7 +72,7 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
     void recordGuildBossDamage(activeBoss.summonId, damage)
       .then((response) => {
         setActiveBoss(response.activeBoss);
-        addNotice("Guild boss damage recorded.");
+        addNotice("Đã ghi nhận sát thương boss bang hội.");
       })
       .catch((error) => handleBossError(error, "damage"))
       .finally(() => setBusy(false));
@@ -84,7 +84,7 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
     void defeatGuildBoss(activeBoss.summonId)
       .then((response) => {
         setActiveBoss(response.activeBoss);
-        addNotice("Guild boss defeat recorded.");
+        addNotice("Đã ghi nhận hạ boss bang hội.");
         void refresh();
       })
       .catch((error) => handleBossError(error, "defeat"))
@@ -101,7 +101,7 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
         if (response.pets) setPets(response.pets);
         if (response.mounts) setMounts(response.mounts);
         if (response.titles) setTitles(response.titles);
-        addNotice("Guild boss reward claimed.");
+        addNotice("Đã nhận thưởng boss bang hội.");
         void refresh();
       })
       .catch((error) => handleBossError(error, "claim"))
@@ -110,25 +110,25 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
 
   function handleBossError(error: unknown, action: "summon" | "damage" | "defeat" | "claim") {
     const text = error instanceof Error ? error.message.toLowerCase() : "";
-    if (text.includes("permission")) addWarning("No permission.");
-    else if (text.includes("storage")) addWarning("Not enough guild storage.");
-    else if (text.includes("duplicate")) addWarning("Duplicate claim.");
-    else if (action === "summon") addWarning("Boss summon failed.");
-    else if (action === "damage") addWarning("Boss damage save failed.");
-    else if (action === "defeat") addWarning("Boss defeat save failed.");
-    else addWarning("Boss reward claim failed.");
+    if (text.includes("permission")) addWarning("Không có quyền.");
+    else if (text.includes("storage")) addWarning("Kho bang hội không đủ.");
+    else if (text.includes("duplicate")) addWarning("Đã nhận thưởng rồi.");
+    else if (action === "summon") addWarning("Triệu hồi boss thất bại.");
+    else if (action === "damage") addWarning("Lưu sát thương boss thất bại.");
+    else if (action === "defeat") addWarning("Lưu hạ boss thất bại.");
+    else addWarning("Nhận thưởng boss thất bại.");
   }
 
   return (
     <article className="guild-card guild-boss-panel">
       <header>
-        <strong>Guild Bosses</strong>
-        <button type="button" onClick={() => void refresh()}>Refresh</button>
+        <strong>Boss bang hội</strong>
+        <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
 
-      <section className="guild-boss-section" aria-label="Available guild bosses">
-        <h3>Summon</h3>
-        {!canSummon && <p className="guild-warning">No permission.</p>}
+      <section className="guild-boss-section" aria-label="Boss bang hội có thể triệu hồi">
+        <h3>Triệu hồi</h3>
+        {!canSummon && <p className="guild-warning">Không có quyền.</p>}
         {canSummon && (
           <div className="guild-boss-summon">
             <select value={selectedBossId} onChange={(event) => setSelectedBossId(event.target.value)}>
@@ -136,29 +136,29 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
                 <option key={boss.guildBossId} value={boss.guildBossId}>{boss.name}</option>
               ))}
             </select>
-            <button type="button" disabled={busy || Boolean(activeBoss) || !selectedBoss} onClick={summon}>Summon</button>
+            <button type="button" disabled={busy || Boolean(activeBoss) || !selectedBoss} onClick={summon}>Triệu hồi</button>
           </div>
         )}
         {selectedBoss && <BossDefinitionCard boss={selectedBoss} />}
       </section>
 
-      <section className="guild-boss-section" aria-label="Active guild boss">
-        <h3>Active Boss</h3>
-        {!activeBoss && <p className="guild-warning">No active guild boss.</p>}
+      <section className="guild-boss-section" aria-label="Boss bang hội đang hoạt động">
+        <h3>Boss đang hoạt động</h3>
+        {!activeBoss && <p className="guild-warning">Không có boss bang hội đang hoạt động.</p>}
         {activeBoss && (
           <article className="guild-boss-active">
             <header>
               <strong>{bosses.find((boss) => boss.guildBossId === activeBoss.guildBossId)?.name ?? activeBoss.guildBossId}</strong>
-              <span>{activeBoss.state}</span>
+              <span>{formatBossState(activeBoss.state)}</span>
             </header>
             <progress value={activeBoss.hp} max={activeBoss.maxHp} />
-            <span>{activeBoss.hp}/{activeBoss.maxHp} HP - {activeBoss.totalDamage} total damage</span>
+            <span>{activeBoss.hp}/{activeBoss.maxHp} máu - {activeBoss.totalDamage} tổng sát thương</span>
             <div className="guild-boss-actions">
               <input type="number" min="1" value={damage} onChange={(event) => setDamage(Number(event.target.value))} />
-              <button type="button" disabled={busy || activeBoss.state !== "active"} onClick={saveDamage}>Record Damage</button>
-              <button type="button" disabled={busy || activeBoss.state !== "active"} onClick={saveDefeat}>Record Defeat</button>
+              <button type="button" disabled={busy || activeBoss.state !== "active"} onClick={saveDamage}>Ghi sát thương</button>
+              <button type="button" disabled={busy || activeBoss.state !== "active"} onClick={saveDefeat}>Ghi hạ boss</button>
               <button type="button" disabled={busy || activeBoss.state !== "defeated" || activeBoss.claimed} onClick={() => claimReward(activeBoss.summonId)}>
-                {activeBoss.claimed ? "Claimed" : "Claim Reward"}
+                {activeBoss.claimed ? "Đã nhận" : "Nhận thưởng"}
               </button>
             </div>
             <DamageRanking boss={activeBoss} />
@@ -166,16 +166,16 @@ export function GuildBossPanel({ canSummon }: GuildBossPanelProps) {
         )}
       </section>
 
-      <section className="guild-boss-section" aria-label="Recent guild bosses">
-        <h3>Recent</h3>
-        {recentBosses.length === 0 && <p className="guild-warning">No guild boss history.</p>}
+      <section className="guild-boss-section" aria-label="Boss bang hội gần đây">
+        <h3>Gần đây</h3>
+        {recentBosses.length === 0 && <p className="guild-warning">Chưa có lịch sử boss bang hội.</p>}
         <div className="guild-boss-recent">
           {recentBosses.map((boss) => (
             <article key={boss.summonId}>
               <strong>{bosses.find((definition) => definition.guildBossId === boss.guildBossId)?.name ?? boss.guildBossId}</strong>
-              <span>{boss.state} - {boss.totalDamage} damage</span>
+              <span>{formatBossState(boss.state)} - {boss.totalDamage} sát thương</span>
               <button type="button" disabled={busy || boss.state !== "defeated" || boss.claimed} onClick={() => claimReward(boss.summonId)}>
-                {boss.claimed ? "Claimed" : "Claim"}
+                {boss.claimed ? "Đã nhận" : "Nhận"}
               </button>
             </article>
           ))}
@@ -190,18 +190,18 @@ function BossDefinitionCard({ boss }: { boss: GuildBossDefinition }) {
     <article className="guild-boss-definition">
       <strong>{boss.name}</strong>
       <p>{boss.description}</p>
-      <span>Lv {boss.level} - {boss.hp} HP - ATK {boss.attack} - DEF {boss.defense}</span>
+      <span>Cấp {boss.level} - {boss.hp} máu - Tấn công {boss.attack} - Phòng thủ {boss.defense}</span>
       <div className="guild-boss-cost">
-        {boss.summonCost.gold ? <span>{boss.summonCost.gold} guild gold</span> : null}
+        {boss.summonCost.gold ? <span>{boss.summonCost.gold} vàng bang hội</span> : null}
         {(boss.summonCost.items ?? []).map((item) => {
           const itemDefinition = findRuntimeItemDefinition(item.itemId);
           return <span key={item.itemId}>{itemDefinition?.name ?? item.itemId} x{item.quantity}</span>;
         })}
       </div>
       <div className="guild-boss-cost">
-        <span>Guild EXP {boss.guildExpReward}</span>
-        {boss.rewards.gold ? <span>{boss.rewards.gold} gold</span> : null}
-        {boss.rewards.exp ? <span>{boss.rewards.exp} EXP</span> : null}
+        <span>Kinh nghiệm bang hội {boss.guildExpReward}</span>
+        {boss.rewards.gold ? <span>{boss.rewards.gold} vàng</span> : null}
+        {boss.rewards.exp ? <span>{boss.rewards.exp} kinh nghiệm</span> : null}
         {(boss.rewards.items ?? []).map((item) => {
           const itemDefinition = findRuntimeItemDefinition(item.itemId);
           return <span key={item.itemId}>{itemDefinition?.name ?? item.itemId} x{item.quantity}</span>;
@@ -214,7 +214,7 @@ function BossDefinitionCard({ boss }: { boss: GuildBossDefinition }) {
 function DamageRanking({ boss }: { boss: GuildBossSummon }) {
   return (
     <div className="guild-boss-ranking">
-      {boss.damageRanking.length === 0 && <p className="guild-warning">No damage recorded.</p>}
+      {boss.damageRanking.length === 0 && <p className="guild-warning">Chưa có sát thương được ghi nhận.</p>}
       {boss.damageRanking.map((entry, index) => (
         <article key={entry.user.userId}>
           <strong>#{index + 1} {entry.user.displayName}</strong>
@@ -223,4 +223,13 @@ function DamageRanking({ boss }: { boss: GuildBossSummon }) {
       ))}
     </div>
   );
+}
+
+function formatBossState(state: string) {
+  const labels: Record<string, string> = {
+    active: "đang hoạt động",
+    defeated: "đã hạ",
+    expired: "hết hạn"
+  };
+  return labels[state] ?? state;
 }

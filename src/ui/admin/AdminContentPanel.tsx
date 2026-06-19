@@ -45,7 +45,7 @@ const defaults: Record<ContentKind, ContentRecord> = {
     mapId: "starter_village",
     x: 128,
     y: 128,
-    dialogue: { default: ["Hello."] },
+    dialogue: { default: ["Xin chào."] },
     questIds: [],
     enabled: true
   },
@@ -99,11 +99,11 @@ const defaults: Record<ContentKind, ContentRecord> = {
 };
 
 const labels: Record<ContentKind, { title: string; idKey: string; nameKey: string }> = {
-  npcs: { title: "NPCs", idKey: "npcId", nameKey: "name" },
-  quests: { title: "Quests", idKey: "questId", nameKey: "title" },
-  items: { title: "Items", idKey: "itemId", nameKey: "name" },
-  enemies: { title: "Enemies", idKey: "enemyId", nameKey: "name" },
-  events: { title: "Events", idKey: "eventId", nameKey: "title" }
+  npcs: { title: "NPC", idKey: "npcId", nameKey: "name" },
+  quests: { title: "Nhiệm vụ", idKey: "questId", nameKey: "title" },
+  items: { title: "Vật phẩm", idKey: "itemId", nameKey: "name" },
+  enemies: { title: "Kẻ địch", idKey: "enemyId", nameKey: "name" },
+  events: { title: "Sự kiện", idKey: "eventId", nameKey: "title" }
 };
 
 export function AdminContentPanel({ kind }: AdminContentPanelProps) {
@@ -123,7 +123,7 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
     setBusy(true);
     void load(kind)
       .then(setRows)
-      .catch(() => addWarning(`${label.title} content load failed.`))
+      .catch(() => addWarning(`Tải nội dung ${label.title} thất bại.`))
       .finally(() => setBusy(false));
   };
 
@@ -146,13 +146,13 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
   const save = () => {
     const parsed = parseContent(jsonText);
     if (!parsed) {
-      addWarning(`${label.title} JSON is invalid.`);
+      addWarning(`JSON ${label.title} không hợp lệ.`);
       return;
     }
     const id = String(parsed[label.idKey] ?? "").trim();
     const name = String(parsed[label.nameKey] ?? "").trim();
     if (!id || !name) {
-      addWarning(`${label.title} require ${label.idKey} and ${label.nameKey}.`);
+      addWarning(`${label.title} cần có ${label.idKey} và ${label.nameKey}.`);
       return;
     }
     setBusy(true);
@@ -161,13 +161,13 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
         setRows(nextRows);
         setSelectedId(id);
       })
-      .catch(() => addWarning(`${label.title} save failed.`))
+      .catch(() => addWarning(`Lưu ${label.title} thất bại.`))
       .finally(() => setBusy(false));
   };
 
   const disable = () => {
     if (!selectedId) return;
-    if (!window.confirm(`Disable ${selectedId}?`)) return;
+    if (!window.confirm(`Tắt ${selectedId}?`)) return;
     setBusy(true);
     void disableContent(kind, selectedId)
       .then((nextRows) => {
@@ -175,7 +175,7 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
         setSelectedId(null);
         setJsonText(JSON.stringify(defaults[kind], null, 2));
       })
-      .catch(() => addWarning(`${label.title} disable failed.`))
+      .catch(() => addWarning(`Tắt ${label.title} thất bại.`))
       .finally(() => setBusy(false));
   };
 
@@ -183,16 +183,16 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
     <div className="admin-tool">
       <div className="admin-actions">
         <button type="button" onClick={newRow}>
-          New
+          Tạo mới
         </button>
         <button type="button" onClick={save} disabled={busy}>
-          {selected ? "Update" : "Create"}
+          {selected ? "Cập nhật" : "Tạo"}
         </button>
         <button type="button" onClick={disable} disabled={busy || !selectedId}>
-          Disable
+          Tắt
         </button>
         <button type="button" onClick={loadRows} disabled={busy}>
-          Refresh
+          Làm mới
         </button>
       </div>
       <div className="admin-columns">
@@ -203,7 +203,7 @@ export function AdminContentPanel({ kind }: AdminContentPanelProps) {
             return (
               <button type="button" key={id} data-active={selectedId === id} onClick={() => selectRow(row)}>
                 <strong>{name || id}</strong>
-                <span>{(row as { enabled?: boolean }).enabled ? id : `${id} disabled`}</span>
+                <span>{(row as { enabled?: boolean }).enabled ? id : `${id} đã tắt`}</span>
               </button>
             );
           })}

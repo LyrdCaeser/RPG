@@ -3,8 +3,8 @@ import type { QuestDefinition, PlayerQuest } from "./types.js";
 export const questDefinitions: QuestDefinition[] = [
   {
     id: "first-steps",
-    title: "First Steps",
-    summary: "Speak with Elder Mira, collect cracked marker stones, and clear the slime near the wall.",
+    title: "Những bước đầu",
+    summary: "Nói chuyện với Trưởng lão Mira, thu thập đá mốc nứt và dọn slime gần tường.",
     giverNpcId: "elder-mira",
     unlocksQuestIds: ["iron-memory"],
     objectives: [
@@ -12,21 +12,21 @@ export const questDefinitions: QuestDefinition[] = [
         id: "talk-mira",
         type: "talk_to_npc",
         targetId: "elder-mira",
-        label: "Talk to Elder Mira",
+        label: "Nói chuyện với Trưởng lão Mira",
         requiredCount: 1
       },
       {
         id: "collect-marker-stones",
         type: "collect_item",
         targetId: "marker-stone",
-        label: "Collect marker stones",
+        label: "Thu thập đá mốc",
         requiredCount: 2
       },
       {
         id: "kill-green-slime",
         type: "kill_enemy",
         targetId: "slime-01",
-        label: "Defeat the Green Slime",
+        label: "Đánh bại Slime xanh",
         requiredCount: 1
       }
     ],
@@ -37,8 +37,8 @@ export const questDefinitions: QuestDefinition[] = [
   },
   {
     id: "iron-memory",
-    title: "Iron Memory",
-    summary: "Gather iron ore for Oro and test the blade against a Dust Wisp.",
+    title: "Ký ức sắt",
+    summary: "Thu thập quặng sắt cho Oro và thử lưỡi kiếm với ma trơi bụi.",
     giverNpcId: "blacksmith-oro",
     unlocksQuestIds: ["scout-route"],
     objectives: [
@@ -46,21 +46,21 @@ export const questDefinitions: QuestDefinition[] = [
         id: "talk-oro",
         type: "talk_to_npc",
         targetId: "blacksmith-oro",
-        label: "Discuss the forge with Oro",
+        label: "Trao đổi về lò rèn với Oro",
         requiredCount: 1
       },
       {
         id: "collect-iron-ore",
         type: "collect_item",
         targetId: "iron-ore",
-        label: "Collect iron ore",
+        label: "Thu thập quặng sắt",
         requiredCount: 3
       },
       {
         id: "kill-dust-wisp",
         type: "kill_enemy",
         targetId: "wisp-01",
-        label: "Defeat the Dust Wisp",
+        label: "Đánh bại Ma trơi bụi",
         requiredCount: 1
       }
     ],
@@ -71,29 +71,29 @@ export const questDefinitions: QuestDefinition[] = [
   },
   {
     id: "scout-route",
-    title: "Scout Route",
-    summary: "Speak with Lyra, recover scout tags, and defeat the Old Sentinel.",
+    title: "Tuyến trinh sát",
+    summary: "Nói chuyện với Lyra, thu hồi thẻ trinh sát và đánh bại Hộ vệ cổ.",
     giverNpcId: "scout-lyra",
     objectives: [
       {
         id: "talk-lyra",
         type: "talk_to_npc",
         targetId: "scout-lyra",
-        label: "Talk to Lyra",
+        label: "Nói chuyện với Lyra",
         requiredCount: 1
       },
       {
         id: "collect-scout-tags",
         type: "collect_item",
         targetId: "scout-tag",
-        label: "Recover scout tags",
+        label: "Thu hồi thẻ trinh sát",
         requiredCount: 2
       },
       {
         id: "kill-old-sentinel",
         type: "kill_enemy",
         targetId: "sentinel-01",
-        label: "Defeat the Old Sentinel",
+        label: "Đánh bại Hộ vệ cổ",
         requiredCount: 1
       }
     ],

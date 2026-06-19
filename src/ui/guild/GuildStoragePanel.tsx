@@ -47,13 +47,13 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
     return Promise.all([
       getGuildStorage().then((response) => setStorage(response.storage)),
       getGuildStorageLogs().then((response) => setLogs(response.logs))
-    ]).catch(() => addWarning("Storage load failed."));
+    ]).catch(() => addWarning("Không tải được kho bang hội."));
   }
 
   function refreshLogs() {
     return getGuildStorageLogs()
       .then((response) => setLogs(response.logs))
-      .catch(() => addWarning("Storage logs load failed."));
+      .catch(() => addWarning("Không tải được nhật ký kho bang hội."));
   }
 
   function depositGoldOnly() {
@@ -66,7 +66,7 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
         setInventorySnapshot(response.inventory);
         setPlayer(response.player);
         setDepositGold(0);
-        addNotice("Guild gold deposited.");
+        addNotice("Đã gửi vàng vào kho bang hội.");
         void refreshLogs();
       })
       .catch((error) => handleStorageError(error, "deposit"))
@@ -83,7 +83,7 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
         setInventorySnapshot(response.inventory);
         setPlayer(response.player);
         setDepositQuantity(1);
-        addNotice("Guild item deposited.");
+        addNotice("Đã gửi vật phẩm vào kho bang hội.");
         void refreshLogs();
       })
       .catch((error) => handleStorageError(error, "deposit"))
@@ -100,7 +100,7 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
         setInventorySnapshot(response.inventory);
         setPlayer(response.player);
         setWithdrawGold(0);
-        addNotice("Guild gold withdrawn.");
+        addNotice("Đã rút vàng khỏi kho bang hội.");
         void refreshLogs();
       })
       .catch((error) => handleStorageError(error, "withdraw"))
@@ -117,7 +117,7 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
         setInventorySnapshot(response.inventory);
         setPlayer(response.player);
         setWithdrawQuantity(1);
-        addNotice("Guild item withdrawn.");
+        addNotice("Đã rút vật phẩm khỏi kho bang hội.");
         void refreshLogs();
       })
       .catch((error) => handleStorageError(error, "withdraw"))
@@ -126,31 +126,31 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
 
   function handleStorageError(error: unknown, action: "deposit" | "withdraw") {
     const text = error instanceof Error ? error.message.toLowerCase() : "";
-    if (text.includes("permission")) addWarning("No permission.");
-    else if (text.includes("player gold")) addWarning("Not enough player gold.");
-    else if (text.includes("player item")) addWarning("Not enough player item.");
-    else if (text.includes("guild storage")) addWarning("Not enough guild storage.");
-    else if (action === "deposit") addWarning("Deposit failed.");
-    else addWarning("Withdraw failed.");
+    if (text.includes("permission")) addWarning("Không có quyền.");
+    else if (text.includes("player gold")) addWarning("Không đủ vàng của người chơi.");
+    else if (text.includes("player item")) addWarning("Không đủ vật phẩm của người chơi.");
+    else if (text.includes("guild storage")) addWarning("Kho bang hội không đủ.");
+    else if (action === "deposit") addWarning("Gửi vào kho thất bại.");
+    else addWarning("Rút khỏi kho thất bại.");
   }
 
   return (
     <article className="guild-card guild-storage-panel">
       <header>
-        <strong>Guild Storage</strong>
-        <button type="button" onClick={() => void refreshStorage()}>Refresh</button>
+        <strong>Kho bang hội</strong>
+        <button type="button" onClick={() => void refreshStorage()}>Làm mới</button>
       </header>
 
       <div className="guild-storage-summary">
-        <span>Stored Gold</span>
+        <span>Vàng trong kho</span>
         <strong>{storage.gold}</strong>
-        <span>Your Gold</span>
+        <span>Vàng của bạn</span>
         <strong>{player?.gold ?? 0}</strong>
       </div>
 
-      <section className="guild-storage-section" aria-label="Stored items">
-        <h3>Items</h3>
-        {storage.items.length === 0 && <p className="guild-warning">No stored items.</p>}
+      <section className="guild-storage-section" aria-label="Vật phẩm trong kho">
+        <h3>Vật phẩm</h3>
+        {storage.items.length === 0 && <p className="guild-warning">Không có vật phẩm trong kho.</p>}
         <div className="guild-storage-list">
           {storage.items.map((stack) => {
             const item = findRuntimeItemDefinition(stack.itemId);
@@ -158,28 +158,28 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
               <article key={stack.itemId}>
                 <strong>{item?.icon ?? "?"} {item?.name ?? stack.itemId}</strong>
                 <span>x{stack.quantity}</span>
-                <small>Deposited by {stack.depositedBy?.displayName ?? "Unknown"}</small>
+                <small>Người gửi {stack.depositedBy?.displayName ?? "Không rõ"}</small>
               </article>
             );
           })}
         </div>
       </section>
 
-      <section className="guild-storage-section" aria-label="Deposit">
-        <h3>Deposit</h3>
+      <section className="guild-storage-section" aria-label="Gửi vào kho">
+        <h3>Gửi vào kho</h3>
         <div className="guild-storage-actions">
           <input
             type="number"
             min="0"
             value={depositGold}
             onChange={(event) => setDepositGold(Number(event.target.value))}
-            aria-label="Deposit gold"
+            aria-label="Gửi vàng"
           />
-          <button type="button" disabled={busy || depositGold <= 0} onClick={depositGoldOnly}>Deposit Gold</button>
+          <button type="button" disabled={busy || depositGold <= 0} onClick={depositGoldOnly}>Gửi vàng</button>
         </div>
         <div className="guild-storage-actions">
-          <select value={depositItemId} onChange={(event) => setDepositItemId(event.target.value)} aria-label="Deposit item">
-            <option value="">Select item</option>
+          <select value={depositItemId} onChange={(event) => setDepositItemId(event.target.value)} aria-label="Gửi vật phẩm">
+            <option value="">Chọn vật phẩm</option>
             {inventory.map((stack) => {
               const item = findRuntimeItemDefinition(stack.itemId);
               return (
@@ -195,15 +195,15 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
             max={selectedDepositStack?.quantity ?? 1}
             value={depositQuantity}
             onChange={(event) => setDepositQuantity(Number(event.target.value))}
-            aria-label="Deposit quantity"
+            aria-label="Số lượng gửi"
           />
-          <button type="button" disabled={busy || !depositItemId || depositQuantity <= 0} onClick={depositItemOnly}>Deposit Item</button>
+          <button type="button" disabled={busy || !depositItemId || depositQuantity <= 0} onClick={depositItemOnly}>Gửi vật phẩm</button>
         </div>
       </section>
 
-      <section className="guild-storage-section" aria-label="Withdraw">
-        <h3>Withdraw</h3>
-        {!canWithdraw && <p className="guild-warning">No permission.</p>}
+      <section className="guild-storage-section" aria-label="Rút khỏi kho">
+        <h3>Rút khỏi kho</h3>
+        {!canWithdraw && <p className="guild-warning">Không có quyền.</p>}
         {canWithdraw && (
           <>
             <div className="guild-storage-actions">
@@ -213,13 +213,13 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
                 max={storage.gold}
                 value={withdrawGold}
                 onChange={(event) => setWithdrawGold(Number(event.target.value))}
-                aria-label="Withdraw gold"
+                aria-label="Rút vàng"
               />
-              <button type="button" disabled={busy || withdrawGold <= 0} onClick={withdrawGoldOnly}>Withdraw Gold</button>
+              <button type="button" disabled={busy || withdrawGold <= 0} onClick={withdrawGoldOnly}>Rút vàng</button>
             </div>
             <div className="guild-storage-actions">
-              <select value={withdrawItemId} onChange={(event) => setWithdrawItemId(event.target.value)} aria-label="Withdraw item">
-                <option value="">Select item</option>
+              <select value={withdrawItemId} onChange={(event) => setWithdrawItemId(event.target.value)} aria-label="Rút vật phẩm">
+                <option value="">Chọn vật phẩm</option>
                 {storage.items.map((stack) => {
                   const item = findRuntimeItemDefinition(stack.itemId);
                   return (
@@ -235,24 +235,24 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
                 max={selectedWithdrawStack?.quantity ?? 1}
                 value={withdrawQuantity}
                 onChange={(event) => setWithdrawQuantity(Number(event.target.value))}
-                aria-label="Withdraw quantity"
+                aria-label="Số lượng rút"
               />
-              <button type="button" disabled={busy || !withdrawItemId || withdrawQuantity <= 0} onClick={withdrawItemOnly}>Withdraw Item</button>
+              <button type="button" disabled={busy || !withdrawItemId || withdrawQuantity <= 0} onClick={withdrawItemOnly}>Rút vật phẩm</button>
             </div>
           </>
         )}
       </section>
 
-      <section className="guild-storage-section" aria-label="Transaction history">
+      <section className="guild-storage-section" aria-label="Lịch sử giao dịch">
         <header>
-          <h3>History</h3>
-          <button type="button" onClick={() => void refreshLogs()}>Refresh Logs</button>
+          <h3>Lịch sử</h3>
+          <button type="button" onClick={() => void refreshLogs()}>Làm mới nhật ký</button>
         </header>
         <div className="guild-storage-log">
-          {logs.length === 0 && <p className="guild-warning">No transactions.</p>}
+          {logs.length === 0 && <p className="guild-warning">Chưa có giao dịch.</p>}
           {logs.map((log) => (
             <article key={log.id}>
-              <strong>{log.actor?.displayName ?? "Unknown"} {log.action}</strong>
+              <strong>{log.actor?.displayName ?? "Không rõ"} {formatAction(log.action)}</strong>
               <span>{formatLog(log)}</span>
               <time>{new Date(log.createdAt).toLocaleString()}</time>
             </article>
@@ -264,7 +264,15 @@ export function GuildStoragePanel({ canWithdraw }: GuildStoragePanelProps) {
 }
 
 function formatLog(log: GuildStorageLog) {
-  if (log.goldAmount) return `${log.goldAmount} gold`;
+  if (log.goldAmount) return `${log.goldAmount} vàng`;
   const item = log.itemId ? findRuntimeItemDefinition(log.itemId) : undefined;
-  return `${item?.name ?? log.itemId ?? "item"} x${log.quantity ?? 0}`;
+  return `${item?.name ?? log.itemId ?? "vật phẩm"} x${log.quantity ?? 0}`;
+}
+
+function formatAction(action: string) {
+  const labels: Record<string, string> = {
+    deposit: "gửi",
+    withdraw: "rút"
+  };
+  return labels[action] ?? action;
 }

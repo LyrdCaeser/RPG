@@ -21,12 +21,12 @@ import { useGameStore } from "../store/useGameStore";
 type ChatTab = "world" | "map" | "guild" | "party" | "private" | "system";
 
 const tabs: { id: ChatTab; label: string }[] = [
-  { id: "world", label: "World" },
-  { id: "map", label: "Map" },
-  { id: "guild", label: "Guild" },
-  { id: "party", label: "Party" },
-  { id: "private", label: "Private" },
-  { id: "system", label: "System" }
+  { id: "world", label: "Thế giới" },
+  { id: "map", label: "Bản đồ" },
+  { id: "guild", label: "Bang hội" },
+  { id: "party", label: "Tổ đội" },
+  { id: "private", label: "Riêng" },
+  { id: "system", label: "Hệ thống" }
 ];
 
 const MESSAGE_LIMIT = 240;
@@ -102,25 +102,25 @@ export function ChatPanel() {
     if (activeTab === "world") {
       return getWorldChat()
         .then((response) => setWorldMessages(response.messages))
-        .catch(() => addWarning("World chat load failed."));
+        .catch(() => addWarning("Không tải được trò chuyện thế giới."));
     }
     if (activeTab === "map") {
       return getMapChat(player.mapId)
         .then((response) => setMapMessages(response.messages))
-        .catch(() => addWarning("Map chat load failed."));
+        .catch(() => addWarning("Không tải được trò chuyện bản đồ."));
     }
     if (activeTab === "party") {
       return getPartyChat()
         .then((response) => setPartyMessages(response.messages))
-        .catch(() => addWarning("Party chat load failed."));
+        .catch(() => addWarning("Không tải được trò chuyện tổ đội."));
     }
     if (activeTab === "guild") {
       return getGuildChat()
         .then((response) => setGuildMessages(response.messages))
         .catch((error) => {
           const messageText = error instanceof Error ? error.message.toLowerCase() : "";
-          if (messageText.includes("guild")) addWarning("Not in guild.");
-          else addWarning("Guild chat load failed.");
+          if (messageText.includes("guild")) addWarning("Bạn chưa ở trong bang hội.");
+          else addWarning("Không tải được trò chuyện bang hội.");
         });
     }
     if (activeTab === "private") {
@@ -131,18 +131,18 @@ export function ChatPanel() {
           setPrivateMessages(response.messages);
           setPrivateUnread(false);
         })
-        .catch(() => addWarning("Private chat load failed."));
+        .catch(() => addWarning("Không tải được tin nhắn riêng."));
     }
     return getSystemChat()
       .then((response) => setSystemMessages(response.messages))
-      .catch(() => addWarning("System messages load failed."));
+      .catch(() => addWarning("Không tải được tin hệ thống."));
   }
 
   function sendMessage() {
     if (!player) return;
     const message = draft.trim();
     if (message.length > MESSAGE_LIMIT) {
-      addWarning("Message too long.");
+      addWarning("Tin nhắn quá dài.");
       return;
     }
     setBusy(true);
@@ -160,44 +160,44 @@ export function ChatPanel() {
                 setPrivateTarget(response.target);
                 setPrivateMessages(response.messages);
               })
-            : Promise.reject(new Error("Private chat target is required."));
+            : Promise.reject(new Error("Cần chọn người nhận tin nhắn riêng."));
 
     void request
       .then(() => setDraft(""))
       .catch((error) => {
         const messageText = error instanceof Error ? error.message.toLowerCase() : "";
-        if (messageText.includes("muted")) addWarning("Player is muted.");
-        else if (messageText.includes("blocked")) addWarning("Player is blocked.");
-        else if (messageText.includes("too long")) addWarning("Message too long.");
-        else if (messageText.includes("guild")) addWarning("Not in guild.");
-        else if (activeTab === "world") addWarning("World message send failed.");
-        else if (activeTab === "map") addWarning("Map message send failed.");
-        else if (activeTab === "guild") addWarning("Guild chat send failed.");
-        else if (activeTab === "party") addWarning("Party chat send failed.");
-        else addWarning("Private message send failed.");
+        if (messageText.includes("muted")) addWarning("Người chơi đang bị cấm chat.");
+        else if (messageText.includes("blocked")) addWarning("Người chơi đã bị chặn.");
+        else if (messageText.includes("too long")) addWarning("Tin nhắn quá dài.");
+        else if (messageText.includes("guild")) addWarning("Bạn chưa ở trong bang hội.");
+        else if (activeTab === "world") addWarning("Không gửi được tin nhắn thế giới.");
+        else if (activeTab === "map") addWarning("Không gửi được tin nhắn bản đồ.");
+        else if (activeTab === "guild") addWarning("Không gửi được tin nhắn bang hội.");
+        else if (activeTab === "party") addWarning("Không gửi được tin nhắn tổ đội.");
+        else addWarning("Không gửi được tin nhắn riêng.");
       })
       .finally(() => setBusy(false));
   }
 
   function report(message: ChatMessage) {
-    const reason = window.prompt("Report reason");
+    const reason = window.prompt("Lý do báo cáo");
     if (!reason?.trim()) return;
     void reportChatMessage(message.id, reportKind(message.type), reason.trim())
-      .catch(() => addWarning("Report failed."));
+      .catch(() => addWarning("Báo cáo thất bại."));
   }
 
   return (
     <>
       <button type="button" className="chat-toggle" onClick={() => setOpen((value) => !value)}>
-        Chat
+        Trò chuyện
       </button>
       {open && (
-        <section className="chat-panel" aria-label="Chat">
+        <section className="chat-panel" aria-label="Trò chuyện">
           <header>
-            <h2>Chat</h2>
-            <button type="button" onClick={() => void refreshActive()}>Refresh</button>
+            <h2>Trò chuyện</h2>
+            <button type="button" onClick={() => void refreshActive()}>Làm mới</button>
           </header>
-          <nav className="chat-tabs" aria-label="Chat tabs">
+          <nav className="chat-tabs" aria-label="Kênh trò chuyện">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -216,11 +216,11 @@ export function ChatPanel() {
           {muteText && <p className="chat-mute">{muteText}</p>}
           {activeTab === "private" && (
             <div className="chat-private-target">
-              <span>{privateTarget ? privateTarget.displayName : "No private target"}</span>
+              <span>{privateTarget ? privateTarget.displayName : "Chưa chọn người nhận"}</span>
             </div>
           )}
           <div className="chat-log">
-            {messages.length === 0 && <p>No messages.</p>}
+            {messages.length === 0 && <p>Chưa có tin nhắn.</p>}
             {messages.map((message) => (
               <article key={message.id} data-type={message.type}>
                 <header>
@@ -229,7 +229,7 @@ export function ChatPanel() {
                   <time>{new Date(message.createdAt).toLocaleTimeString()}</time>
                 </header>
                 <p>{message.message}</p>
-                <button type="button" onClick={() => report(message)}>Report</button>
+                <button type="button" onClick={() => report(message)}>Báo cáo</button>
               </article>
             ))}
           </div>
@@ -242,11 +242,11 @@ export function ChatPanel() {
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && canSend) sendMessage();
                 }}
-                aria-label={activeTab === "private" ? "Private message" : "Message"}
+                aria-label={activeTab === "private" ? "Tin nhắn riêng" : "Tin nhắn"}
               />
               <span>{draft.length}/{MESSAGE_LIMIT}</span>
               <button type="button" disabled={!canSend || (activeTab === "private" && !privateTarget)} onClick={sendMessage}>
-                Send
+                Gửi
               </button>
             </div>
           )}
@@ -257,11 +257,11 @@ export function ChatPanel() {
 }
 
 function senderLabel(type: ChatMessage["type"]) {
-  return type === "moderation_notice" ? "Moderation" : "System";
+  return type === "moderation_notice" ? "Điều hành" : "Hệ thống";
 }
 
 function messageMeta(message: ChatMessage) {
-  const base = `Lv ${message.sender?.level ?? 1} ${message.sender?.classId ?? "unclassed"}`;
+  const base = `Cấp ${message.sender?.level ?? 1} ${formatClassLabel(message.sender?.classId)}`;
   return message.guildRole ? `${message.guildRole} - ${base}` : base;
 }
 
@@ -273,5 +273,18 @@ function reportKind(type: ChatMessage["type"]) {
 }
 
 function formatMute(reason?: string, expiresAt?: string) {
-  return expiresAt ? `Muted until ${new Date(expiresAt).toLocaleString()}: ${reason ?? "No reason provided."}` : `Muted: ${reason ?? "No reason provided."}`;
+  return expiresAt
+    ? `Bị cấm chat đến ${new Date(expiresAt).toLocaleString()}: ${reason ?? "Không có lý do."}`
+    : `Bị cấm chat: ${reason ?? "Không có lý do."}`;
+}
+
+function formatClassLabel(classId?: string) {
+  const labels: Record<string, string> = {
+    warrior: "Chiến binh",
+    mage: "Pháp sư",
+    ranger: "Kiếm sĩ",
+    priest: "Linh mục",
+    assassin: "Sát thủ"
+  };
+  return classId ? labels[classId] ?? classId : "chưa chọn lớp";
 }

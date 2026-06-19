@@ -31,26 +31,26 @@ const AdminPvpSeasonRewardsPanel = lazy(() =>
 const AdminPvpShopPanel = lazy(() => import("./AdminPvpShopPanel").then((module) => ({ default: module.AdminPvpShopPanel })));
 
 const tabs = [
-  "Dashboard",
-  "Players",
+  "Tổng quan",
+  "Người chơi",
   "NPCs",
-  "Quests",
-  "Items",
-  "Enemies",
-  "Events",
-  "PvP Operations",
-  "PvP Risk Queue",
-  "PvP Reports",
-  "PvP Appeals",
-  "PvP Penalties",
-  "PvP Player Profile",
-  "PvP Seasons",
-  "PvP Rewards",
-  "PvP Shop",
-  "Mailbox",
-  "Giftcodes",
-  "Bans",
-  "Audit Logs"
+  "Nhiệm vụ",
+  "Vật phẩm",
+  "Kẻ địch",
+  "Sự kiện",
+  "Vận hành đấu trường",
+  "Hàng đợi rủi ro",
+  "Báo cáo đấu trường",
+  "Kháng cáo đấu trường",
+  "Án phạt đấu trường",
+  "Hồ sơ người chơi đấu trường",
+  "Mùa đấu trường",
+  "Thưởng đấu trường",
+  "Cửa hàng đấu trường",
+  "Thư",
+  "Mã quà",
+  "Cấm",
+  "Nhật ký kiểm toán"
 ] as const;
 
 type AdminTab = (typeof tabs)[number];
@@ -67,7 +67,7 @@ export function AdminPanel({
   const account = useGameStore((state) => state.account);
   const addWarning = useGameStore((state) => state.addWarning);
   const [open, setOpen] = useState(initialOpen);
-  const [activeTab, setActiveTab] = useState<AdminTab>("Dashboard");
+  const [activeTab, setActiveTab] = useState<AdminTab>("Tổng quan");
   const [requestedPvpProfilePlayerId, setRequestedPvpProfilePlayerId] = useState("");
   const [requestedPvpProfileRequestId, setRequestedPvpProfileRequestId] = useState(0);
   const [accessDenied, setAccessDenied] = useState(false);
@@ -92,7 +92,7 @@ export function AdminPanel({
       .catch(() => {
         if (!mounted) return;
         setAccessDenied(true);
-        addWarning("Admin dashboard load failed.");
+        addWarning("Không tải được tổng quan quản trị.");
       });
     return () => {
       mounted = false;
@@ -105,7 +105,7 @@ export function AdminPanel({
       if (!playerId) return;
       setRequestedPvpProfilePlayerId(playerId);
       setRequestedPvpProfileRequestId((value) => value + 1);
-      setActiveTab("PvP Player Profile");
+      setActiveTab("Hồ sơ người chơi đấu trường");
       setOpen(true);
     }
     window.addEventListener(ADMIN_PVP_PLAYER_PROFILE_OPEN_EVENT, openPvpPlayerProfile);
@@ -116,58 +116,58 @@ export function AdminPanel({
     <>
       {showToggle ? (
         <button type="button" className="admin-toggle" onClick={() => setOpen((value) => !value)}>
-          Admin
+          Quản trị
         </button>
       ) : null}
       {open && (
-        <section className="admin-panel" aria-label="Admin panel">
+        <section className="admin-panel" aria-label="Bảng quản trị">
           <header>
-            <h2>Admin</h2>
+            <h2>Quản trị</h2>
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
                 onClose?.();
               }}
-              aria-label="Close admin"
+              aria-label="Đóng quản trị"
             >
               x
             </button>
           </header>
           {!canTryAdmin || accessDenied ? (
-            <div className="admin-denied">Access denied. Admin or owner role required.</div>
+            <div className="admin-denied">Từ chối truy cập. Cần quyền quản trị hoặc chủ sở hữu.</div>
           ) : (
             <>
-              <nav className="admin-tabs" aria-label="Admin sections">
+              <nav className="admin-tabs" aria-label="Khu vực quản trị">
                 {tabs.map((tab) => (
                   <button type="button" key={tab} data-active={activeTab === tab} onClick={() => setActiveTab(tab)}>
                     {tab}
                   </button>
                 ))}
               </nav>
-              {activeTab === "Dashboard" && <Dashboard stats={stats} />}
-              <Suspense fallback={<div className="admin-loading">Loading admin section</div>}>
-                {activeTab === "Players" && <AdminPlayersPanel />}
+              {activeTab === "Tổng quan" && <Dashboard stats={stats} />}
+              <Suspense fallback={<div className="admin-loading">Đang tải khu quản trị</div>}>
+                {activeTab === "Người chơi" && <AdminPlayersPanel />}
                 {activeTab === "NPCs" && <AdminContentPanel kind="npcs" />}
-                {activeTab === "Quests" && <AdminContentPanel kind="quests" />}
-                {activeTab === "Items" && <AdminContentPanel kind="items" />}
-                {activeTab === "Enemies" && <AdminContentPanel kind="enemies" />}
-                {activeTab === "Events" && <AdminContentPanel kind="events" />}
-                {activeTab === "PvP Operations" && <AdminPvpOperationsPanel />}
-                {activeTab === "PvP Risk Queue" && <AdminPvpRiskQueuePanel />}
-                {activeTab === "PvP Reports" && <AdminPvpReportsPanel />}
-                {activeTab === "PvP Appeals" && <AdminPvpPenaltyAppealsPanel />}
-                {activeTab === "PvP Penalties" && <AdminPvpPenaltiesPanel />}
-                {activeTab === "PvP Player Profile" && (
+                {activeTab === "Nhiệm vụ" && <AdminContentPanel kind="quests" />}
+                {activeTab === "Vật phẩm" && <AdminContentPanel kind="items" />}
+                {activeTab === "Kẻ địch" && <AdminContentPanel kind="enemies" />}
+                {activeTab === "Sự kiện" && <AdminContentPanel kind="events" />}
+                {activeTab === "Vận hành đấu trường" && <AdminPvpOperationsPanel />}
+                {activeTab === "Hàng đợi rủi ro" && <AdminPvpRiskQueuePanel />}
+                {activeTab === "Báo cáo đấu trường" && <AdminPvpReportsPanel />}
+                {activeTab === "Kháng cáo đấu trường" && <AdminPvpPenaltyAppealsPanel />}
+                {activeTab === "Án phạt đấu trường" && <AdminPvpPenaltiesPanel />}
+                {activeTab === "Hồ sơ người chơi đấu trường" && (
                   <AdminPvpPlayerProfilePanel requestedPlayerId={requestedPvpProfilePlayerId} requestedRequestId={requestedPvpProfileRequestId} />
                 )}
-                {activeTab === "PvP Seasons" && <AdminPvpSeasonsPanel />}
-                {activeTab === "PvP Rewards" && <AdminPvpSeasonRewardsPanel />}
-                {activeTab === "PvP Shop" && <AdminPvpShopPanel />}
-                {activeTab === "Mailbox" && <AdminMailboxPanel />}
-                {activeTab === "Giftcodes" && <AdminGiftcodesPanel />}
-                {activeTab === "Bans" && <AdminBansPanel />}
-                {activeTab === "Audit Logs" && <AdminAuditLogsPanel />}
+                {activeTab === "Mùa đấu trường" && <AdminPvpSeasonsPanel />}
+                {activeTab === "Thưởng đấu trường" && <AdminPvpSeasonRewardsPanel />}
+                {activeTab === "Cửa hàng đấu trường" && <AdminPvpShopPanel />}
+                {activeTab === "Thư" && <AdminMailboxPanel />}
+                {activeTab === "Mã quà" && <AdminGiftcodesPanel />}
+                {activeTab === "Cấm" && <AdminBansPanel />}
+                {activeTab === "Nhật ký kiểm toán" && <AdminAuditLogsPanel />}
               </Suspense>
             </>
           )}
@@ -179,12 +179,12 @@ export function AdminPanel({
 
 function Dashboard({ stats }: { stats: AdminDashboardStats | null }) {
   const cards = [
-    ["total players", stats?.totalPlayers],
-    ["total quests", stats?.totalQuests],
-    ["total items", stats?.totalItems],
-    ["total events", stats?.totalEvents],
-    ["banned players", stats?.bannedPlayers],
-    ["giftcodes created", stats?.giftcodesCreated]
+    ["tổng người chơi", stats?.totalPlayers],
+    ["tổng nhiệm vụ", stats?.totalQuests],
+    ["tổng vật phẩm", stats?.totalItems],
+    ["tổng sự kiện", stats?.totalEvents],
+    ["người chơi bị cấm", stats?.bannedPlayers],
+    ["mã quà đã tạo", stats?.giftcodesCreated]
   ] as const;
 
   return (

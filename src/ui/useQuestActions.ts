@@ -51,7 +51,7 @@ export function useQuestActions() {
       const response = await updateQuest(quest.questId, nextState, progress);
       setQuests(replaceQuest(quests, response.quest));
     } catch {
-      addWarning("Quest accept failed. The quest was not saved to the database.");
+      addWarning("Không nhận được nhiệm vụ. Nhiệm vụ chưa được lưu vào cơ sở dữ liệu.");
     }
   }
 
@@ -93,7 +93,7 @@ export function useQuestActions() {
         setInventorySnapshot(inventoryResponse);
         void saveCollectionProgress({ category: "items", entryId: rewardItem.itemId, amount: rewardItem.quantity })
           .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-          .catch(() => addWarning("Collection progress save failed."));
+          .catch(() => addWarning("Không lưu được tiến trình bộ sưu tập."));
       }
       if ((definition.rewardPets?.length ?? 0) > 0 || (definition.rewardMounts?.length ?? 0) > 0) {
         try {
@@ -110,23 +110,23 @@ export function useQuestActions() {
           for (const pet of rewardResponse.pets) {
             void saveCollectionProgress({ category: "pets", entryId: pet.petId, amount: 1 })
               .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-              .catch(() => addWarning("Collection progress save failed."));
+              .catch(() => addWarning("Không lưu được tiến trình bộ sưu tập."));
           }
           for (const mount of rewardResponse.mounts) {
             void saveCollectionProgress({ category: "mounts", entryId: mount.mountId, amount: 1 })
               .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-              .catch(() => addWarning("Collection progress save failed."));
+              .catch(() => addWarning("Không lưu được tiến trình bộ sưu tập."));
           }
         } catch {
-          if ((definition.rewardPets?.length ?? 0) > 0) addWarning("Pet reward failed.");
-          if ((definition.rewardMounts?.length ?? 0) > 0) addWarning("Mount reward failed.");
+          if ((definition.rewardPets?.length ?? 0) > 0) addWarning("Không nhận được thưởng thú đồng hành.");
+          if ((definition.rewardMounts?.length ?? 0) > 0) addWarning("Không nhận được thưởng thú cưỡi.");
         }
       }
       void saveAchievementProgress({ targetType: "quest_claim", targetValue: definition.id, amount: 1 })
         .then((achievementResponse) => setAchievements(achievementResponse.achievements))
-        .catch(() => addWarning("Achievement progress save failed."));
+        .catch(() => addWarning("Không lưu được tiến trình thành tựu."));
     } catch {
-      addWarning("Quest claim failed. Rewards or unlocked quests may not have been persisted.");
+      addWarning("Không nhận được thưởng nhiệm vụ. Phần thưởng hoặc nhiệm vụ mới có thể chưa được lưu.");
     }
   }
 

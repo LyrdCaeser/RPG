@@ -58,14 +58,14 @@ export function AdminPvpShopPanel() {
     setLoading(true);
     return getAdminPvpShopItems()
       .then((response) => setItems(response.items))
-      .catch((error) => addWarning(adminPvpShopWarning(error, "PvP shop item load failed.")))
+      .catch((error) => addWarning(adminPvpShopWarning(error, "Tải vật phẩm cửa hàng đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
   function saveItem() {
     const rewards = parseRewardJson(form.rewardsJson);
     if (!rewards) {
-      addWarning("Shop reward JSON validation failed.");
+      addWarning("JSON phần thưởng cửa hàng không hợp lệ.");
       return;
     }
     const payload = {
@@ -84,7 +84,7 @@ export function AdminPvpShopPanel() {
       enabled: form.enabled
     };
     if (!Number.isFinite(payload.pricePvpPoints)) {
-      addWarning("Shop item validation failed.");
+      addWarning("Vật phẩm cửa hàng không hợp lệ.");
       return;
     }
 
@@ -97,9 +97,9 @@ export function AdminPvpShopPanel() {
       .then((response) => {
         setItems(response.items);
         setForm(toForm(response.item));
-        addNotice(form.shopItemId ? "PvP shop item updated." : "PvP shop item created.");
+        addNotice(form.shopItemId ? "Đã cập nhật vật phẩm cửa hàng đấu trường." : "Đã tạo vật phẩm cửa hàng đấu trường.");
       })
-      .catch((error) => addWarning(adminPvpShopWarning(error, form.shopItemId ? "PvP shop item update failed." : "PvP shop item create failed.")))
+      .catch((error) => addWarning(adminPvpShopWarning(error, form.shopItemId ? "Cập nhật vật phẩm cửa hàng đấu trường thất bại." : "Tạo vật phẩm cửa hàng đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
@@ -112,16 +112,16 @@ export function AdminPvpShopPanel() {
   }
 
   function runItemAction(action: "enable" | "disable" | "delete", shopItemId: string) {
-    if (action === "delete" && !window.confirm("Delete this PvP shop item?")) return;
+    if (action === "delete" && !window.confirm("Xóa vật phẩm cửa hàng đấu trường này?")) return;
     setLoading(true);
     if (action === "delete") {
       void deleteAdminPvpShopItem(shopItemId)
         .then((response) => {
           setItems(response.items);
           setForm((current) => (current.shopItemId === shopItemId ? emptyShopForm : current));
-          addNotice("PvP shop item delete succeeded.");
+          addNotice("Đã xóa vật phẩm cửa hàng đấu trường.");
         })
-        .catch((error) => addWarning(adminPvpShopWarning(error, "PvP shop item delete failed.")))
+        .catch((error) => addWarning(adminPvpShopWarning(error, "Xóa vật phẩm cửa hàng đấu trường thất bại.")))
         .finally(() => setLoading(false));
       return;
     }
@@ -131,108 +131,108 @@ export function AdminPvpShopPanel() {
       .then((response) => {
         setItems(response.items);
         setForm((current) => (current.shopItemId === response.item.shopItemId ? toForm(response.item) : current));
-        addNotice(`PvP shop item ${action} succeeded.`);
+        addNotice(`Đã ${action === "enable" ? "bật" : "tắt"} vật phẩm cửa hàng đấu trường.`);
       })
-      .catch((error) => addWarning(adminPvpShopWarning(error, `PvP shop item ${action} failed.`)))
+      .catch((error) => addWarning(adminPvpShopWarning(error, "Thao tác vật phẩm cửa hàng đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
   return (
     <div className="admin-pvp-shop">
       <section className="admin-form">
-        <h3>{form.shopItemId ? "Update PvP Shop Item" : "Create PvP Shop Item"}</h3>
+        <h3>{form.shopItemId ? "Cập nhật vật phẩm cửa hàng đấu trường" : "Tạo vật phẩm cửa hàng đấu trường"}</h3>
         <div className="admin-form-grid">
           <label>
-            Name
+            Tên
             <input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
           </label>
           <label>
-            Category
+            Danh mục
             <input value={form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))} />
           </label>
           <label>
-            Price PvP points
+            Giá điểm đấu trường
             <input value={form.pricePvpPoints} onChange={(event) => setForm((current) => ({ ...current, pricePvpPoints: event.target.value }))} />
           </label>
           <label>
-            Min rating
+            Điểm hạng tối thiểu
             <input value={form.minRating} onChange={(event) => setForm((current) => ({ ...current, minRating: event.target.value }))} />
           </label>
           <label>
-            Min season points
+            Điểm mùa tối thiểu
             <input value={form.minSeasonPoints} onChange={(event) => setForm((current) => ({ ...current, minSeasonPoints: event.target.value }))} />
           </label>
           <label>
-            Min rank
+            Hạng tối thiểu
             <input value={form.minRank} onChange={(event) => setForm((current) => ({ ...current, minRank: event.target.value }))} />
           </label>
           <label>
-            Stock limit
+            Giới hạn tồn kho
             <input value={form.stockLimit} onChange={(event) => setForm((current) => ({ ...current, stockLimit: event.target.value }))} />
           </label>
           <label>
-            Per player limit
+            Giới hạn mỗi người chơi
             <input value={form.perPlayerLimit} onChange={(event) => setForm((current) => ({ ...current, perPlayerLimit: event.target.value }))} />
           </label>
           <label className="admin-check">
             <input type="checkbox" checked={form.enabled} onChange={(event) => setForm((current) => ({ ...current, enabled: event.target.checked }))} />
-            Enabled
+            Đang bật
           </label>
           <label>
-            Starts at
+            Bắt đầu lúc
             <input value={form.startsAt} onChange={(event) => setForm((current) => ({ ...current, startsAt: event.target.value }))} />
           </label>
           <label>
-            Ends at
+            Kết thúc lúc
             <input value={form.endsAt} onChange={(event) => setForm((current) => ({ ...current, endsAt: event.target.value }))} />
           </label>
           <label>
-            Description
+            Mô tả
             <input value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
           </label>
         </div>
         <label className="admin-json">
-          Rewards JSON
+          JSON phần thưởng
           <textarea value={form.rewardsJson} onChange={(event) => setForm((current) => ({ ...current, rewardsJson: event.target.value }))} />
         </label>
         <div className="admin-row-actions">
           <button type="button" onClick={saveItem} disabled={loading || !canSubmitShopItem(form)}>
-            {form.shopItemId ? "Update" : "Create"}
+            {form.shopItemId ? "Cập nhật" : "Tạo"}
           </button>
-          <button type="button" onClick={newItem}>New</button>
-          <button type="button" onClick={loadItems} disabled={loading}>Refresh</button>
+          <button type="button" onClick={newItem}>Tạo mới</button>
+          <button type="button" onClick={loadItems} disabled={loading}>Làm mới</button>
         </div>
       </section>
 
       <section className="admin-table admin-pvp-shop-table">
         <div className="admin-table-header">
-          <h3>PvP Shop Items</h3>
-          {loading ? <span>Loading</span> : null}
+          <h3>Vật phẩm cửa hàng đấu trường</h3>
+          {loading ? <span>Đang tải</span> : null}
         </div>
-        {!loading && items.length === 0 ? <p>No PvP shop items recorded.</p> : null}
+        {!loading && items.length === 0 ? <p>Chưa có vật phẩm cửa hàng đấu trường trong cơ sở dữ liệu.</p> : null}
         {items.map((item) => (
           <article key={item.shopItemId} data-revoked={!item.enabled}>
             <button type="button" onClick={() => selectItem(item)}>
               <strong>{item.name}</strong>
               <span>{item.shopItemId}</span>
             </button>
-            <span>{item.description || "No description"}</span>
+            <span>{item.description || "Không có mô tả"}</span>
             <span>{item.category}</span>
-            <span>{item.pricePvpPoints} PvP points</span>
+            <span>{item.pricePvpPoints} điểm đấu trường</span>
             <span>{formatShopRequirements(item)}</span>
             <span>{formatShopLimits(item)}</span>
-            <span>{item.purchaseCount} purchases</span>
+            <span>{item.purchaseCount} lượt mua</span>
             <span>{formatRewardPreview(item.rewards)}</span>
-            <span>{item.enabled ? "Enabled" : "Disabled"}</span>
-            <span>{formatDateLabel("Starts", item.startsAt)}</span>
-            <span>{formatDateLabel("Ends", item.endsAt)}</span>
-            <span>Created {formatDate(item.createdAt)}</span>
-            <span>Updated {formatDate(item.updatedAt)}</span>
+            <span>{item.enabled ? "Đang bật" : "Đã tắt"}</span>
+            <span>{formatDateLabel("Bắt đầu", item.startsAt)}</span>
+            <span>{formatDateLabel("Kết thúc", item.endsAt)}</span>
+            <span>Tạo lúc {formatDate(item.createdAt)}</span>
+            <span>Cập nhật {formatDate(item.updatedAt)}</span>
             <code>{JSON.stringify(item.rewards)}</code>
             <div className="admin-row-actions">
-              <button type="button" onClick={() => runItemAction("enable", item.shopItemId)} disabled={loading || item.enabled}>Enable</button>
-              <button type="button" onClick={() => runItemAction("disable", item.shopItemId)} disabled={loading || !item.enabled}>Disable</button>
-              <button type="button" onClick={() => runItemAction("delete", item.shopItemId)} disabled={loading}>Delete</button>
+              <button type="button" onClick={() => runItemAction("enable", item.shopItemId)} disabled={loading || item.enabled}>Bật</button>
+              <button type="button" onClick={() => runItemAction("disable", item.shopItemId)} disabled={loading || !item.enabled}>Tắt</button>
+              <button type="button" onClick={() => runItemAction("delete", item.shopItemId)} disabled={loading}>Xóa</button>
             </div>
           </article>
         ))}
@@ -287,36 +287,36 @@ function valueOrEmpty(value?: number) {
 
 function formatShopRequirements(item: AdminPvPShopItem) {
   const requirements = [
-    item.minRating ? `Rating ${item.minRating}+` : "",
-    item.minSeasonPoints ? `Season points ${item.minSeasonPoints}+` : "",
-    item.minRank ? `Rank ${item.minRank} or better` : ""
+    item.minRating ? `Điểm hạng ${item.minRating}+` : "",
+    item.minSeasonPoints ? `Điểm mùa ${item.minSeasonPoints}+` : "",
+    item.minRank ? `Hạng ${item.minRank} trở lên` : ""
   ].filter(Boolean);
-  return requirements.length > 0 ? requirements.join(" / ") : "No minimum requirement";
+  return requirements.length > 0 ? requirements.join(" / ") : "Không có yêu cầu tối thiểu";
 }
 
 function formatShopLimits(item: AdminPvPShopItem) {
   const limits = [
-    item.stockLimit ? `Stock ${item.stockLimit}` : "",
-    item.perPlayerLimit ? `Per player ${item.perPlayerLimit}` : ""
+    item.stockLimit ? `Tồn kho ${item.stockLimit}` : "",
+    item.perPlayerLimit ? `Mỗi người chơi ${item.perPlayerLimit}` : ""
   ].filter(Boolean);
-  return limits.length > 0 ? limits.join(" / ") : "No purchase limit";
+  return limits.length > 0 ? limits.join(" / ") : "Không có giới hạn mua";
 }
 
 function formatRewardPreview(rewards: EventReward) {
   const parts = [
-    rewards.gold ? `${rewards.gold} gold` : "",
-    rewards.exp ? `${rewards.exp} EXP` : "",
-    rewards.pvpPoints ? `${rewards.pvpPoints} PvP points` : "",
+    rewards.gold ? `${rewards.gold} vàng` : "",
+    rewards.exp ? `${rewards.exp} kinh nghiệm` : "",
+    rewards.pvpPoints ? `${rewards.pvpPoints} điểm đấu trường` : "",
     ...(rewards.items ?? []).map((item) => `${item.quantity}x ${item.itemId}`),
-    ...(rewards.pets ?? []).map((pet) => `Pet ${pet.petId}`),
-    ...(rewards.mounts ?? []).map((mount) => `Mount ${mount.mountId}`),
-    ...(rewards.titles ?? []).map((title) => `Title ${title.titleId}`)
+    ...(rewards.pets ?? []).map((pet) => `Thú cưng ${pet.petId}`),
+    ...(rewards.mounts ?? []).map((mount) => `Thú cưỡi ${mount.mountId}`),
+    ...(rewards.titles ?? []).map((title) => `Danh hiệu ${title.titleId}`)
   ].filter(Boolean);
-  return parts.length > 0 ? parts.join(" / ") : "No rewards";
+  return parts.length > 0 ? parts.join(" / ") : "Không có phần thưởng";
 }
 
 function formatDateLabel(label: string, value?: string) {
-  return value ? `${label} ${formatDate(value)}` : `${label} anytime`;
+  return value ? `${label} ${formatDate(value)}` : `${label} bất kỳ lúc nào`;
 }
 
 function formatDate(value: string) {
@@ -334,14 +334,14 @@ function adminPvpShopWarning(error: unknown, fallback: string) {
     message.includes("connection timeout") ||
     message.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (message.includes("unsupported key")) return "Shop reward JSON validation failed: unsupported key.";
-  if (message.includes("malformed")) return "Shop reward JSON validation failed: malformed payload.";
-  if (message.includes("safe integer")) return "Shop item validation failed: invalid number.";
-  if (message.includes("valid date")) return "Shop item validation failed: invalid date.";
-  if (message.includes("ends_at")) return "Shop item validation failed: ends_at must be after starts_at.";
-  if (message.includes("not found")) return "PvP shop item was not found.";
+  if (message.includes("unsupported key")) return "JSON phần thưởng cửa hàng không hợp lệ: khóa không được hỗ trợ.";
+  if (message.includes("malformed")) return "JSON phần thưởng cửa hàng không hợp lệ: dữ liệu sai định dạng.";
+  if (message.includes("safe integer")) return "Vật phẩm cửa hàng không hợp lệ: số không hợp lệ.";
+  if (message.includes("valid date")) return "Vật phẩm cửa hàng không hợp lệ: ngày không hợp lệ.";
+  if (message.includes("ends_at")) return "Vật phẩm cửa hàng không hợp lệ: ngày kết thúc phải sau ngày bắt đầu.";
+  if (message.includes("not found")) return "Không tìm thấy vật phẩm cửa hàng đấu trường.";
   if (message.includes("required")) return message;
   return fallback;
 }

@@ -22,7 +22,7 @@ export function AccountPanel({ onReady }: AccountPanelProps) {
       setAccount(session.user);
       onReady?.();
     } catch {
-      addWarning("Account create/load failed. API/database may be unavailable.");
+      addWarning("Không tạo hoặc tải được tài khoản. API/cơ sở dữ liệu có thể đang không khả dụng.");
     } finally {
       setBusy(false);
     }
@@ -36,36 +36,46 @@ export function AccountPanel({ onReady }: AccountPanelProps) {
       setSaveStatus("saved");
     } catch {
       setSaveStatus("failed");
-      addWarning("Player save failed. Cloud save was not persisted.");
+      addWarning("Không lưu được nhân vật. Dữ liệu chưa được lưu lên máy chủ.");
     }
   }
 
   if (!account) {
     return (
-      <section className="account-start" aria-label="Account start">
+      <section className="account-start" aria-label="Bắt đầu tài khoản">
         <h1>Phaser RPG</h1>
         <button type="button" disabled={busy} onClick={startGuest}>
-          Continue as Guest
+          Chơi bằng tài khoản khách
         </button>
         <button type="button" disabled>
-          Create Account
+          Tạo tài khoản
         </button>
         <button type="button" disabled>
-          Login
+          Đăng nhập
         </button>
-        <p>Account creation and login are unavailable until production auth is connected.</p>
+        <p>Tạo tài khoản và đăng nhập sẽ khả dụng khi hệ thống xác thực sản xuất được kết nối.</p>
       </section>
     );
   }
 
   return (
-    <section className="account-panel" aria-label="Account">
+    <section className="account-panel" aria-label="Tài khoản">
       <strong>{account.displayName}</strong>
       <span>{account.accountType}</span>
       <button type="button" onClick={manualSave} disabled={!player || saveStatus === "saving"}>
-        {saveStatus === "saving" ? "Saving" : "Save"}
+        {saveStatus === "saving" ? "Đang lưu" : "Lưu"}
       </button>
-      <em>{saveStatus}</em>
+      <em>{formatSaveStatus(saveStatus)}</em>
     </section>
   );
+}
+
+function formatSaveStatus(status: string) {
+  const labels: Record<string, string> = {
+    idle: "Sẵn sàng",
+    saving: "Đang lưu",
+    saved: "Đã lưu",
+    failed: "Lỗi lưu"
+  };
+  return labels[status] ?? status;
 }

@@ -24,8 +24,8 @@ export function QuestPanel({ onQuestSaved }: QuestPanelProps) {
   }
 
   return (
-    <section className="quest-panel" aria-label="Quests">
-      <h2>Quests</h2>
+    <section className="quest-panel" aria-label="Nhiệm vụ">
+      <h2>Nhiệm vụ</h2>
       <div className="quest-list">
         {quests.map((quest) => {
           const definition = getRuntimeQuestDefinitions().find((candidate) => candidate.id === quest.questId);
@@ -35,7 +35,7 @@ export function QuestPanel({ onQuestSaved }: QuestPanelProps) {
             <article className="quest-row" key={quest.questId} data-state={quest.state}>
               <div>
                 <strong>{definition.title}</strong>
-                <span>{quest.state}</span>
+                <span>{formatQuestState(quest.state)}</span>
               </div>
               <button type="button" disabled={disabled} onClick={() => advanceQuest(quest.questId)}>
                 {questActionLabel(quest.state)}
@@ -60,4 +60,15 @@ export function QuestPanel({ onQuestSaved }: QuestPanelProps) {
       </div>
     </section>
   );
+}
+
+function formatQuestState(state: string) {
+  const labels: Record<string, string> = {
+    locked: "Đã khóa",
+    available: "Có sẵn",
+    active: "Đang làm",
+    completed: "Hoàn thành",
+    claimed: "Đã nhận"
+  };
+  return labels[state] ?? state;
 }

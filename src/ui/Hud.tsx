@@ -9,33 +9,33 @@ export function Hud() {
   const activeTitle = findTitleDefinition(player.activeTitleId);
 
   return (
-    <section className="hud" aria-label="Player status">
+    <section className="hud" aria-label="Trạng thái nhân vật">
       <div className="hud-stat">
-        <span>HP</span>
+        <span>Máu</span>
         <strong>
           {player.hp}/{player.maxHp}
         </strong>
       </div>
       <div className="hud-stat">
-        <span>Energy</span>
+        <span>Nội lực</span>
         <strong>
           {player.mp}/{player.maxMp}
         </strong>
       </div>
       <div className="hud-stat">
-        <span>LV</span>
+        <span>Cấp</span>
         <strong>{player.level}</strong>
       </div>
       <div className="hud-stat">
-        <span>EXP</span>
+        <span>Kinh nghiệm</span>
         <strong>{player.exp}</strong>
       </div>
       <div className="hud-stat">
-        <span>Gold</span>
+        <span>Vàng</span>
         <strong>{player.gold}</strong>
       </div>
       <div className="hud-stat">
-        <span>Class</span>
+        <span>Lớp</span>
         <strong>{player.classId ?? "-"}</strong>
       </div>
       <div className="hud-map">{player.mapId}</div>

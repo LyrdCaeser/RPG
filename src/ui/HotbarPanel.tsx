@@ -8,7 +8,7 @@ export function HotbarPanel() {
   const now = Date.now();
 
   return (
-    <section className="hotbar-panel" aria-label="Skill hotbar">
+    <section className="hotbar-panel" aria-label="Thanh kỹ năng">
       {[1, 2, 3, 4].map((slot) => {
         const skillId = hotbar.find((entry) => entry.slot === slot)?.skillId;
         const skill = skillDefinitions.find((candidate) => candidate.skillId === skillId);
@@ -18,8 +18,8 @@ export function HotbarPanel() {
           <div key={slot} className="hotbar-slot" data-unavailable={unavailable}>
             <kbd>{slot}</kbd>
             <strong>{skill?.icon ?? "-"}</strong>
-            <span>{skill?.name ?? "Empty"}</span>
-            {skill && <em>{skill.mpCost} MP</em>}
+            <span>{skill?.name ?? "Trống"}</span>
+            {skill && <em>{skill.mpCost} nội lực</em>}
             {cooldownMs > 0 && <b>{Math.ceil(cooldownMs / 1000)}</b>}
           </div>
         );

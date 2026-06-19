@@ -18,7 +18,7 @@ export function TitlePanel() {
   const refresh = () => {
     void getTitlesMe()
       .then((response) => setTitles(response.titles))
-      .catch(() => addWarning("Title load failed."));
+      .catch(() => addWarning("Tải danh hiệu thất bại."));
   };
 
   const equip = (titleId: string) => {
@@ -28,18 +28,18 @@ export function TitlePanel() {
         setPlayer(response.player);
         void saveCollectionProgress({ category: "titles", entryId: titleId, amount: 1 })
           .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-          .catch(() => addWarning("Collection progress save failed."));
+          .catch(() => addWarning("Lưu tiến độ bộ sưu tập thất bại."));
       })
-      .catch(() => addWarning("Title equip failed."));
+      .catch(() => addWarning("Trang bị danh hiệu thất bại."));
   };
 
   return (
-    <section className="title-panel" aria-label="Titles">
+    <section className="title-panel" aria-label="Danh hiệu">
       <header>
-        <h2>Titles</h2>
-        <button type="button" onClick={refresh}>Refresh</button>
+        <h2>Danh hiệu</h2>
+        <button type="button" onClick={refresh}>Làm mới</button>
       </header>
-      {active && <strong className="active-title">Active: {titleDefinitions.find((title) => title.titleId === active.titleId)?.name ?? active.titleId}</strong>}
+      {active && <strong className="active-title">Đang dùng: {titleDefinitions.find((title) => title.titleId === active.titleId)?.name ?? active.titleId}</strong>}
       <div className="title-list">
         {titleDefinitions.map((definition) => {
           const unlocked = ownedIds.has(definition.titleId);
@@ -53,7 +53,7 @@ export function TitlePanel() {
               <p>{definition.description}</p>
               <small>{formatStats(definition.statBonuses)}</small>
               <button type="button" disabled={!unlocked || activeTitle} onClick={() => equip(definition.titleId)}>
-                {activeTitle ? "Equipped" : unlocked ? "Equip" : "Locked"}
+                {activeTitle ? "Đã trang bị" : unlocked ? "Trang bị" : "Đã khóa"}
               </button>
             </article>
           );
@@ -67,5 +67,5 @@ function formatStats(stats: ItemStats) {
   const parts = Object.entries(stats)
     .filter(([, value]) => Boolean(value))
     .map(([key, value]) => `${key} +${value}`);
-  return parts.length ? parts.join(", ") : "No stat bonus";
+  return parts.length ? parts.join(", ") : "Không có cộng chỉ số";
 }

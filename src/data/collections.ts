@@ -49,7 +49,7 @@ export const collectionEntries: CollectionEntryDefinition[] = [
     category: "enemies" as const,
     entryId: enemy.id,
     name: enemy.name,
-    description: `Defeated combat record for ${enemy.name}.`,
+    description: `Hồ sơ đã đánh bại ${enemy.name}.`,
     discoveryType: "defeated" as const,
     setId: "field-bestiary",
     enabled: true
@@ -72,7 +72,7 @@ export const collectionEntries: CollectionEntryDefinition[] = [
     category: "maps" as const,
     entryId: map.mapId,
     name: map.name,
-    description: `Visited ${map.name}.`,
+    description: `Đã ghé thăm ${map.name}.`,
     discoveryType: "visited" as const,
     setId: "world-atlas",
     enabled: true
@@ -93,8 +93,8 @@ export const collectionEntries: CollectionEntryDefinition[] = [
 export const collectionSets: CollectionSetDefinition[] = [
   {
     setId: "companion-register",
-    name: "Companion Register",
-    description: "Collect two pets.",
+    name: "Sổ thú đồng hành",
+    description: "Sưu tầm hai thú đồng hành.",
     requiredEntryIds: ["moon_fox", "slime_buddy"],
     rewards: { gold: 25, exp: 20 },
     points: 20,
@@ -102,8 +102,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "stable-register",
-    name: "Stable Register",
-    description: "Own two mounts.",
+    name: "Sổ thú cưỡi",
+    description: "Sở hữu hai thú cưỡi.",
     requiredEntryIds: ["brown_horse", "shadow_panther"],
     rewards: { gold: 30 },
     points: 20,
@@ -111,8 +111,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "starter-items",
-    name: "Starter Kit",
-    description: "Register common starter equipment and supplies.",
+    name: "Bộ khởi đầu",
+    description: "Ghi nhận trang bị và vật phẩm khởi đầu thường gặp.",
     requiredEntryIds: ["hp-potion", "mp-potion", "rusted-sword", "padded-armor"],
     rewards: { exp: 25, gold: 20 },
     points: 25,
@@ -120,8 +120,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "field-bestiary",
-    name: "Field Bestiary",
-    description: "Defeat each field enemy type.",
+    name: "Sổ quái dã ngoại",
+    description: "Đánh bại mỗi loại kẻ địch ngoài đồng.",
     requiredEntryIds: ["slime-01", "wisp-01", "sentinel-01"],
     rewards: { gold: 60, titles: [{ titleId: "guardian_challenger" }] },
     points: 35,
@@ -129,8 +129,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "world-atlas",
-    name: "World Atlas",
-    description: "Visit the core world maps.",
+    name: "Tập bản đồ thế giới",
+    description: "Ghé thăm các bản đồ chính của thế giới.",
     requiredEntryIds: ["starter_village", "moon_forest", "slime_field", "ancient_dungeon_1", "boss_arena_1"],
     rewards: { exp: 50, gold: 35 },
     points: 40,
@@ -138,8 +138,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "title-cabinet",
-    name: "Title Cabinet",
-    description: "Unlock three titles.",
+    name: "Tủ danh hiệu",
+    description: "Mở khóa ba danh hiệu.",
     requiredEntryIds: ["slime_breaker", "village_helper", "trailfinder"],
     rewards: { exp: 35, gold: 35 },
     points: 30,
@@ -147,8 +147,8 @@ export const collectionSets: CollectionSetDefinition[] = [
   },
   {
     setId: "boss-chronicle",
-    name: "Boss Chronicle",
-    description: "Record a world boss defeat.",
+    name: "Biên niên boss",
+    description: "Ghi nhận một lần đánh bại boss thế giới.",
     requiredEntryIds: ["verdant-guardian"],
     rewards: { gold: 100, pets: [{ petId: "crystal_drake" }] },
     points: 50,

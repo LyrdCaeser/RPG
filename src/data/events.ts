@@ -7,28 +7,28 @@ const eventEnd = new Date(eventStart.getTime() + 7 * 24 * 60 * 60 * 1000);
 export const cutsceneDefinitions: CutsceneDefinition[] = [
   {
     id: "dungeon-arrival",
-    title: "First Look At The Ancient Dungeon",
+    title: "Lần đầu thấy hầm ngục cổ",
     trigger: {
       condition: "by_map_enter",
       targetId: "ancient_dungeon_1"
     },
     lines: [
-      "The gate closes behind you with a low metallic hum.",
-      "Old stones wake under your steps, each mark pointing deeper into the dungeon.",
-      "Somewhere ahead, something large moves through the green dark."
+      "Cánh cổng khép lại sau lưng bạn với tiếng ngân kim loại trầm.",
+      "Đá cổ thức dậy dưới bước chân, từng dấu khắc chỉ sâu hơn vào hầm ngục.",
+      "Đâu đó phía trước, một thứ lớn lao đang chuyển động trong bóng xanh."
     ]
   },
   {
     id: "mira-warning",
-    title: "Mira's Warning",
+    title: "Lời cảnh báo của Mira",
     trigger: {
       condition: "by_npc_talk",
       targetId: "elder-mira"
     },
     lines: [
-      "Mira lowers her voice.",
-      "The old guardian answers only when the village is strong enough to face it.",
-      "If you hear the horn, do not go alone."
+      "Mira hạ giọng.",
+      "Hộ vệ cổ chỉ đáp lại khi ngôi làng đủ mạnh để đối mặt với nó.",
+      "Nếu nghe tiếng tù và, đừng đi một mình."
     ]
   }
 ];
@@ -36,8 +36,8 @@ export const cutsceneDefinitions: CutsceneDefinition[] = [
 export const eventDefinitions: GameEventDefinition[] = [
   {
     id: "daily-supplies",
-    title: "Daily Field Supplies",
-    description: "Claim a small supply pack once per server day.",
+    title: "Tiếp tế dã ngoại hằng ngày",
+    description: "Nhận một gói tiếp tế nhỏ mỗi ngày máy chủ.",
     type: "daily_event",
     defaultState: "active",
     triggers: [
@@ -55,8 +55,8 @@ export const eventDefinitions: GameEventDefinition[] = [
   },
   {
     id: "dungeon-arrival-event",
-    title: "The Dungeon Stirs",
-    description: "Enter the dungeon and witness the old stones waking.",
+    title: "Hầm ngục thức giấc",
+    description: "Vào hầm ngục và chứng kiến đá cổ thức dậy.",
     type: "cutscene",
     defaultState: "scheduled",
     triggers: [
@@ -72,8 +72,8 @@ export const eventDefinitions: GameEventDefinition[] = [
   },
   {
     id: "mira-warning-event",
-    title: "Mira's Warning",
-    description: "Hear Elder Mira's warning about the guardian.",
+    title: "Lời cảnh báo của Mira",
+    description: "Nghe Trưởng lão Mira cảnh báo về hộ vệ.",
     type: "quest_event",
     defaultState: "scheduled",
     triggers: [
@@ -89,8 +89,8 @@ export const eventDefinitions: GameEventDefinition[] = [
   },
   {
     id: "guardian-week",
-    title: "Verdant Guardian",
-    description: "A world boss patrols the arena for a limited time.",
+    title: "Hộ vệ xanh thẳm",
+    description: "Một boss thế giới tuần tra đấu trường trong thời gian giới hạn.",
     type: "boss_event",
     defaultState: "active",
     startsAt: eventStart.toISOString(),
@@ -113,7 +113,7 @@ export const eventDefinitions: GameEventDefinition[] = [
     boss: {
       eventId: "guardian-week",
       id: "verdant-guardian",
-      name: "Verdant Guardian",
+      name: "Hộ vệ xanh thẳm",
       x: 1056,
       y: 736,
       maxHp: 240,
@@ -131,8 +131,8 @@ export const eventDefinitions: GameEventDefinition[] = [
   },
   {
     id: "scout-cleanup",
-    title: "Southern Route Cleanup",
-    description: "Defeat enemies along Lyra's route after the scout quest becomes active.",
+    title: "Dọn tuyến đường phía nam",
+    description: "Đánh bại kẻ địch dọc tuyến của Lyra sau khi nhiệm vụ trinh sát mở.",
     type: "map_event",
     defaultState: "locked",
     triggers: [

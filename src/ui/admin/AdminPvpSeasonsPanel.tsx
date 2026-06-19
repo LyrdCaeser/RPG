@@ -40,7 +40,7 @@ export function AdminPvpSeasonsPanel() {
   function loadSeasons() {
     return getAdminPvpSeasons()
       .then((response) => setSeasons(response.seasons))
-      .catch((error) => addWarning(adminPvpSeasonWarning(error, "PvP season load failed.")));
+      .catch((error) => addWarning(adminPvpSeasonWarning(error, "Tải mùa đấu trường thất bại.")));
   }
 
   function createSeason() {
@@ -54,7 +54,7 @@ export function AdminPvpSeasonsPanel() {
         setSeasons(response.seasons);
         setCreateForm(emptyForm);
       })
-      .catch((error) => addWarning(adminPvpSeasonWarning(error, "PvP season create failed.")));
+      .catch((error) => addWarning(adminPvpSeasonWarning(error, "Tạo mùa đấu trường thất bại.")));
   }
 
   function updateSeason() {
@@ -70,7 +70,7 @@ export function AdminPvpSeasonsPanel() {
         setSeasons(response.seasons);
         setEditForm(toForm(response.season));
       })
-      .catch((error) => addWarning(adminPvpSeasonWarning(error, "PvP season update failed.")));
+      .catch((error) => addWarning(adminPvpSeasonWarning(error, "Cập nhật mùa đấu trường thất bại.")));
   }
 
   function runSeasonAction(action: "activate" | "end" | "archive", seasonId: string) {
@@ -85,29 +85,29 @@ export function AdminPvpSeasonsPanel() {
         setSeasons(response.seasons);
         setEditForm((current) => (current?.seasonId === response.season.seasonId ? toForm(response.season) : current));
       })
-      .catch((error) => addWarning(adminPvpSeasonWarning(error, `PvP season ${action} failed.`)));
+      .catch((error) => addWarning(adminPvpSeasonWarning(error, `Thao tác mùa đấu trường ${action} thất bại.`)));
   }
 
   return (
     <div className="admin-pvp-seasons">
       <section className="admin-form">
-        <h3>Create PvP Season</h3>
+        <h3>Tạo mùa đấu trường</h3>
         <SeasonForm form={createForm} onChange={setCreateForm} includeState />
         <button type="button" onClick={createSeason} disabled={!canSubmitSeason(createForm)}>
-          Create
+          Tạo
         </button>
       </section>
 
       {editForm ? (
         <section className="admin-form">
-          <h3>Update PvP Season</h3>
+          <h3>Cập nhật mùa đấu trường</h3>
           <SeasonForm form={editForm} onChange={setEditForm} includeState />
           <div className="admin-row-actions">
             <button type="button" onClick={updateSeason} disabled={!canSubmitSeason(editForm)}>
-              Update
+              Cập nhật
             </button>
             <button type="button" onClick={() => setEditForm(null)}>
-              Clear
+              Xóa chọn
             </button>
           </div>
         </section>
@@ -115,32 +115,32 @@ export function AdminPvpSeasonsPanel() {
 
       <section className="admin-table">
         <div className="admin-table-header">
-          <h3>PvP Seasons</h3>
-          <button type="button" onClick={loadSeasons}>Refresh</button>
+          <h3>Mùa đấu trường</h3>
+          <button type="button" onClick={loadSeasons}>Làm mới</button>
         </div>
-        {seasons.length === 0 ? <p>No PvP seasons recorded.</p> : null}
+        {seasons.length === 0 ? <p>Chưa có mùa đấu trường trong cơ sở dữ liệu.</p> : null}
         {seasons.map((season) => (
           <article key={season.seasonId} className="admin-table-row">
             <div>
               <strong>{season.name}</strong>
               <span>{season.state}</span>
             </div>
-            <small>Start {formatAdminDate(season.startAt)}</small>
-            <small>End {formatAdminDate(season.endAt)}</small>
-            <small>Created {formatAdminDate(season.createdAt)}</small>
-            <small>Updated {formatAdminDate(season.updatedAt)}</small>
+            <small>Bắt đầu {formatAdminDate(season.startAt)}</small>
+            <small>Kết thúc {formatAdminDate(season.endAt)}</small>
+            <small>Tạo lúc {formatAdminDate(season.createdAt)}</small>
+            <small>Cập nhật {formatAdminDate(season.updatedAt)}</small>
             <div className="admin-row-actions">
               <button type="button" onClick={() => setEditForm(toForm(season))}>
-                Edit
+                Sửa
               </button>
               <button type="button" onClick={() => runSeasonAction("activate", season.seasonId)} disabled={season.state !== "scheduled"}>
-                Activate
+                Kích hoạt
               </button>
               <button type="button" onClick={() => runSeasonAction("end", season.seasonId)} disabled={season.state !== "active" && season.state !== "scheduled"}>
-                End
+                Kết thúc
               </button>
               <button type="button" onClick={() => runSeasonAction("archive", season.seasonId)} disabled={season.state !== "ended"}>
-                Archive
+                Lưu trữ
               </button>
             </div>
           </article>
@@ -162,12 +162,12 @@ function SeasonForm({
   return (
     <div className="admin-form-grid">
       <label>
-        Name
+        Tên
         <input value={form.name} onChange={(event) => onChange({ ...form, name: event.target.value })} />
       </label>
       {includeState ? (
         <label>
-          State
+          Trạng thái
           <select value={form.state} onChange={(event) => onChange({ ...form, state: event.target.value as PvPSeasonState })}>
             {states.map((state) => (
               <option key={state} value={state}>{state}</option>
@@ -176,11 +176,11 @@ function SeasonForm({
         </label>
       ) : null}
       <label>
-        Start
+        Bắt đầu
         <input type="datetime-local" value={form.startAt} onChange={(event) => onChange({ ...form, startAt: event.target.value })} />
       </label>
       <label>
-        End
+        Kết thúc
         <input type="datetime-local" value={form.endAt} onChange={(event) => onChange({ ...form, endAt: event.target.value })} />
       </label>
     </div>
@@ -222,12 +222,12 @@ function adminPvpSeasonWarning(error: unknown, fallback: string) {
     message.includes("connection timeout") ||
     message.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (message.includes("active pvp season")) return "Another active PvP season already exists.";
-  if (message.includes("valid date")) return "Season dates are invalid.";
-  if (message.includes("after start")) return "Season end must be after start.";
-  if (message.includes("transition")) return "Season state transition is invalid.";
-  if (message.includes("not found")) return "PvP season was not found.";
+  if (message.includes("active pvp season")) return "Đã có mùa đấu trường đang hoạt động.";
+  if (message.includes("valid date")) return "Ngày mùa không hợp lệ.";
+  if (message.includes("after start")) return "Ngày kết thúc mùa phải sau ngày bắt đầu.";
+  if (message.includes("transition")) return "Chuyển trạng thái mùa không hợp lệ.";
+  if (message.includes("not found")) return "Không tìm thấy mùa đấu trường.";
   return fallback;
 }

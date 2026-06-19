@@ -102,12 +102,12 @@ export default function App() {
           setRuntimeContentDefinitions(await getContentDefinitions());
         } catch {
           clearRuntimeContentDefinitions();
-          addWarning("Content overrides unavailable. Static RPG data is being used.");
+          addWarning("Không tải được nội dung máy chủ. Đang dùng dữ liệu RPG cục bộ.");
         }
         try {
           await getMapDefinitions();
         } catch {
-          addWarning("Map load failed. Static map data is being used.");
+          addWarning("Không tải được bản đồ từ máy chủ. Đang dùng bản đồ cục bộ.");
         }
         const [
           playerResponse,
@@ -124,27 +124,27 @@ export default function App() {
           getQuestsMe(),
           getInventoryMe(),
           getSkillsMe().catch(() => {
-            addWarning("Skill load failed.");
+            addWarning("Không tải được kỹ năng.");
             return { skills: [], hotbar: [1, 2, 3, 4].map((slot) => ({ slot })) };
           }),
           getPetsMe().catch(() => {
-            addWarning("Pet load failed.");
+            addWarning("Không tải được thú đồng hành.");
             return { pets: [] };
           }),
           getMountsMe().catch(() => {
-            addWarning("Mount load failed.");
+            addWarning("Không tải được thú cưỡi.");
             return { mounts: [] };
           }),
           getAchievementsMe().catch(() => {
-            addWarning("Achievement load failed.");
+            addWarning("Không tải được thành tựu.");
             return { achievements: [] };
           }),
           getTitlesMe().catch(() => {
-            addWarning("Title load failed.");
+            addWarning("Không tải được danh hiệu.");
             return { titles: [], definitions: [] };
           }),
           getCollectionsMe().catch(() => {
-            addWarning("Collection load failed.");
+            addWarning("Không tải được bộ sưu tập.");
             return { collections: [], claimedSetIds: [] };
           })
         ]);
@@ -162,7 +162,7 @@ export default function App() {
         setLoading(false);
       } catch (error) {
         if (!mounted) return;
-        setLoadError(error instanceof Error ? error.message : "Failed to load game data.");
+        setLoadError(error instanceof Error ? error.message : "Không tải được dữ liệu trò chơi.");
         setLoading(false);
       }
     }
@@ -197,7 +197,7 @@ export default function App() {
         setSaveStatus("saved");
       } catch {
         setSaveStatus("failed");
-        addWarning(`Save failed after ${reason}. Progress is still in memory for this session.`);
+        addWarning(`Lưu thất bại sau ${reason}. Tiến trình chỉ còn trong bộ nhớ của phiên này.`);
       }
     },
     [addWarning, setSaveStatus]
@@ -207,7 +207,7 @@ export default function App() {
     (event: Parameters<typeof saveAchievementProgress>[0]) => {
       void saveAchievementProgress(event)
         .then((response) => setAchievements(response.achievements))
-        .catch(() => addWarning("Achievement progress save failed."));
+        .catch(() => addWarning("Không lưu được tiến trình thành tựu."));
     },
     [addWarning, setAchievements]
   );
@@ -216,7 +216,7 @@ export default function App() {
     (event: Parameters<typeof saveCollectionProgress>[0]) => {
       void saveCollectionProgress(event)
         .then((response) => setCollections(response.collections, response.claimedSetIds))
-        .catch(() => addWarning("Collection progress save failed."));
+        .catch(() => addWarning("Không lưu được tiến trình bộ sưu tập."));
     },
     [addWarning, setCollections]
   );
@@ -225,7 +225,7 @@ export default function App() {
     (event: Parameters<typeof saveGuildQuestProgress>[0]) => {
       void saveGuildQuestProgress(event).catch((error) => {
         const message = error instanceof Error ? error.message.toLowerCase() : "";
-        if (!message.includes("guild")) addWarning("Guild quest progress save failed.");
+        if (!message.includes("guild")) addWarning("Không lưu được tiến trình nhiệm vụ bang hội.");
       });
     },
     [addWarning]
@@ -249,7 +249,7 @@ export default function App() {
         })
         .catch(() => {
           setSaveStatus("failed");
-          addWarning("Map change save failed. Current position is only in memory until the API/database recovers.");
+          addWarning("Không lưu được chuyển bản đồ. Vị trí hiện tại chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
         });
       reportAchievementProgress({ targetType: "map_visit", targetValue: nextPlayer.mapId, amount: 1 });
       reportCollectionProgress({ category: "maps", entryId: nextPlayer.mapId, amount: 1 });
@@ -272,12 +272,12 @@ export default function App() {
             killedAt: response.result.killedAt
           })
             .then((partyResponse) => {
-              if (partyResponse.recorded) addNotice("Party EXP event recorded.");
+          if (partyResponse.recorded) addNotice("Đã ghi nhận kinh nghiệm tổ đội.");
             })
             .catch((error) => {
               const message = error instanceof Error ? error.message.toLowerCase() : "";
-              if (message.includes("validation")) addWarning("Party reward validation failed.");
-              else if (!message.includes("not in a party")) addWarning("Party EXP event save failed.");
+              if (message.includes("validation")) addWarning("Xác thực phần thưởng tổ đội thất bại.");
+              else if (!message.includes("not in a party")) addWarning("Không lưu được kinh nghiệm tổ đội.");
             });
           void recordPartyLootEvent({
             enemyId: result.enemyId,
@@ -286,16 +286,16 @@ export default function App() {
             killedAt: response.result.killedAt
           })
             .then((partyResponse) => {
-              if (partyResponse.recorded) addNotice("Party loot event recorded.");
+              if (partyResponse.recorded) addNotice("Đã ghi nhận chiến lợi phẩm tổ đội.");
             })
             .catch((error) => {
               const message = error instanceof Error ? error.message.toLowerCase() : "";
-              if (message.includes("validation")) addWarning("Party reward validation failed.");
-              else if (!message.includes("not in a party")) addWarning("Party loot event save failed.");
+              if (message.includes("validation")) addWarning("Xác thực phần thưởng tổ đội thất bại.");
+              else if (!message.includes("not in a party")) addWarning("Không lưu được chiến lợi phẩm tổ đội.");
             });
         })
         .catch(() => {
-          addWarning("Battle result could not be saved. Rewards are only in memory until the API/database recovers.");
+          addWarning("Không lưu được kết quả chiến đấu. Phần thưởng chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
         });
     });
 
@@ -318,7 +318,7 @@ export default function App() {
         })
         .then(setInventorySnapshot)
         .catch(() => {
-          addWarning("Boss result save failed. Rewards are only in memory until the API/database recovers.");
+          addWarning("Không lưu được kết quả boss. Phần thưởng chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
         });
     });
 
@@ -329,7 +329,7 @@ export default function App() {
           reportCollectionProgress({ category: "items", entryId: pickup.itemId, amount: 1 });
         })
         .catch(() => {
-          addWarning("Inventory save failed. Picked up item is not persisted yet.");
+          addWarning("Không lưu được hành trang. Vật phẩm nhặt được chưa được lưu.");
         });
     });
 
@@ -354,7 +354,7 @@ export default function App() {
           }
         })
         .catch(() => {
-          addWarning("Dungeon result save failed. Clear progress is only in memory until the API/database recovers.");
+          addWarning("Không lưu được kết quả hầm ngục. Tiến trình chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
         });
     });
 
@@ -367,7 +367,7 @@ export default function App() {
           setPlayer(response.player);
         })
         .catch(() => {
-          addWarning("Skill cast save failed. Combat state is only in memory until the API/database recovers.");
+          addWarning("Không lưu được lần dùng kỹ năng. Trạng thái chiến đấu chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
         });
     });
 
@@ -386,8 +386,8 @@ export default function App() {
           }
         })
         .catch(() => {
-          addWarning("Pet combat save failed. Pet EXP is only in memory until the API/database recovers.");
-          addWarning("Pet exp update failed.");
+          addWarning("Không lưu được chiến đấu của thú đồng hành. Kinh nghiệm thú chỉ ở trong bộ nhớ cho đến khi API/cơ sở dữ liệu phục hồi.");
+          addWarning("Không cập nhật được kinh nghiệm thú đồng hành.");
         });
     });
 
@@ -402,7 +402,7 @@ export default function App() {
           if (response.pets) setPets(response.pets);
           for (const pet of response.pets ?? []) reportCollectionProgress({ category: "pets", entryId: pet.petId, amount: 1 });
           if (response.petBonusSaveFailed) {
-            addWarning("Pet gathering bonus save failed.");
+            addWarning("Không lưu được thưởng thu thập từ thú đồng hành.");
           }
           reportAchievementProgress({ targetType: "gather_node", targetValue: node.nodeId, amount: 1 });
           reportGuildQuestProgress({ type: "gather_node", targetId: node.type, amount: 1, metadata: { nodeId: node.nodeId, mapId: node.mapId } });
@@ -417,7 +417,7 @@ export default function App() {
           }
         })
         .catch(() => {
-          addWarning("Gathering failed. Materials were not persisted.");
+          addWarning("Thu thập thất bại. Nguyên liệu chưa được lưu.");
         });
     });
 
@@ -512,16 +512,16 @@ export default function App() {
   }
 
   if (loading) {
-    return <main className="shell shell-centered">Loading world data...</main>;
+    return <main className="shell shell-centered">Đang tải dữ liệu thế giới...</main>;
   }
 
   if (loadError || !player) {
     return (
       <main className="shell shell-centered">
         <section className="startup-error">
-          <h1>Unable to load RPG data</h1>
-          <p>{loadError ?? "Player data was unavailable."}</p>
-          <p>Start the API server with a valid PostgreSQL `DATABASE_URL`, then refresh.</p>
+          <h1>Không tải được dữ liệu RPG</h1>
+          <p>{loadError ?? "Không có dữ liệu nhân vật."}</p>
+          <p>Hãy khởi động máy chủ API với PostgreSQL `DATABASE_URL` hợp lệ, rồi tải lại trang.</p>
         </section>
       </main>
     );
@@ -548,11 +548,11 @@ export default function App() {
             <HotbarPanel />
             <QuestProgressController />
             {activePanel && (
-              <section className="major-panel-shell" data-panel={activePanel} aria-label={`${activePanel} panel`}>
+              <section className="major-panel-shell" data-panel={activePanel} aria-label={`Bảng ${panelTitle(activePanel)}`}>
                 <header>
                   <strong>{panelTitle(activePanel)}</strong>
-                  <button type="button" onClick={closeActivePanel} aria-label="Close panel">
-                    Close
+                  <button type="button" onClick={closeActivePanel} aria-label="Đóng bảng">
+                    Đóng
                   </button>
                 </header>
                 <div className="major-panel-body">
@@ -567,17 +567,17 @@ export default function App() {
                   {activePanel === "map" && <MinimapPanel />}
                   {activePanel === "mail" && <MailboxPanel />}
                   {activePanel === "admin" && isAdmin && (
-                    <Suspense fallback={<div className="admin-loading">Loading admin section</div>}>
+                    <Suspense fallback={<div className="admin-loading">Đang tải khu quản trị</div>}>
                       <AdminPanel initialOpen showToggle={false} onClose={closeActivePanel} />
                     </Suspense>
                   )}
                   {guildPanelLoaded && (
-                    <Suspense fallback={<div className="admin-loading">Loading guild panel</div>}>
+                    <Suspense fallback={<div className="admin-loading">Đang tải bang hội</div>}>
                       <GuildPanel />
                     </Suspense>
                   )}
                   {pvpPanelLoaded && (
-                    <Suspense fallback={<div className="admin-loading">Loading PvP panel</div>}>
+                    <Suspense fallback={<div className="admin-loading">Đang tải đấu trường</div>}>
                       <PvPPanel />
                     </Suspense>
                   )}
@@ -605,18 +605,18 @@ interface GameMenuProps {
 
 function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
   const items: { panel: Exclude<ActivePanel, null>; label: string; shortcut?: string; adminOnly?: boolean }[] = [
-    { panel: "inventory", label: "Inventory", shortcut: "I" },
-    { panel: "skills", label: "Skills" },
-    { panel: "quests", label: "Quests" },
-    { panel: "map", label: "Map" },
-    { panel: "mail", label: "Mail" },
-    { panel: "guild", label: "Guild" },
-    { panel: "pvp", label: "PvP" },
-    { panel: "admin", label: "Admin", adminOnly: true }
+    { panel: "inventory", label: "Hành trang", shortcut: "I" },
+    { panel: "skills", label: "Kỹ năng" },
+    { panel: "quests", label: "Nhiệm vụ" },
+    { panel: "map", label: "Bản đồ" },
+    { panel: "mail", label: "Thư" },
+    { panel: "guild", label: "Bang hội" },
+    { panel: "pvp", label: "Đấu trường" },
+    { panel: "admin", label: "Quản trị", adminOnly: true }
   ];
 
   return (
-    <nav className="game-menu" aria-label="Game menu">
+    <nav className="game-menu" aria-label="Menu trò chơi">
       {items
         .filter((item) => !item.adminOnly || isAdmin)
         .map((item) => (
@@ -641,16 +641,16 @@ function QuestTracker() {
   const activeQuests = quests.filter((quest) => quest.state === "active" || quest.state === "completed").slice(0, 3);
 
   return (
-    <aside className="quest-tracker" data-collapsed={collapsed} aria-label="Quest tracker">
+    <aside className="quest-tracker" data-collapsed={collapsed} aria-label="Theo dõi nhiệm vụ">
       <header>
-        <strong>Quests</strong>
+        <strong>Nhiệm vụ</strong>
         <button type="button" onClick={() => setCollapsed((value) => !value)}>
-          {collapsed ? "Show" : "Hide"}
+          {collapsed ? "Hiện" : "Ẩn"}
         </button>
       </header>
       {!collapsed && (
         <div>
-          {activeQuests.length === 0 && <p>No active quests</p>}
+          {activeQuests.length === 0 && <p>Không có nhiệm vụ đang làm</p>}
           {activeQuests.map((quest) => {
             const definition = getRuntimeQuestDefinitions().find((candidate) => candidate.id === quest.questId);
             if (!definition) return null;
@@ -659,7 +659,7 @@ function QuestTracker() {
             return (
               <article key={quest.questId} data-state={quest.state}>
                 <strong>{definition.title}</strong>
-                <span>{quest.state}</span>
+                <span>{formatQuestState(quest.state)}</span>
                 {firstObjective && (
                   <small>
                     {firstObjective.label}: {current}/{firstObjective.requiredCount}
@@ -675,6 +675,26 @@ function QuestTracker() {
 }
 
 function panelTitle(panel: Exclude<ActivePanel, null>) {
-  if (panel === "pvp") return "PvP";
-  return panel.charAt(0).toUpperCase() + panel.slice(1);
+  const titles: Record<Exclude<ActivePanel, null>, string> = {
+    inventory: "Hành trang",
+    skills: "Kỹ năng",
+    quests: "Nhiệm vụ",
+    map: "Bản đồ",
+    mail: "Thư",
+    guild: "Bang hội",
+    pvp: "Đấu trường",
+    admin: "Quản trị"
+  };
+  return titles[panel];
+}
+
+function formatQuestState(state: string) {
+  const states: Record<string, string> = {
+    locked: "Đã khóa",
+    available: "Có sẵn",
+    active: "Đang làm",
+    completed: "Hoàn thành",
+    claimed: "Đã nhận"
+  };
+  return states[state] ?? state;
 }

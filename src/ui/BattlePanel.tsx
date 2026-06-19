@@ -10,25 +10,35 @@ export function BattlePanel() {
   const hpPercent = target ? Math.max(0, Math.min(100, (target.hp / target.maxHp) * 100)) : 0;
 
   return (
-    <section className="battle-panel combat-panel" aria-label="Combat">
+    <section className="battle-panel combat-panel" aria-label="Chiến đấu">
       <header>
-        <h2>{target ? `${target.name} Lv ${target.level}` : "Combat"}</h2>
-        <span>{status.attackCooldownMs > 0 ? `${Math.ceil(status.attackCooldownMs)}ms` : "Ready"}</span>
+        <h2>{target ? `${target.name} Cấp ${target.level}` : "Chiến đấu"}</h2>
+        <span>{status.attackCooldownMs > 0 ? `${Math.ceil(status.attackCooldownMs)}ms` : "Sẵn sàng"}</span>
       </header>
       {target && (
         <>
-          <div className="combat-bar" aria-label="Enemy HP">
+          <div className="combat-bar" aria-label="Máu kẻ địch">
             <span style={{ width: `${hpPercent}%` }} />
           </div>
           <p>
-            Enemy HP {target.hp}/{target.maxHp} - {target.state}
+            Máu kẻ địch {target.hp}/{target.maxHp} - {formatCombatState(target.state)}
           </p>
         </>
       )}
       <p>
-        Player HP {player?.hp ?? 0}/{player?.maxHp ?? 0} MP {player?.mp ?? 0}/{player?.maxMp ?? 0}
+        Máu người chơi {player?.hp ?? 0}/{player?.maxHp ?? 0} Nội lực {player?.mp ?? 0}/{player?.maxMp ?? 0}
       </p>
       {status.lastMessage && <p>{status.lastMessage}</p>}
     </section>
   );
+}
+
+function formatCombatState(state: string) {
+  const labels: Record<string, string> = {
+    idle: "đứng yên",
+    chasing: "đuổi theo",
+    attacking: "tấn công",
+    defeated: "bị hạ"
+  };
+  return labels[state] ?? state;
 }

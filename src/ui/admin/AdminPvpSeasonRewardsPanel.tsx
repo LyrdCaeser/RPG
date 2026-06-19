@@ -52,14 +52,14 @@ export function AdminPvpSeasonRewardsPanel() {
       getAdminPvpSeasonRewards().then((response) => setRules(response.rewards)),
       getAdminPvpSeasons().then((response) => setSeasons(response.seasons))
     ])
-      .catch((error) => addWarning(adminPvpRewardWarning(error, "PvP reward rules load failed.")))
+      .catch((error) => addWarning(adminPvpRewardWarning(error, "Tải quy tắc thưởng đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
   function saveRule() {
     const rewards = parseRewardJson(form.rewardsJson);
     if (!rewards) {
-      addWarning("Reward JSON validation failed.");
+      addWarning("JSON phần thưởng không hợp lệ.");
       return;
     }
     const payload = {
@@ -82,9 +82,9 @@ export function AdminPvpSeasonRewardsPanel() {
       .then((response) => {
         setRules(response.rewards);
         setForm(toForm(response.reward));
-        addNotice(form.rewardRuleId ? "PvP reward rule updated." : "PvP reward rule created.");
+        addNotice(form.rewardRuleId ? "Đã cập nhật quy tắc thưởng đấu trường." : "Đã tạo quy tắc thưởng đấu trường.");
       })
-      .catch((error) => addWarning(adminPvpRewardWarning(error, form.rewardRuleId ? "PvP reward rule update failed." : "PvP reward rule create failed.")))
+      .catch((error) => addWarning(adminPvpRewardWarning(error, form.rewardRuleId ? "Cập nhật quy tắc thưởng đấu trường thất bại." : "Tạo quy tắc thưởng đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
@@ -103,9 +103,9 @@ export function AdminPvpSeasonRewardsPanel() {
         .then((response) => {
           setRules(response.rewards);
           setForm((current) => (current.rewardRuleId === rewardRuleId ? emptyRewardForm : current));
-          addNotice("PvP reward rule delete succeeded.");
+          addNotice("Đã xóa quy tắc thưởng đấu trường.");
         })
-        .catch((error) => addWarning(adminPvpRewardWarning(error, "PvP reward rule delete failed.")))
+        .catch((error) => addWarning(adminPvpRewardWarning(error, "Xóa quy tắc thưởng đấu trường thất bại.")))
         .finally(() => setLoading(false));
       return;
     }
@@ -116,21 +116,21 @@ export function AdminPvpSeasonRewardsPanel() {
       .then((response) => {
         setRules(response.rewards);
         setForm((current) => (current.rewardRuleId === response.reward.rewardRuleId ? toForm(response.reward) : current));
-        addNotice(`PvP reward rule ${action} succeeded.`);
+        addNotice(`Đã ${action === "enable" ? "bật" : "tắt"} quy tắc thưởng đấu trường.`);
       })
-      .catch((error) => addWarning(adminPvpRewardWarning(error, `PvP reward rule ${action} failed.`)))
+      .catch((error) => addWarning(adminPvpRewardWarning(error, `Thao tác quy tắc thưởng đấu trường thất bại.`)))
       .finally(() => setLoading(false));
   }
 
   return (
     <div className="admin-pvp-rewards">
       <section className="admin-form">
-        <h3>{form.rewardRuleId ? "Update PvP Season Reward" : "Create PvP Season Reward"}</h3>
+        <h3>{form.rewardRuleId ? "Cập nhật thưởng mùa đấu trường" : "Tạo thưởng mùa đấu trường"}</h3>
         <div className="admin-form-grid">
           <label>
-            Season
+            Mùa
             <select value={form.seasonId} onChange={(event) => setForm((current) => ({ ...current, seasonId: event.target.value }))}>
-              <option value="">Select season</option>
+              <option value="">Chọn mùa</option>
               {seasons.map((season) => (
                 <option key={season.seasonId} value={season.seasonId}>
                   {season.name} - {season.state}
@@ -139,49 +139,49 @@ export function AdminPvpSeasonRewardsPanel() {
             </select>
           </label>
           <label>
-            Tier
+            Bậc
             <input value={form.tier} onChange={(event) => setForm((current) => ({ ...current, tier: event.target.value }))} />
           </label>
           <label>
-            Min rank
+            Hạng tối thiểu
             <input value={form.minRank} onChange={(event) => setForm((current) => ({ ...current, minRank: event.target.value }))} />
           </label>
           <label>
-            Max rank
+            Hạng tối đa
             <input value={form.maxRank} onChange={(event) => setForm((current) => ({ ...current, maxRank: event.target.value }))} />
           </label>
           <label>
-            Min rating
+            Điểm hạng tối thiểu
             <input value={form.minRating} onChange={(event) => setForm((current) => ({ ...current, minRating: event.target.value }))} />
           </label>
           <label>
-            Min season points
+            Điểm mùa tối thiểu
             <input value={form.minSeasonPoints} onChange={(event) => setForm((current) => ({ ...current, minSeasonPoints: event.target.value }))} />
           </label>
           <label className="admin-check">
             <input type="checkbox" checked={form.enabled} onChange={(event) => setForm((current) => ({ ...current, enabled: event.target.checked }))} />
-            Enabled
+            Đang bật
           </label>
         </div>
         <label className="admin-json">
-          Rewards JSON
+          JSON phần thưởng
           <textarea value={form.rewardsJson} onChange={(event) => setForm((current) => ({ ...current, rewardsJson: event.target.value }))} />
         </label>
         <div className="admin-row-actions">
           <button type="button" onClick={saveRule} disabled={loading || !canSubmitRewardRule(form)}>
-            {form.rewardRuleId ? "Update" : "Create"}
+            {form.rewardRuleId ? "Cập nhật" : "Tạo"}
           </button>
-          <button type="button" onClick={newRule}>New</button>
-          <button type="button" onClick={loadData} disabled={loading}>Refresh</button>
+          <button type="button" onClick={newRule}>Tạo mới</button>
+          <button type="button" onClick={loadData} disabled={loading}>Làm mới</button>
         </div>
       </section>
 
       <section className="admin-table admin-pvp-reward-table">
         <div className="admin-table-header">
-          <h3>PvP Season Reward Rules</h3>
-          {loading ? <span>Loading</span> : null}
+          <h3>Quy tắc thưởng mùa đấu trường</h3>
+          {loading ? <span>Đang tải</span> : null}
         </div>
-        {!loading && rules.length === 0 ? <p>No PvP reward rules recorded.</p> : null}
+        {!loading && rules.length === 0 ? <p>Chưa có quy tắc thưởng đấu trường trong cơ sở dữ liệu.</p> : null}
         {rules.map((rule) => (
           <article key={rule.rewardRuleId} data-revoked={!rule.enabled}>
             <button type="button" onClick={() => selectRule(rule)}>
@@ -190,14 +190,14 @@ export function AdminPvpSeasonRewardsPanel() {
             </button>
             <span>{formatRewardRequirements(rule)}</span>
             <span>{formatRewardPreview(rule.rewards)}</span>
-            <span>{rule.claimCount} claims</span>
-            <span>{rule.enabled ? "Enabled" : "Disabled"}</span>
-            <span>Created {formatDate(rule.createdAt)}</span>
-            <span>Updated {formatDate(rule.updatedAt)}</span>
+            <span>{rule.claimCount} lượt nhận</span>
+            <span>{rule.enabled ? "Đang bật" : "Đã tắt"}</span>
+            <span>Tạo lúc {formatDate(rule.createdAt)}</span>
+            <span>Cập nhật {formatDate(rule.updatedAt)}</span>
             <div className="admin-row-actions">
-              <button type="button" onClick={() => runRuleAction("enable", rule.rewardRuleId)} disabled={loading || rule.enabled}>Enable</button>
-              <button type="button" onClick={() => runRuleAction("disable", rule.rewardRuleId)} disabled={loading || !rule.enabled}>Disable</button>
-              <button type="button" onClick={() => runRuleAction("delete", rule.rewardRuleId)} disabled={loading}>Delete</button>
+              <button type="button" onClick={() => runRuleAction("enable", rule.rewardRuleId)} disabled={loading || rule.enabled}>Bật</button>
+              <button type="button" onClick={() => runRuleAction("disable", rule.rewardRuleId)} disabled={loading || !rule.enabled}>Tắt</button>
+              <button type="button" onClick={() => runRuleAction("delete", rule.rewardRuleId)} disabled={loading}>Xóa</button>
             </div>
           </article>
         ))}
@@ -243,24 +243,24 @@ function valueOrEmpty(value?: number) {
 
 function formatRewardRequirements(rule: AdminPvPSeasonRewardRule) {
   const requirements = [
-    rule.minRank || rule.maxRank ? `Rank ${rule.minRank ?? "any"} to ${rule.maxRank ?? "any"}` : "",
-    rule.minRating ? `Rating ${rule.minRating}+` : "",
-    rule.minSeasonPoints ? `Season points ${rule.minSeasonPoints}+` : ""
+    rule.minRank || rule.maxRank ? `Hạng ${rule.minRank ?? "bất kỳ"} đến ${rule.maxRank ?? "bất kỳ"}` : "",
+    rule.minRating ? `Điểm hạng ${rule.minRating}+` : "",
+    rule.minSeasonPoints ? `Điểm mùa ${rule.minSeasonPoints}+` : ""
   ].filter(Boolean);
-  return requirements.length > 0 ? requirements.join(" / ") : "No minimum requirement";
+  return requirements.length > 0 ? requirements.join(" / ") : "Không có yêu cầu tối thiểu";
 }
 
 function formatRewardPreview(rewards: EventReward) {
   const parts = [
-    rewards.gold ? `${rewards.gold} gold` : "",
-    rewards.exp ? `${rewards.exp} EXP` : "",
-    rewards.pvpPoints ? `${rewards.pvpPoints} PvP points` : "",
+    rewards.gold ? `${rewards.gold} vàng` : "",
+    rewards.exp ? `${rewards.exp} kinh nghiệm` : "",
+    rewards.pvpPoints ? `${rewards.pvpPoints} điểm đấu trường` : "",
     ...(rewards.items ?? []).map((item) => `${item.quantity}x ${item.itemId}`),
-    ...(rewards.pets ?? []).map((pet) => `Pet ${pet.petId}`),
-    ...(rewards.mounts ?? []).map((mount) => `Mount ${mount.mountId}`),
-    ...(rewards.titles ?? []).map((title) => `Title ${title.titleId}`)
+    ...(rewards.pets ?? []).map((pet) => `Thú cưng ${pet.petId}`),
+    ...(rewards.mounts ?? []).map((mount) => `Thú cưỡi ${mount.mountId}`),
+    ...(rewards.titles ?? []).map((title) => `Danh hiệu ${title.titleId}`)
   ].filter(Boolean);
-  return parts.length > 0 ? parts.join(" / ") : "No rewards";
+  return parts.length > 0 ? parts.join(" / ") : "Không có phần thưởng";
 }
 
 function formatDate(value: string) {
@@ -278,14 +278,14 @@ function adminPvpRewardWarning(error: unknown, fallback: string) {
     message.includes("connection timeout") ||
     message.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (message.includes("unsupported key")) return "Reward JSON validation failed: unsupported key.";
-  if (message.includes("malformed")) return "Reward JSON validation failed: malformed payload.";
-  if (message.includes("safe integer")) return "Reward JSON validation failed: invalid number.";
-  if (message.includes("invalid")) return "Reward JSON validation failed.";
-  if (message.includes("not found")) return "PvP season reward rule was not found.";
-  if (message.includes("season_id")) return "Season id is required.";
-  if (message.includes("tier")) return "Tier is required.";
+  if (message.includes("unsupported key")) return "JSON phần thưởng không hợp lệ: khóa không được hỗ trợ.";
+  if (message.includes("malformed")) return "JSON phần thưởng không hợp lệ: dữ liệu sai định dạng.";
+  if (message.includes("safe integer")) return "JSON phần thưởng không hợp lệ: số không hợp lệ.";
+  if (message.includes("invalid")) return "JSON phần thưởng không hợp lệ.";
+  if (message.includes("not found")) return "Không tìm thấy quy tắc thưởng đấu trường.";
+  if (message.includes("season_id")) return "Cần chọn mùa.";
+  if (message.includes("tier")) return "Cần nhập bậc thưởng.";
   return fallback;
 }

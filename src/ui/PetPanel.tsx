@@ -17,7 +17,7 @@ export function PetPanel() {
   const refresh = () => {
     void getPetsMe()
       .then((response) => setPets(response.pets))
-      .catch(() => addWarning("Pet load failed."));
+      .catch(() => addWarning("Tải thú cưng thất bại."));
   };
 
   const equip = (petId: string) => {
@@ -26,7 +26,7 @@ export function PetPanel() {
         setPets(response.pets);
         setPlayer(response.player);
       })
-      .catch(() => addWarning("Pet equip failed."));
+      .catch(() => addWarning("Trang bị thú cưng thất bại."));
   };
 
   const unequip = () => {
@@ -35,7 +35,7 @@ export function PetPanel() {
         setPets(response.pets);
         setPlayer(response.player);
       })
-      .catch(() => addWarning("Pet unequip failed."));
+      .catch(() => addWarning("Gỡ thú cưng thất bại."));
   };
 
   const addExp = (petId: string) => {
@@ -44,23 +44,23 @@ export function PetPanel() {
         setPets(response.pets);
         setPlayer(response.player);
       })
-      .catch(() => addWarning("Pet exp save failed."));
+      .catch(() => addWarning("Lưu kinh nghiệm thú cưng thất bại."));
   };
 
   return (
-    <section className="pet-panel" aria-label="Pets">
+    <section className="pet-panel" aria-label="Thú cưng">
       <header>
-        <h2>Pets</h2>
-        <button type="button" onClick={refresh}>Refresh</button>
+        <h2>Thú cưng</h2>
+        <button type="button" onClick={refresh}>Làm mới</button>
       </header>
       {activePet && activeDefinition && (
         <div className="pet-active">
           <strong>{activeDefinition.icon} {activeDefinition.name}</strong>
-          <span>Active · Lv {activePet.level}</span>
+          <span>Đang dùng - Cấp {activePet.level}</span>
           <small>
-            Bonus atk {activeBonus?.attack ?? 0}, def {activeBonus?.defense ?? 0}, hp {activeBonus?.maxHp ?? 0}
+            Cộng công {activeBonus?.attack ?? 0}, thủ {activeBonus?.defense ?? 0}, máu {activeBonus?.maxHp ?? 0}
           </small>
-          <button type="button" onClick={unequip}>Unequip</button>
+          <button type="button" onClick={unequip}>Gỡ</button>
         </div>
       )}
       <div className="pet-list">
@@ -70,12 +70,12 @@ export function PetPanel() {
           return (
             <article key={pet.petId} data-active={pet.active}>
               <strong>{definition.icon} {definition.name}</strong>
-              <span>{definition.rarity} · {definition.type}</span>
-              <small>Lv {pet.level} · EXP {pet.exp}</small>
+              <span>{definition.rarity} - {definition.type}</span>
+              <small>Cấp {pet.level} - Kinh nghiệm {pet.exp}</small>
               <p>{definition.description}</p>
               <div>
-                <button type="button" disabled={pet.active} onClick={() => equip(pet.petId)}>Equip</button>
-                <button type="button" onClick={() => addExp(pet.petId)}>+EXP</button>
+                <button type="button" disabled={pet.active} onClick={() => equip(pet.petId)}>Trang bị</button>
+                <button type="button" onClick={() => addExp(pet.petId)}>+Kinh nghiệm</button>
               </div>
             </article>
           );

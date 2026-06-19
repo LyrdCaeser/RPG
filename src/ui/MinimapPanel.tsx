@@ -13,7 +13,7 @@ export function MinimapPanel() {
   if (!minimap) return null;
 
   return (
-    <section className="minimap-panel" aria-label="Minimap">
+    <section className="minimap-panel" aria-label="Bản đồ nhỏ">
       <header>
         <h2>{minimap.mapName}</h2>
         <span>{minimap.mapType}</span>
@@ -21,7 +21,7 @@ export function MinimapPanel() {
       <div className="minimap-canvas">
         <span
           className="minimap-marker"
-          title="Player"
+          title="Người chơi"
           style={{
             left: `${(minimap.player.x / minimap.width) * 100}%`,
             top: `${(minimap.player.y / minimap.height) * 100}%`,
@@ -44,8 +44,8 @@ export function MinimapPanel() {
       </div>
       <footer>
         <span>NPC</span>
-        <span>Enemy</span>
-        <span>Portal</span>
+        <span>Kẻ địch</span>
+        <span>Cổng</span>
       </footer>
     </section>
   );

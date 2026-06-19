@@ -20,7 +20,7 @@ export function CraftingPanel() {
   useEffect(() => {
     void getCraftingRecipes()
       .then((response) => setRecipes(response.recipes))
-      .catch(() => addWarning("Crafting recipes unavailable."));
+      .catch(() => addWarning("Không tải được công thức chế tạo."));
   }, [addWarning]);
 
   if (!player) return null;
@@ -29,29 +29,29 @@ export function CraftingPanel() {
   const craft = () => {
     if (!selected) return;
     if (player.level < selected.requiredLevel) {
-      addWarning("Level too low.");
+      addWarning("Cấp quá thấp.");
       return;
     }
     if (player.gold < selected.requiredGold) {
-      addWarning("Not enough gold.");
+      addWarning("Không đủ vàng.");
       return;
     }
     if (!hasMaterials(selected)) {
-      addWarning("Not enough materials.");
+      addWarning("Không đủ nguyên liệu.");
       return;
     }
     void craftRecipe(selected.recipeId, player)
       .then((response) => {
         setPlayer(response.player);
         setInventorySnapshot(response);
-        setResult(response.success ? `Crafted ${response.outputItemId}.` : "Craft failed.");
+        setResult(response.success ? `Đã chế tạo ${response.outputItemId}.` : "Chế tạo thất bại.");
         if (response.success && response.outputItemId) {
           void saveAchievementProgress({ targetType: "craft_item", targetValue: response.outputItemId, amount: 1 })
             .then((achievementResponse) => setAchievements(achievementResponse.achievements))
-            .catch(() => addWarning("Achievement progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ thành tựu thất bại."));
           void saveCollectionProgress({ category: "items", entryId: response.outputItemId, amount: response.outputQuantity ?? 1 })
             .then((collectionResponse) => setCollections(collectionResponse.collections, collectionResponse.claimedSetIds))
-            .catch(() => addWarning("Collection progress save failed."));
+            .catch(() => addWarning("Lưu tiến độ bộ sưu tập thất bại."));
           gameEvents.emit("quest:objective", {
             type: "collect_item",
             targetId: response.outputItemId,
@@ -60,7 +60,7 @@ export function CraftingPanel() {
           });
         }
       })
-      .catch((error) => addWarning(error instanceof Error ? error.message : "Craft failed."));
+      .catch((error) => addWarning(error instanceof Error ? error.message : "Chế tạo thất bại."));
   };
 
   function hasMaterials(recipe: CraftingRecipeDefinition) {
@@ -71,10 +71,10 @@ export function CraftingPanel() {
   }
 
   return (
-    <section className="crafting-panel" aria-label="Crafting">
+    <section className="crafting-panel" aria-label="Chế tạo">
       <header>
-        <h2>Crafting</h2>
-        <span>{player.gold} gold</span>
+        <h2>Chế tạo</h2>
+        <span>{player.gold} vàng</span>
       </header>
       <div className="crafting-list">
         {recipes.map((recipe) => {
@@ -90,7 +90,7 @@ export function CraftingPanel() {
       {selected && (
         <div className="crafting-detail">
           <strong>{findRuntimeItemDefinition(selected.outputItemId)?.name ?? selected.outputItemId} x{selected.outputQuantity}</strong>
-          <span>Level {selected.requiredLevel} · {selected.requiredGold} gold</span>
+          <span>Cấp {selected.requiredLevel} - {selected.requiredGold} vàng</span>
           <ul>
             {selected.requiredMaterials.map((material) => {
               const owned = inventory.find((item) => item.itemId === material.itemId)?.quantity ?? 0;
@@ -101,7 +101,7 @@ export function CraftingPanel() {
               );
             })}
           </ul>
-          <button type="button" onClick={craft}>Craft</button>
+          <button type="button" onClick={craft}>Chế tạo</button>
           {result && <em>{result}</em>}
         </div>
       )}

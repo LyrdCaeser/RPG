@@ -63,7 +63,7 @@ export function AdminPvpOperationsPanel() {
         setLoaded(true);
       })
       .catch((caught) => {
-        const message = adminPvpOperationsWarning(caught, "PvP operations refresh failed.");
+        const message = adminPvpOperationsWarning(caught, "Làm mới vận hành đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -71,9 +71,9 @@ export function AdminPvpOperationsPanel() {
   }
 
   function runCancel(kind: "queue" | "ranked" | "duel", id: string) {
-    const reason = window.prompt("Cancel reason");
+    const reason = window.prompt("Lý do hủy");
     if (!reason?.trim()) {
-      addWarning("Cancel reason is required.");
+      addWarning("Cần nhập lý do hủy.");
       return;
     }
     setLoading(true);
@@ -86,35 +86,35 @@ export function AdminPvpOperationsPanel() {
 
     void request
       .then(() => refreshDashboard())
-      .then(() => addNotice("PvP cancel succeeded."))
-      .catch((caught) => addWarning(adminPvpOperationsWarning(caught, "PvP cancel failed.")))
+      .then(() => addNotice("Đã hủy bản ghi đấu trường."))
+      .catch((caught) => addWarning(adminPvpOperationsWarning(caught, "Hủy bản ghi đấu trường thất bại.")))
       .finally(() => setLoading(false));
   }
 
   const cards = overview
     ? [
-        ["active ranked queue", overview.activeRankedQueueCount],
-        ["matched ranked queue", overview.matchedRankedQueueCount],
-        ["active ranked matches", overview.activeRankedMatches],
-        ["completed ranked matches", overview.completedRankedMatches],
-        ["active duel matches", overview.activeDuelMatches],
-        ["completed duel matches", overview.completedDuelMatches],
-        ["PvP profiles", overview.totalPvpProfiles],
-        ["shop purchases", overview.totalPvpShopPurchases],
-        ["season reward claims", overview.totalSeasonRewardClaims],
-        ["active season", overview.currentActiveSeason?.name ?? "None"]
+        ["hàng đợi xếp hạng đang chờ", overview.activeRankedQueueCount],
+        ["hàng đợi xếp hạng đã ghép", overview.matchedRankedQueueCount],
+        ["trận xếp hạng đang chạy", overview.activeRankedMatches],
+        ["trận xếp hạng đã xong", overview.completedRankedMatches],
+        ["trận thách đấu đang chạy", overview.activeDuelMatches],
+        ["trận thách đấu đã xong", overview.completedDuelMatches],
+        ["hồ sơ đấu trường", overview.totalPvpProfiles],
+        ["lượt mua cửa hàng", overview.totalPvpShopPurchases],
+        ["lượt nhận thưởng mùa", overview.totalSeasonRewardClaims],
+        ["mùa đang hoạt động", overview.currentActiveSeason?.name ?? "Không có"]
       ]
     : [];
 
   return (
     <div className="admin-pvp-operations">
       <div className="admin-table-header">
-        <h3>PvP Operations</h3>
+        <h3>Vận hành đấu trường</h3>
         <button type="button" onClick={refreshDashboard} disabled={loading}>
-          Refresh
+          Làm mới
         </button>
       </div>
-      {loading ? <span className="admin-loading">Loading</span> : null}
+      {loading ? <span className="admin-loading">Đang tải</span> : null}
       {error ? <div className="admin-denied">{error}</div> : null}
 
       <section className="admin-dashboard admin-pvp-operation-cards">
@@ -126,102 +126,102 @@ export function AdminPvpOperationsPanel() {
         ))}
       </section>
 
-      <MonitorSection title="Ranked Queue">
-        {!loaded ? null : queue.length === 0 ? <p>No ranked queue rows recorded.</p> : null}
+      <MonitorSection title="Hàng đợi xếp hạng">
+        {!loaded ? null : queue.length === 0 ? <p>Chưa có hàng đợi xếp hạng trong cơ sở dữ liệu.</p> : null}
         {queue.map((entry) => (
           <article key={entry.queueId}>
             <strong>{entry.player.displayName}</strong>
             <span>{entry.player.playerId}</span>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(entry.player.playerId)}>
-              Open Profile
+              Mở hồ sơ
             </button>
             <span>{entry.state}</span>
-            <span>Rating {entry.rating}</span>
-            <span>{entry.matchId ? `Match ${entry.matchId}` : "No match"}</span>
-            <span>Queued {formatDate(entry.queuedAt)}</span>
-            <span>Updated {formatDate(entry.updatedAt)}</span>
+            <span>Điểm hạng {entry.rating}</span>
+            <span>{entry.matchId ? `Trận ${entry.matchId}` : "Chưa có trận"}</span>
+            <span>Vào hàng đợi {formatDate(entry.queuedAt)}</span>
+            <span>Cập nhật {formatDate(entry.updatedAt)}</span>
             {isQueueCancellable(entry) ? (
               <button type="button" onClick={() => runCancel("queue", entry.queueId)} disabled={loading}>
-                Cancel
+                Hủy
               </button>
             ) : (
-              <span>Closed</span>
+              <span>Đã đóng</span>
             )}
           </article>
         ))}
       </MonitorSection>
 
-      <MonitorSection title="Ranked Matches">
-        {!loaded ? null : rankedMatches.length === 0 ? <p>No ranked matches recorded.</p> : null}
+      <MonitorSection title="Trận xếp hạng">
+        {!loaded ? null : rankedMatches.length === 0 ? <p>Chưa có trận xếp hạng trong cơ sở dữ liệu.</p> : null}
         {rankedMatches.map((match) => (
           <article key={match.matchId}>
             <strong>{match.state}</strong>
             <span>{match.playerA.displayName} vs {match.playerB.displayName}</span>
             <span>{match.playerA.playerId} / {match.playerB.playerId}</span>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(match.playerA.playerId)}>
-              Open A Profile
+              Mở hồ sơ A
             </button>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(match.playerB.playerId)}>
-              Open B Profile
+              Mở hồ sơ B
             </button>
             <span>{match.playerARating} - {match.playerBRating}</span>
-            <span>{match.resultRecorded ? "Result recorded" : "No result"}</span>
+            <span>{match.resultRecorded ? "Đã ghi kết quả" : "Chưa có kết quả"}</span>
             <span>{match.mapId}</span>
-            <span>Created {formatDate(match.createdAt)}</span>
-            <span>Updated {formatDate(match.updatedAt)}</span>
+            <span>Tạo lúc {formatDate(match.createdAt)}</span>
+            <span>Cập nhật {formatDate(match.updatedAt)}</span>
             {isRankedMatchCancellable(match) ? (
               <button type="button" onClick={() => runCancel("ranked", match.matchId)} disabled={loading}>
-                Cancel
+                Hủy
               </button>
             ) : (
-              <span>Closed</span>
+              <span>Đã đóng</span>
             )}
           </article>
         ))}
       </MonitorSection>
 
-      <MonitorSection title="Duel Matches">
-        {!loaded ? null : duelMatches.length === 0 ? <p>No duel matches recorded.</p> : null}
+      <MonitorSection title="Trận thách đấu">
+        {!loaded ? null : duelMatches.length === 0 ? <p>Chưa có trận thách đấu trong cơ sở dữ liệu.</p> : null}
         {duelMatches.map((match) => (
           <article key={match.matchId}>
             <strong>{match.state}</strong>
             <span>{match.playerA.displayName} vs {match.playerB.displayName}</span>
             <span>{match.playerA.playerId} / {match.playerB.playerId}</span>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(match.playerA.playerId)}>
-              Open A Profile
+              Mở hồ sơ A
             </button>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(match.playerB.playerId)}>
-              Open B Profile
+              Mở hồ sơ B
             </button>
-            <span>{match.challengeId ? `Challenge ${match.challengeId}` : "No challenge"}</span>
-            <span>{match.resultRecorded ? "Result recorded" : "No result"}</span>
+            <span>{match.challengeId ? `Lời thách đấu ${match.challengeId}` : "Không có lời thách đấu"}</span>
+            <span>{match.resultRecorded ? "Đã ghi kết quả" : "Chưa có kết quả"}</span>
             <span>{match.mapId}</span>
-            <span>Created {formatDate(match.createdAt)}</span>
-            <span>Updated {formatDate(match.updatedAt)}</span>
+            <span>Tạo lúc {formatDate(match.createdAt)}</span>
+            <span>Cập nhật {formatDate(match.updatedAt)}</span>
             {isDuelMatchCancellable(match) ? (
               <button type="button" onClick={() => runCancel("duel", match.matchId)} disabled={loading}>
-                Cancel
+                Hủy
               </button>
             ) : (
-              <span>Closed</span>
+              <span>Đã đóng</span>
             )}
           </article>
         ))}
       </MonitorSection>
 
-      <MonitorSection title="PvP Events">
-        {!loaded ? null : events.length === 0 ? <p>No PvP events recorded.</p> : null}
+      <MonitorSection title="Sự kiện đấu trường">
+        {!loaded ? null : events.length === 0 ? <p>Chưa có sự kiện đấu trường trong cơ sở dữ liệu.</p> : null}
         {events.map((event) => (
           <article key={`${event.eventSource}-${event.createdAt}-${event.eventType}`}>
             <strong>{event.eventType}</strong>
             <span>{event.eventSource}</span>
-            <span>{event.playerId ? `Player ${event.playerId}` : "No player"}</span>
+            <span>{event.playerId ? `Người chơi ${event.playerId}` : "Không có người chơi"}</span>
             {event.playerId ? (
               <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(event.playerId!)}>
-                Open Profile
+                Mở hồ sơ
               </button>
             ) : null}
-            <span>{event.adminId ? `Admin ${event.adminId}` : "No admin"}</span>
+            <span>{event.adminId ? `Quản trị ${event.adminId}` : "Không có quản trị"}</span>
             <span>{formatDate(event.createdAt)}</span>
             <code>{JSON.stringify(event.metadata)}</code>
           </article>
@@ -269,11 +269,11 @@ function adminPvpOperationsWarning(error: unknown, defaultMessage: string) {
     message.includes("connection timeout") ||
     message.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (message.includes("reason")) return "Cancel reason is required.";
-  if (message.includes("completed")) return "Completed PvP records cannot be cancelled.";
-  if (message.includes("not found")) return "PvP operation record was not found.";
-  if (message.includes("cannot be cancelled")) return "PvP operation cannot be cancelled.";
+  if (message.includes("reason")) return "Cần nhập lý do hủy.";
+  if (message.includes("completed")) return "Không thể hủy bản ghi đấu trường đã hoàn tất.";
+  if (message.includes("not found")) return "Không tìm thấy bản ghi vận hành đấu trường.";
+  if (message.includes("cannot be cancelled")) return "Không thể hủy bản ghi vận hành đấu trường này.";
   return defaultMessage;
 }

@@ -30,14 +30,14 @@ import { GuildStoragePanel } from "./guild/GuildStoragePanel";
 type GuildTab = "my" | "quests" | "bosses" | "leaderboard" | "storage" | "search" | "applications" | "invites";
 
 const tabs: { id: GuildTab; label: string }[] = [
-  { id: "my", label: "My Guild" },
-  { id: "quests", label: "Quests" },
-  { id: "bosses", label: "Bosses" },
-  { id: "leaderboard", label: "Ranks" },
-  { id: "storage", label: "Storage" },
-  { id: "search", label: "Search" },
-  { id: "applications", label: "Applications" },
-  { id: "invites", label: "Invites" }
+  { id: "my", label: "Bang hội của tôi" },
+  { id: "quests", label: "Nhiệm vụ" },
+  { id: "bosses", label: "Boss" },
+  { id: "leaderboard", label: "Xếp hạng" },
+  { id: "storage", label: "Kho" },
+  { id: "search", label: "Tìm kiếm" },
+  { id: "applications", label: "Đơn xin" },
+  { id: "invites", label: "Lời mời" }
 ];
 
 export function GuildPanel() {
@@ -85,8 +85,8 @@ export function GuildPanel() {
       .catch(() => {
         setGuild(undefined);
         setStatus("unavailable");
-        setMessage("Guild load failed.");
-        addWarning("Guild load failed.");
+        setMessage("Không tải được bang hội.");
+        addWarning("Không tải được bang hội.");
       });
   }
 
@@ -120,26 +120,26 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("duplicate")) addWarning("Duplicate guild name or tag.");
-        else if (text.includes("already")) addWarning("Already in guild.");
-        else addWarning("Guild create failed.");
+        if (text.includes("duplicate")) addWarning("Tên hoặc thẻ bang hội bị trùng.");
+        else if (text.includes("already")) addWarning("Bạn đã ở trong bang hội.");
+        else addWarning("Tạo bang hội thất bại.");
       });
   }
 
   function submitSearch() {
     void searchGuilds(search)
       .then((response) => setResults(response.guilds))
-      .catch(() => addWarning("Guild search failed."));
+      .catch(() => addWarning("Tìm bang hội thất bại."));
   }
 
   function apply(guildId: string) {
     void applyToGuild(guildId)
-      .then(() => addWarning("Guild application submitted."))
+      .then(() => addWarning("Đã gửi đơn xin vào bang hội."))
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("duplicate")) addWarning("Duplicate application/invite.");
-        else if (text.includes("already")) addWarning("Already in guild.");
-        else addWarning("Guild apply failed.");
+        if (text.includes("duplicate")) addWarning("Đơn xin hoặc lời mời bị trùng.");
+        else if (text.includes("already")) addWarning("Bạn đã ở trong bang hội.");
+        else addWarning("Xin vào bang hội thất bại.");
       });
   }
 
@@ -151,10 +151,10 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else if (text.includes("duplicate")) addWarning("Duplicate application/invite.");
-        else if (text.includes("already")) addWarning("Already in guild.");
-        else addWarning("Guild invite failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else if (text.includes("duplicate")) addWarning("Đơn xin hoặc lời mời bị trùng.");
+        else if (text.includes("already")) addWarning("Người chơi đã ở trong bang hội.");
+        else addWarning("Mời vào bang hội thất bại.");
       });
   }
 
@@ -166,9 +166,9 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else if (text.includes("already")) addWarning("Already in guild.");
-        else addWarning("Application accept/reject failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else if (text.includes("already")) addWarning("Người chơi đã ở trong bang hội.");
+        else addWarning("Chấp nhận/từ chối đơn thất bại.");
       });
   }
 
@@ -177,8 +177,8 @@ export function GuildPanel() {
       .then((response) => setApplications(response.applications))
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Application accept/reject failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Chấp nhận/từ chối đơn thất bại.");
       });
   }
 
@@ -191,15 +191,15 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("already")) addWarning("Already in guild.");
-        else addWarning("Guild invite accept/reject failed.");
+        if (text.includes("already")) addWarning("Bạn đã ở trong bang hội.");
+        else addWarning("Chấp nhận/từ chối lời mời thất bại.");
       });
   }
 
   function rejectInvite(inviteId: string) {
     void rejectGuildInvite(inviteId)
       .then((response) => setInvites(response.invites))
-      .catch(() => addWarning("Guild invite accept/reject failed."));
+      .catch(() => addWarning("Chấp nhận/từ chối lời mời thất bại."));
   }
 
   function submitLeave() {
@@ -207,9 +207,9 @@ export function GuildPanel() {
       .then(() => {
         setGuild(undefined);
         setStatus("no_guild");
-        setMessage("No guild.");
+        setMessage("Chưa có bang hội.");
       })
-      .catch(() => addWarning("Guild leave failed."));
+      .catch(() => addWarning("Rời bang hội thất bại."));
   }
 
   function submitNotice() {
@@ -222,8 +222,8 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Notice update failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Cập nhật thông báo thất bại.");
       });
   }
 
@@ -234,8 +234,8 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Member kick failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Trục xuất thành viên thất bại.");
       });
   }
 
@@ -246,8 +246,8 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Promote failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Thăng chức thất bại.");
       });
   }
 
@@ -258,8 +258,8 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Demote failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Giáng chức thất bại.");
       });
   }
 
@@ -271,8 +271,8 @@ export function GuildPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("permission")) addWarning("No permission.");
-        else addWarning("Transfer leader failed.");
+        if (text.includes("permission")) addWarning("Không có quyền.");
+        else addWarning("Chuyển thủ lĩnh thất bại.");
       });
   }
 
@@ -280,22 +280,22 @@ export function GuildPanel() {
   const canManage = permissions.includes("invite_member") || permissions.includes("accept_application");
 
   return (
-    <section className="guild-panel" aria-label="Guild">
+    <section className="guild-panel" aria-label="Bang hội">
       <header>
-        <h2>Guild</h2>
+        <h2>Bang hội</h2>
         <div>
-          <button type="button" onClick={() => void refreshAll()}>Refresh</button>
-          <button type="button" onClick={() => setOpen(false)}>Close</button>
+          <button type="button" onClick={() => void refreshAll()}>Làm mới</button>
+          <button type="button" onClick={() => setOpen(false)}>Đóng</button>
         </div>
       </header>
-      <nav className="guild-tabs" aria-label="Guild tabs">
+      <nav className="guild-tabs" aria-label="Thẻ bang hội">
         {tabs.map((tab) => (
           <button key={tab.id} type="button" data-active={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}>
             {tab.label}
           </button>
         ))}
       </nav>
-      {(status !== "idle" || message) && <p className="guild-warning">{message || (status === "no_guild" ? "No guild." : "Guild data unavailable.")}</p>}
+      {(status !== "idle" || message) && <p className="guild-warning">{message || (status === "no_guild" ? "Chưa có bang hội." : "Dữ liệu bang hội không khả dụng.")}</p>}
 
       {activeTab === "my" && (
         <div className="guild-content">
@@ -303,47 +303,47 @@ export function GuildPanel() {
             <article className="guild-card">
               <header>
                 <strong>[{guild.tag}] {guild.name}</strong>
-                <span>Lv {guild.level} - {guild.exp} EXP</span>
+                <span>Cấp {guild.level} - {guild.exp} kinh nghiệm</span>
               </header>
-              <p>{guild.description || "No description."}</p>
-              <p>{guild.notice || "No notice."}</p>
+              <p>{guild.description || "Chưa có mô tả."}</p>
+              <p>{guild.notice || "Chưa có thông báo."}</p>
               {permissions.includes("edit_notice") && (
                 <div className="guild-form">
-                  <textarea value={noticeDraft} onChange={(event) => setNoticeDraft(event.target.value)} aria-label="Guild notice" />
-                  <button type="button" onClick={submitNotice}>Update Notice</button>
+                  <textarea value={noticeDraft} onChange={(event) => setNoticeDraft(event.target.value)} aria-label="Thông báo bang hội" />
+                  <button type="button" onClick={submitNotice}>Cập nhật thông báo</button>
                 </div>
               )}
-              <span>{guild.memberCount}/{guild.maxMembers} members - {formatMode(guild.joinMode)}</span>
-              <button type="button" onClick={() => gameEvents.emit("chat:open-guild", undefined)}>Open Guild Chat</button>
-              <button type="button" onClick={submitLeave}>Leave Guild</button>
+              <span>{guild.memberCount}/{guild.maxMembers} thành viên - {formatMode(guild.joinMode)}</span>
+              <button type="button" onClick={() => gameEvents.emit("chat:open-guild", undefined)}>Mở chat bang hội</button>
+              <button type="button" onClick={submitLeave}>Rời bang hội</button>
               {canManage && (
                 <div className="guild-search">
-                  <input value={inviteTarget} onChange={(event) => setInviteTarget(event.target.value)} aria-label="Player ID or username" />
-                  <button type="button" disabled={!inviteTarget.trim()} onClick={submitInvite}>Invite</button>
+                  <input value={inviteTarget} onChange={(event) => setInviteTarget(event.target.value)} aria-label="ID người chơi hoặc tên đăng nhập" />
+                  <button type="button" disabled={!inviteTarget.trim()} onClick={submitInvite}>Mời</button>
                 </div>
               )}
               <div className="guild-member-list">
                 {guild.members.map((member) => (
                   <article key={member.user.userId}>
                     <strong>{member.user.displayName}</strong>
-                    <span>{member.role} - Lv {member.user.level} {member.user.classId ?? "unclassed"}</span>
+                    <span>{formatRole(member.role)} - Cấp {member.user.level} {formatClassLabel(member.user.classId)}</span>
                     <small>CP {member.user.combatPower} - contribution {member.contribution}</small>
                     {member.user.userId !== account?.id && (
                       <div className="guild-member-actions">
                         {canPromote(myRole, member.role, "officer", permissions) && (
-                          <button type="button" onClick={() => promoteMember(member.user.userId, "officer")}>Officer</button>
+                          <button type="button" onClick={() => promoteMember(member.user.userId, "officer")}>Sĩ quan</button>
                         )}
                         {canPromote(myRole, member.role, "deputy", permissions) && (
-                          <button type="button" onClick={() => promoteMember(member.user.userId, "deputy")}>Deputy</button>
+                          <button type="button" onClick={() => promoteMember(member.user.userId, "deputy")}>Phó bang</button>
                         )}
                         {canDemote(myRole, member.role, permissions) && (
-                          <button type="button" onClick={() => demoteMember(member.user.userId)}>Demote</button>
+                          <button type="button" onClick={() => demoteMember(member.user.userId)}>Giáng chức</button>
                         )}
                         {canKick(myRole, member.role, permissions) && (
-                          <button type="button" onClick={() => kickMember(member.user.userId)}>Kick</button>
+                          <button type="button" onClick={() => kickMember(member.user.userId)}>Trục xuất</button>
                         )}
                         {myRole === "leader" && member.role !== "leader" && (
-                          <button type="button" onClick={() => transferLeader(member.user.userId)}>Leader</button>
+                          <button type="button" onClick={() => transferLeader(member.user.userId)}>Thủ lĩnh</button>
                         )}
                       </div>
                     )}
@@ -353,12 +353,12 @@ export function GuildPanel() {
             </article>
           ) : (
             <article className="guild-card">
-              <strong>No guild</strong>
+              <strong>Chưa có bang hội</strong>
               <div className="guild-form">
-                <input value={createName} onChange={(event) => setCreateName(event.target.value)} aria-label="Guild name" />
+                <input value={createName} onChange={(event) => setCreateName(event.target.value)} aria-label="Tên bang hội" />
                 <input value={createTag} onChange={(event) => setCreateTag(event.target.value.toUpperCase())} aria-label="Tag" maxLength={5} />
-                <textarea value={createDescription} onChange={(event) => setCreateDescription(event.target.value)} aria-label="Description" />
-                <button type="button" disabled={!createName.trim() || !createTag.trim()} onClick={submitCreate}>Create Guild</button>
+                <textarea value={createDescription} onChange={(event) => setCreateDescription(event.target.value)} aria-label="Mô tả" />
+                <button type="button" disabled={!createName.trim() || !createTag.trim()} onClick={submitCreate}>Tạo bang hội</button>
               </div>
             </article>
           )}
@@ -374,20 +374,20 @@ export function GuildPanel() {
               onKeyDown={(event) => {
                 if (event.key === "Enter") submitSearch();
               }}
-              aria-label="Guild name or tag"
+              aria-label="Tên hoặc thẻ bang hội"
             />
-            <button type="button" onClick={submitSearch}>Search</button>
+            <button type="button" onClick={submitSearch}>Tìm kiếm</button>
           </div>
           {results.map((result) => (
             <article key={result.guildId} className="guild-card">
               <header>
                 <strong>[{result.tag}] {result.name}</strong>
-                <span>Lv {result.level}</span>
+                <span>Cấp {result.level}</span>
               </header>
-              <p>{result.description || "No description."}</p>
-              <span>{result.memberCount}/{result.maxMembers} members - {formatMode(result.joinMode)}</span>
+              <p>{result.description || "Chưa có mô tả."}</p>
+              <span>{result.memberCount}/{result.maxMembers} thành viên - {formatMode(result.joinMode)}</span>
               <button type="button" disabled={result.joinMode !== "application"} onClick={() => apply(result.guildId)}>
-                {result.joinMode === "application" ? "Apply" : formatMode(result.joinMode)}
+                {result.joinMode === "application" ? "Xin vào" : formatMode(result.joinMode)}
               </button>
             </article>
           ))}
@@ -396,40 +396,40 @@ export function GuildPanel() {
 
       {activeTab === "storage" && (
         <div className="guild-content">
-          {guild ? <GuildStoragePanel canWithdraw={permissions.includes("manage_storage")} /> : <p className="guild-warning">No guild.</p>}
+          {guild ? <GuildStoragePanel canWithdraw={permissions.includes("manage_storage")} /> : <p className="guild-warning">Chưa có bang hội.</p>}
         </div>
       )}
 
       {activeTab === "quests" && (
         <div className="guild-content">
-          {guild ? <GuildQuestPanel /> : <p className="guild-warning">No guild.</p>}
+          {guild ? <GuildQuestPanel /> : <p className="guild-warning">Chưa có bang hội.</p>}
         </div>
       )}
 
       {activeTab === "bosses" && (
         <div className="guild-content">
-          {guild ? <GuildBossPanel canSummon={permissions.includes("start_guild_event")} /> : <p className="guild-warning">No guild.</p>}
+          {guild ? <GuildBossPanel canSummon={permissions.includes("start_guild_event")} /> : <p className="guild-warning">Chưa có bang hội.</p>}
         </div>
       )}
 
       {activeTab === "leaderboard" && (
         <div className="guild-content">
-          {guild ? <GuildLeaderboardPanel /> : <p className="guild-warning">No guild.</p>}
+          {guild ? <GuildLeaderboardPanel /> : <p className="guild-warning">Chưa có bang hội.</p>}
         </div>
       )}
 
       {activeTab === "applications" && (
         <div className="guild-content">
-          {!canManage && <p className="guild-warning">No permission.</p>}
-          {canManage && applications.length === 0 && <p className="guild-warning">No pending applications.</p>}
+          {!canManage && <p className="guild-warning">Không có quyền.</p>}
+          {canManage && applications.length === 0 && <p className="guild-warning">Không có đơn xin đang chờ.</p>}
           {canManage && applications.map((application) => (
             <article key={application.id} className="guild-card">
               <strong>{application.applicant.displayName}</strong>
-              <span>Lv {application.applicant.level} {application.applicant.classId ?? "unclassed"} - CP {application.applicant.combatPower}</span>
-              <p>{application.message || "No message."}</p>
+              <span>Cấp {application.applicant.level} {formatClassLabel(application.applicant.classId)} - Sức chiến đấu {application.applicant.combatPower}</span>
+              <p>{application.message || "Không có tin nhắn."}</p>
               <div className="guild-search">
-                <button type="button" onClick={() => acceptApplication(application.id)}>Accept</button>
-                <button type="button" onClick={() => rejectApplication(application.id)}>Reject</button>
+                <button type="button" onClick={() => acceptApplication(application.id)}>Chấp nhận</button>
+                <button type="button" onClick={() => rejectApplication(application.id)}>Từ chối</button>
               </div>
             </article>
           ))}
@@ -438,14 +438,14 @@ export function GuildPanel() {
 
       {activeTab === "invites" && (
         <div className="guild-content">
-          {invites.length === 0 && <p className="guild-warning">No pending invites.</p>}
+          {invites.length === 0 && <p className="guild-warning">Không có lời mời đang chờ.</p>}
           {invites.map((invite) => (
             <article key={invite.id} className="guild-card">
               <strong>[{invite.guildTag}] {invite.guildName}</strong>
-              <span>From {invite.fromUser.displayName}</span>
+              <span>Từ {invite.fromUser.displayName}</span>
               <div className="guild-search">
-                <button type="button" onClick={() => acceptInvite(invite.id)}>Accept</button>
-                <button type="button" onClick={() => rejectInvite(invite.id)}>Reject</button>
+                <button type="button" onClick={() => acceptInvite(invite.id)}>Chấp nhận</button>
+                <button type="button" onClick={() => rejectInvite(invite.id)}>Từ chối</button>
               </div>
             </article>
           ))}
@@ -456,7 +456,33 @@ export function GuildPanel() {
 }
 
 function formatMode(value: string) {
-  return value.replaceAll("_", " ");
+  const labels: Record<string, string> = {
+    open: "mở",
+    application: "cần duyệt đơn",
+    invite_only: "chỉ nhận lời mời"
+  };
+  return labels[value] ?? value.replaceAll("_", " ");
+}
+
+function formatRole(role: GuildRole) {
+  const labels: Record<GuildRole, string> = {
+    leader: "Thủ lĩnh",
+    deputy: "Phó bang",
+    officer: "Sĩ quan",
+    member: "Thành viên"
+  };
+  return labels[role];
+}
+
+function formatClassLabel(classId?: string) {
+  const labels: Record<string, string> = {
+    warrior: "Chiến binh",
+    mage: "Pháp sư",
+    ranger: "Kiếm sĩ",
+    priest: "Linh mục",
+    assassin: "Sát thủ"
+  };
+  return classId ? labels[classId] ?? classId : "chưa chọn lớp";
 }
 
 function getMyRole(guild: Guild | undefined, userId: string | undefined): GuildRole | undefined {

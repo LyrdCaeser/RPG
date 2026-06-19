@@ -146,15 +146,15 @@ function clampObjectiveCount(value: unknown, objective: QuestObjective) {
 export function questActionLabel(state: QuestState) {
   switch (state) {
     case "available":
-      return "Accept";
+      return "Chấp nhận";
     case "active":
-      return "In Progress";
+      return "Đang làm";
     case "completed":
-      return "Claim";
+      return "Nhận thưởng";
     case "claimed":
-      return "Claimed";
+      return "Đã nhận";
     case "locked":
     default:
-      return "Locked";
+      return "Đã khóa";
   }
 }

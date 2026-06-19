@@ -19,7 +19,7 @@ export function PartyHud() {
         .then((response) => {
           if (mounted) setParty(response.party);
         })
-        .catch(() => addWarning("Party load failed."));
+        .catch(() => addWarning("Tải tổ đội thất bại."));
     }
 
     refresh();
@@ -34,20 +34,20 @@ export function PartyHud() {
   if (!account || !party) return null;
 
   return (
-    <aside className="party-hud" aria-label="Party HUD">
+    <aside className="party-hud" aria-label="HUD tổ đội">
       <header>
-        <strong>Party</strong>
+        <strong>Tổ đội</strong>
         <span>{party.members.length}/{party.maxMembers}</span>
       </header>
       {party.members.map((member) => (
         <article key={member.user.userId} data-leader={member.role === "leader"}>
           <div>
             <strong>{member.user.displayName}{member.role === "leader" ? " *" : ""}</strong>
-            <span>Lv {member.user.level} {member.user.classId ?? "unclassed"}</span>
+            <span>Cấp {member.user.level} {member.user.classId ?? "chưa chọn lớp"}</span>
           </div>
-          <small>{member.mapId ?? "unknown"} - {formatPresence(member.user.onlineStatus)}</small>
-          <Bar label="HP" value={member.hp} max={member.maxHp} />
-          <Bar label="MP" value={member.mp} max={member.maxMp} />
+          <small>{member.mapId ?? "không rõ"} - {formatPresence(member.user.onlineStatus)}</small>
+          <Bar label="Máu" value={member.hp} max={member.maxHp} />
+          <Bar label="Nội lực" value={member.mp} max={member.maxMp} />
         </article>
       ))}
     </aside>
@@ -66,7 +66,7 @@ function Bar({ label, value, max }: { label: string; value?: number; max?: numbe
 }
 
 function formatPresence(status: string) {
-  if (status === "online") return "online";
-  if (status === "offline") return "offline";
-  return "presence pending";
+  if (status === "online") return "trực tuyến";
+  if (status === "offline") return "ngoại tuyến";
+  return "chưa rõ trạng thái";
 }

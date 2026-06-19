@@ -15,7 +15,7 @@ export function ClassSelectPanel() {
   useEffect(() => {
     void getClasses()
       .then((response) => setClasses(response.classes))
-      .catch(() => addWarning("Class list load failed."));
+      .catch(() => addWarning("Không tải được danh sách lớp."));
   }, [addWarning]);
 
   if (!player || player.classId) return null;
@@ -31,17 +31,17 @@ export function ClassSelectPanel() {
         setSkills(response.skills);
         setHotbar(response.hotbar);
       })
-      .catch(() => addWarning("Class selection failed."))
+      .catch(() => addWarning("Không chọn được lớp."))
       .finally(() => setBusy(false));
   };
 
   return (
     <>
       <div className="class-select-backdrop" aria-hidden="true" />
-      <section className="class-select-panel" aria-label="Class selection" role="dialog" aria-modal="true">
+      <section className="class-select-panel" aria-label="Chọn lớp" role="dialog" aria-modal="true">
         <header>
           <h2>Chọn Lớp</h2>
-          <span>Choose your combat style to enter the world.</span>
+          <span>Chọn phong cách chiến đấu để bước vào thế giới.</span>
         </header>
         <div>
           {classes.map((definition) => (

@@ -3,15 +3,15 @@ import type { GuildQuestDefinition } from "./types.js";
 export const guildQuestDefinitions: GuildQuestDefinition[] = [
   {
     guildQuestId: "guild-slime-hunt",
-    title: "Kill 50 Slimes as a Guild",
-    description: "Members work together to clear slime threats from the field.",
+    title: "Bang hội hạ 50 Slime",
+    description: "Các thành viên cùng dọn mối đe dọa slime ngoài đồng.",
     type: "daily_guild_quest",
     objectives: [
       {
         objectiveId: "kill-slimes",
         type: "kill_enemy",
         targetId: "slime-01",
-        label: "Green Slimes defeated",
+        label: "Slime xanh đã hạ",
         requiredCount: 50
       }
     ],
@@ -23,15 +23,15 @@ export const guildQuestDefinitions: GuildQuestDefinition[] = [
   },
   {
     guildQuestId: "guild-herb-gather",
-    title: "Gather 30 Herbs as a Guild",
-    description: "Gather herbs for the guild quartermaster.",
+    title: "Bang hội thu thập 30 thảo dược",
+    description: "Thu thập thảo dược cho quản kho bang hội.",
     type: "daily_guild_quest",
     objectives: [
       {
         objectiveId: "gather-herbs",
         type: "gather_node",
         targetId: "herb",
-        label: "Herb nodes gathered",
+        label: "Điểm thảo dược đã thu thập",
         requiredCount: 30
       }
     ],
@@ -43,15 +43,15 @@ export const guildQuestDefinitions: GuildQuestDefinition[] = [
   },
   {
     guildQuestId: "guild-storage-gold",
-    title: "Deposit 1000 Gold to Guild Storage",
-    description: "Build the guild treasury through member deposits.",
+    title: "Gửi 1000 vàng vào kho bang hội",
+    description: "Xây dựng ngân quỹ bang hội qua đóng góp của thành viên.",
     type: "storage_quest",
     objectives: [
       {
         objectiveId: "deposit-gold",
         type: "storage_gold",
         targetId: "gold",
-        label: "Gold deposited",
+        label: "Vàng đã gửi",
         requiredCount: 1000
       }
     ],
@@ -63,15 +63,15 @@ export const guildQuestDefinitions: GuildQuestDefinition[] = [
   },
   {
     guildQuestId: "guild-dungeon-clear",
-    title: "Clear 1 Dungeon as a Guild",
-    description: "Record a guild dungeon clear as a foundation for future party-guild dungeons.",
+    title: "Bang hội hoàn thành 1 hầm ngục",
+    description: "Ghi nhận một lượt hoàn thành hầm ngục bang hội để chuẩn bị cho nội dung tổ đội sau này.",
     type: "contribution_quest",
     objectives: [
       {
         objectiveId: "clear-ancient-dungeon",
         type: "dungeon_clear",
         targetId: "ancient_dungeon_1",
-        label: "Ancient Dungeon clears",
+        label: "Lượt hoàn thành Hầm Ngục Cổ",
         requiredCount: 1
       }
     ],
@@ -83,15 +83,15 @@ export const guildQuestDefinitions: GuildQuestDefinition[] = [
   },
   {
     guildQuestId: "guild-boss-materials",
-    title: "Prepare Guild Boss Summon Materials",
-    description: "Deposit sentinel cores so the guild can prepare a future boss summon.",
+    title: "Chuẩn bị nguyên liệu triệu hồi boss bang hội",
+    description: "Gửi lõi lính gác để bang hội chuẩn bị triệu hồi boss.",
     type: "boss_unlock_quest",
     objectives: [
       {
         objectiveId: "deposit-sentinel-cores",
         type: "storage_item",
         targetId: "sentinel-core",
-        label: "Sentinel Cores deposited",
+        label: "Lõi lính gác đã gửi",
         requiredCount: 5
       }
     ],

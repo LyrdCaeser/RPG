@@ -44,7 +44,7 @@ export function AdminPvpPenaltyAppealsPanel() {
         }
       })
       .catch((caught) => {
-        const message = adminPvpAppealWarning(caught, "PvP appeal load failed.");
+        const message = adminPvpAppealWarning(caught, "Tải kháng cáo đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -58,7 +58,7 @@ export function AdminPvpPenaltyAppealsPanel() {
     void getAdminPvpPenaltyAppealDetail(appealId)
       .then((response) => setDetail(response.appeal))
       .catch((caught) => {
-        const message = adminPvpAppealWarning(caught, "PvP appeal detail load failed.");
+        const message = adminPvpAppealWarning(caught, "Tải chi tiết kháng cáo đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -76,12 +76,12 @@ export function AdminPvpPenaltyAppealsPanel() {
     if (!detail) return;
     const note =
       action === "review"
-        ? window.prompt("Review note")
+        ? window.prompt("Ghi chú xem xét")
         : action === "approve"
-          ? window.prompt("Approval note. Approving will lift the linked active penalty when valid.")
-          : window.prompt("Rejection note");
+          ? window.prompt("Ghi chú chấp thuận. Chấp thuận sẽ gỡ án phạt đang hoạt động liên kết khi hợp lệ.")
+          : window.prompt("Ghi chú từ chối");
     if ((action === "approve" || action === "reject") && !note?.trim()) {
-      addWarning(action === "approve" ? "Approval note is required." : "Rejection note is required.");
+      addWarning(action === "approve" ? "Cần nhập ghi chú chấp thuận." : "Cần nhập ghi chú từ chối.");
       return;
     }
 
@@ -98,12 +98,12 @@ export function AdminPvpPenaltyAppealsPanel() {
       .then((response) => {
         setAppeals(response.appeals);
         setDetail(response.appeal);
-        addNotice(`PvP appeal ${action} succeeded.`);
+        addNotice(`Đã xử lý kháng cáo đấu trường.`);
         if (action === "approve" || action === "reject") notifyAdminPvpModerationRefresh();
         return loadAppeals(filter).then(() => refreshDetail(response.appeal.appealId));
       })
       .catch((caught) => {
-        const message = adminPvpAppealWarning(caught, `PvP appeal ${action} failed.`);
+        const message = adminPvpAppealWarning(caught, `Xử lý kháng cáo đấu trường thất bại.`);
         setError(message);
         addWarning(message);
       })
@@ -113,28 +113,28 @@ export function AdminPvpPenaltyAppealsPanel() {
   return (
     <div className="admin-pvp-appeals">
       <div className="admin-table-header">
-        <h3>PvP Appeals</h3>
+        <h3>Kháng cáo đấu trường</h3>
         <button type="button" onClick={() => loadAppeals()} disabled={loading}>
-          Refresh
+          Làm mới
         </button>
       </div>
       <div className="admin-actions">
         {filters.map((candidate) => (
           <button type="button" key={candidate} data-active={filter === candidate} onClick={() => setFilter(candidate)}>
-            {candidate}
+            {formatAppealFilter(candidate)}
           </button>
         ))}
       </div>
-      {loading ? <span className="admin-loading">Loading</span> : null}
+      {loading ? <span className="admin-loading">Đang tải</span> : null}
       {error ? <div className="admin-denied">{error}</div> : null}
 
       <div className="admin-pvp-report-layout">
         <section className="admin-table admin-pvp-report-table">
           <div className="admin-table-header">
-            <h3>Appeal List</h3>
+            <h3>Danh sách kháng cáo</h3>
           </div>
           {!loaded ? null : appeals.length === 0 ? (
-            <p>{filter === "all" ? "No PvP penalty appeals recorded." : "No PvP penalty appeals for selected status."}</p>
+            <p>{filter === "all" ? "Chưa có kháng cáo án phạt đấu trường trong cơ sở dữ liệu." : "Không có kháng cáo cho trạng thái đã chọn."}</p>
           ) : null}
           {appeals.map((appeal) => (
             <article key={appeal.appealId} data-revoked={appeal.status === "approved" || appeal.status === "rejected"}>
@@ -145,106 +145,106 @@ export function AdminPvpPenaltyAppealsPanel() {
               <span>{appeal.player.displayName}</span>
               <span>{appeal.player.playerId}</span>
               <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(appeal.player.playerId)}>
-                Open Profile
+                Mở hồ sơ
               </button>
               <span>{appeal.penaltyId}</span>
-              <span>{appeal.penaltyType ?? "Missing linked penalty data"}</span>
-              <span>{appeal.status}</span>
-              <span>Created {formatDate(appeal.createdAt)}</span>
-              <span>Updated {formatDate(appeal.updatedAt)}</span>
+              <span>{appeal.penaltyType ?? "Thiếu dữ liệu án phạt liên kết"}</span>
+              <span>{formatAppealStatus(appeal.status)}</span>
+              <span>Tạo lúc {formatDate(appeal.createdAt)}</span>
+              <span>Cập nhật {formatDate(appeal.updatedAt)}</span>
             </article>
           ))}
         </section>
 
         <section className="admin-pvp-report-detail">
           <div className="admin-table-header">
-            <h3>Appeal Detail</h3>
-            {detailLoading ? <span>Loading</span> : null}
+            <h3>Chi tiết kháng cáo</h3>
+            {detailLoading ? <span>Đang tải</span> : null}
           </div>
-          {!detail && !detailLoading ? <p>Select an appeal.</p> : null}
+          {!detail && !detailLoading ? <p>Chọn một kháng cáo.</p> : null}
           {detail ? (
             <>
-              <InfoBlock title="Appeal">
+              <InfoBlock title="Kháng cáo">
                 <span>{detail.appealId}</span>
-                <span>{detail.status}</span>
+                <span>{formatAppealStatus(detail.status)}</span>
                 <span>{detail.reason}</span>
-                <span>{detail.details || "No details"}</span>
-                <span>Created {formatDate(detail.createdAt)}</span>
-                <span>Updated {formatDate(detail.updatedAt)}</span>
-                {detail.reviewedBy ? <span>Reviewed by {detail.reviewedBy}</span> : null}
-                {detail.reviewedAt ? <span>Reviewed {formatDate(detail.reviewedAt)}</span> : null}
+                <span>{detail.details || "Không có chi tiết"}</span>
+                <span>Tạo lúc {formatDate(detail.createdAt)}</span>
+                <span>Cập nhật {formatDate(detail.updatedAt)}</span>
+                {detail.reviewedBy ? <span>Xem xét bởi {detail.reviewedBy}</span> : null}
+                {detail.reviewedAt ? <span>Đã xem xét {formatDate(detail.reviewedAt)}</span> : null}
                 {detail.resolutionNote ? <span>{detail.resolutionNote}</span> : null}
               </InfoBlock>
 
-              <InfoBlock title="Player">
-                {detail.playerMissing ? <span>Missing player data from database.</span> : null}
+              <InfoBlock title="Người chơi">
+                {detail.playerMissing ? <span>Thiếu dữ liệu người chơi trong cơ sở dữ liệu.</span> : null}
                 <span>{detail.player.displayName}</span>
                 <span>{detail.player.playerId}</span>
                 <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(detail.player.playerId)}>
-                  Open Player Profile
+                  Mở hồ sơ người chơi
                 </button>
               </InfoBlock>
 
-              <InfoBlock title="Linked Penalty">
+              <InfoBlock title="Án phạt liên kết">
                 {detail.penaltyMissing || !detail.penalty ? (
-                  <span>Missing linked penalty data from database.</span>
+                  <span>Thiếu dữ liệu án phạt liên kết trong cơ sở dữ liệu.</span>
                 ) : (
                   <>
                     <strong>{detail.penalty.penaltyType}</strong>
                     <span>{detail.penalty.penaltyId}</span>
                     <span>{detail.penalty.status}</span>
                     <span>{detail.penalty.reason}</span>
-                    <span>{detail.penalty.details || "No details"}</span>
-                    <span>Target {detail.penalty.targetPlayer.displayName}</span>
+                    <span>{detail.penalty.details || "Không có chi tiết"}</span>
+                    <span>Mục tiêu {detail.penalty.targetPlayer.displayName}</span>
                     <span>{detail.penalty.targetPlayer.playerId}</span>
                     <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(detail.penalty!.targetPlayer.playerId)}>
-                      Open Target Profile
+                      Mở hồ sơ mục tiêu
                     </button>
-                    <span>Starts {formatDate(detail.penalty.startsAt)}</span>
+                    <span>Bắt đầu {formatDate(detail.penalty.startsAt)}</span>
                     <span>
                       {detail.penalty.permanent
-                        ? "Permanent"
+                        ? "Vĩnh viễn"
                         : detail.penalty.expiresAt
-                          ? `Expires ${formatDate(detail.penalty.expiresAt)}`
-                          : "No expiry"}
+                          ? `Hết hạn ${formatDate(detail.penalty.expiresAt)}`
+                          : "Không hết hạn"}
                     </span>
-                    {detail.penalty.liftedAt ? <span>Lifted {formatDate(detail.penalty.liftedAt)}</span> : null}
+                    {detail.penalty.liftedAt ? <span>Đã gỡ {formatDate(detail.penalty.liftedAt)}</span> : null}
                     {detail.penalty.liftReason ? <span>{detail.penalty.liftReason}</span> : null}
                   </>
                 )}
               </InfoBlock>
 
-              <InfoBlock title="Actions">
-                <span>Approve lifts the linked active penalty when valid.</span>
+              <InfoBlock title="Hành động">
+                <span>Chấp thuận sẽ gỡ án phạt đang hoạt động liên kết khi hợp lệ.</span>
                 <div className="admin-row-actions">
                   <button type="button" disabled={detailLoading || detail.status !== "open"} onClick={() => runAction("review")}>
-                    Start Review
+                    Bắt đầu xem xét
                   </button>
                   <button
                     type="button"
                     disabled={detailLoading || (detail.status !== "open" && detail.status !== "reviewing")}
                     onClick={() => runAction("approve")}
                   >
-                    Approve
+                    Chấp thuận
                   </button>
                   <button
                     type="button"
                     disabled={detailLoading || (detail.status !== "open" && detail.status !== "reviewing")}
                     onClick={() => runAction("reject")}
                   >
-                    Reject
+                    Từ chối
                   </button>
                 </div>
               </InfoBlock>
 
-              <InfoBlock title="Appeal Timeline">
-                {detail.events.length === 0 ? <span>No appeal events recorded.</span> : null}
+              <InfoBlock title="Dòng thời gian kháng cáo">
+                {detail.events.length === 0 ? <span>Chưa có sự kiện kháng cáo trong cơ sở dữ liệu.</span> : null}
                 <div className="admin-pvp-event-feed">
                   {detail.events.map((event) => (
                     <article key={event.eventId}>
                       <strong>{event.eventType}</strong>
                       <span>{formatDate(event.createdAt)}</span>
-                      {event.actorPlayerId ? <span>Actor {event.actorPlayerId}</span> : null}
+                      {event.actorPlayerId ? <span>Người thực hiện {event.actorPlayerId}</span> : null}
                       <code>{JSON.stringify(event.metadata)}</code>
                     </article>
                   ))}
@@ -279,14 +279,28 @@ function adminPvpAppealWarning(error: unknown, fallback: string) {
     lower.includes("connection timeout") ||
     lower.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
-  if (lower.includes("only open penalty appeals")) return "Only open appeals can move to reviewing.";
-  if (lower.includes("only open or reviewing")) return "Only open or reviewing appeals can be approved or rejected.";
-  if (lower.includes("resolution_note")) return "Approval note is required.";
-  if (lower.includes("rejection_note")) return "Rejection note is required.";
+  if (lower.includes("only open penalty appeals")) return "Chỉ kháng cáo đang mở mới có thể chuyển sang xem xét.";
+  if (lower.includes("only open or reviewing")) return "Chỉ kháng cáo đang mở hoặc đang xem xét mới có thể được chấp thuận hoặc từ chối.";
+  if (lower.includes("resolution_note")) return "Cần nhập ghi chú chấp thuận.";
+  if (lower.includes("rejection_note")) return "Cần nhập ghi chú từ chối.";
   if (message) return message;
   return fallback;
+}
+
+function formatAppealFilter(filter: AppealFilter) {
+  return filter === "all" ? "Tất cả" : formatAppealStatus(filter);
+}
+
+function formatAppealStatus(status: PvPPenaltyAppealStatus) {
+  const labels: Record<PvPPenaltyAppealStatus, string> = {
+    open: "Đang mở",
+    reviewing: "Đang xem xét",
+    approved: "Đã chấp thuận",
+    rejected: "Đã từ chối"
+  };
+  return labels[status] ?? status;
 }
 
 function formatDate(value: string) {

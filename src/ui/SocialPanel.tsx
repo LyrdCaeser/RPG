@@ -19,10 +19,10 @@ import { useGameStore } from "../store/useGameStore";
 type SocialTab = "friends" | "requests" | "search" | "blocked";
 
 const tabs: { id: SocialTab; label: string }[] = [
-  { id: "friends", label: "Friends" },
-  { id: "requests", label: "Requests" },
-  { id: "search", label: "Search" },
-  { id: "blocked", label: "Blocked" }
+  { id: "friends", label: "Bạn bè" },
+  { id: "requests", label: "Lời mời" },
+  { id: "search", label: "Tìm kiếm" },
+  { id: "blocked", label: "Đã chặn" }
 ];
 
 export function SocialPanel() {
@@ -53,7 +53,7 @@ export function SocialPanel() {
   function refreshFriends() {
     return getSocialFriends()
       .then((response) => setFriends(response.friends))
-      .catch(() => addWarning("Friend list load failed."));
+      .catch(() => addWarning("Tải danh sách bạn bè thất bại."));
   }
 
   function refreshRequests() {
@@ -62,13 +62,13 @@ export function SocialPanel() {
         setIncoming(response.incoming);
         setOutgoing(response.outgoing);
       })
-      .catch(() => addWarning("Friend request failed."));
+      .catch(() => addWarning("Tải lời mời kết bạn thất bại."));
   }
 
   function refreshBlocked() {
     return getBlockedPlayers()
       .then((response) => setBlocked(response.blocked))
-      .catch(() => addWarning("Friend list load failed."));
+      .catch(() => addWarning("Tải danh sách chặn thất bại."));
   }
 
   function runSearch() {
@@ -80,7 +80,7 @@ export function SocialPanel() {
     setBusy(true);
     void searchSocialPlayers(trimmed)
       .then((response) => setResults(response.players))
-      .catch(() => addWarning("Player search failed."))
+      .catch(() => addWarning("Tìm người chơi thất bại."))
       .finally(() => setBusy(false));
   }
 
@@ -91,7 +91,7 @@ export function SocialPanel() {
         setOutgoing(response.outgoing);
         return runSearch();
       })
-      .catch(() => addWarning("Friend request failed."));
+      .catch(() => addWarning("Gửi lời mời kết bạn thất bại."));
   }
 
   function acceptRequest(requestId: string) {
@@ -101,7 +101,7 @@ export function SocialPanel() {
         setOutgoing(response.outgoing);
         setFriends(response.friends);
       })
-      .catch(() => addWarning("Accept/reject failed."));
+      .catch(() => addWarning("Chấp nhận/từ chối thất bại."));
   }
 
   function rejectRequest(requestId: string) {
@@ -110,13 +110,13 @@ export function SocialPanel() {
         setIncoming(response.incoming);
         setOutgoing(response.outgoing);
       })
-      .catch(() => addWarning("Accept/reject failed."));
+      .catch(() => addWarning("Chấp nhận/từ chối thất bại."));
   }
 
   function removeFriend(targetUserId: string) {
     void removeSocialFriend(targetUserId)
       .then((response) => setFriends(response.friends))
-      .catch(() => addWarning("Remove friend failed."));
+      .catch(() => addWarning("Xóa bạn thất bại."));
   }
 
   function blockPlayer(targetUserId: string) {
@@ -128,45 +128,45 @@ export function SocialPanel() {
         setOutgoing(response.outgoing);
         setResults((current) => current.filter((profile) => profile.userId !== targetUserId));
       })
-      .catch(() => addWarning("Block failed."));
+      .catch(() => addWarning("Chặn thất bại."));
   }
 
   function unblockPlayer(targetUserId: string) {
     void unblockSocialPlayer(targetUserId)
       .then((response) => setBlocked(response.blocked))
-      .catch(() => addWarning("Unblock failed."));
+      .catch(() => addWarning("Bỏ chặn thất bại."));
   }
 
   function inviteParty(targetUserId: string) {
     void inviteToParty(targetUserId)
       .catch((error) => {
         const message = error instanceof Error ? error.message.toLowerCase() : "";
-        if (message.includes("blocked")) addWarning("Target blocked.");
-        else if (message.includes("full")) addWarning("Party full.");
-        else addWarning("Invite failed.");
+        if (message.includes("blocked")) addWarning("Mục tiêu đã chặn.");
+        else if (message.includes("full")) addWarning("Tổ đội đã đầy.");
+        else addWarning("Mời thất bại.");
       });
   }
 
   return (
     <>
       <button type="button" className="social-toggle" onClick={() => setOpen((value) => !value)}>
-        Social
+        Xã hội
       </button>
       {open && (
-        <section className="social-panel" aria-label="Social">
+        <section className="social-panel" aria-label="Xã hội">
           <header>
             <div>
-              <h2>Social</h2>
-              <span>{account.displayName} - Lv {player.level} {player.classId ?? "unclassed"}</span>
+              <h2>Xã hội</h2>
+              <span>{account.displayName} - Cấp {player.level} {player.classId ?? "chưa chọn lớp"}</span>
             </div>
-            <button type="button" onClick={() => setOpen(false)}>Close</button>
+            <button type="button" onClick={() => setOpen(false)}>Đóng</button>
           </header>
           <div className="social-summary">
             <strong>{player.name}</strong>
             <span>{account.username}</span>
-            <em>CP {getCurrentCombatPower(player)}</em>
+            <em>Sức chiến đấu {getCurrentCombatPower(player)}</em>
           </div>
-          <nav className="social-tabs" aria-label="Social tabs">
+          <nav className="social-tabs" aria-label="Tab xã hội">
             {tabs.map((tab) => (
               <button key={tab.id} type="button" data-active={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}>
                 {tab.label}
@@ -176,15 +176,15 @@ export function SocialPanel() {
 
           {activeTab === "friends" && (
             <div className="social-list">
-              {friends.length === 0 && <p>No friends yet.</p>}
+              {friends.length === 0 && <p>Chưa có bạn bè.</p>}
               {friends.map((friend) => (
                 <article key={friend.userId}>
                   <ProfileLine profile={friend} />
                   <div>
-                    <button type="button" onClick={() => openPrivateChat(friend)}>Message</button>
-                    <button type="button" onClick={() => inviteParty(friend.userId)}>Party</button>
-                    <button type="button" onClick={() => removeFriend(friend.userId)}>Remove</button>
-                    <button type="button" onClick={() => blockPlayer(friend.userId)}>Block</button>
+                    <button type="button" onClick={() => openPrivateChat(friend)}>Nhắn tin</button>
+                    <button type="button" onClick={() => inviteParty(friend.userId)}>Tổ đội</button>
+                    <button type="button" onClick={() => removeFriend(friend.userId)}>Xóa</button>
+                    <button type="button" onClick={() => blockPlayer(friend.userId)}>Chặn</button>
                   </div>
                 </article>
               ))}
@@ -193,24 +193,24 @@ export function SocialPanel() {
 
           {activeTab === "requests" && (
             <div className="social-list">
-              <h3>Incoming</h3>
-              {incoming.length === 0 && <p>No incoming requests.</p>}
+              <h3>Lời mời đến</h3>
+              {incoming.length === 0 && <p>Không có lời mời đến.</p>}
               {incoming.map((request) => (
                 <article key={request.id}>
                   <ProfileLine profile={request.fromUser} />
                   <div>
-                    <button type="button" onClick={() => acceptRequest(request.id)}>Accept</button>
-                    <button type="button" onClick={() => rejectRequest(request.id)}>Reject</button>
-                    <button type="button" onClick={() => blockPlayer(request.fromUser.userId)}>Block</button>
+                    <button type="button" onClick={() => acceptRequest(request.id)}>Chấp nhận</button>
+                    <button type="button" onClick={() => rejectRequest(request.id)}>Từ chối</button>
+                    <button type="button" onClick={() => blockPlayer(request.fromUser.userId)}>Chặn</button>
                   </div>
                 </article>
               ))}
-              <h3>Outgoing</h3>
-              {outgoing.length === 0 && <p>No outgoing requests.</p>}
+              <h3>Lời mời đã gửi</h3>
+              {outgoing.length === 0 && <p>Không có lời mời đã gửi.</p>}
               {outgoing.map((request) => (
                 <article key={request.id}>
                   <ProfileLine profile={request.toUser} />
-                  <span>Pending</span>
+                  <span>Đang chờ</span>
                 </article>
               ))}
             </div>
@@ -225,21 +225,21 @@ export function SocialPanel() {
                   onKeyDown={(event) => {
                     if (event.key === "Enter") runSearch();
                   }}
-                  aria-label="Username or display name"
+                  aria-label="Tên đăng nhập hoặc tên hiển thị"
                 />
-                <button type="button" disabled={busy} onClick={runSearch}>Search</button>
+                <button type="button" disabled={busy} onClick={runSearch}>Tìm</button>
               </div>
               <div className="social-list">
                 {results.map((profile) => (
                   <article key={profile.userId}>
                     <ProfileLine profile={profile} />
                     <div>
-                      <button type="button" onClick={() => openPrivateChat(profile)}>Message</button>
-                      <button type="button" onClick={() => inviteParty(profile.userId)}>Party</button>
+                      <button type="button" onClick={() => openPrivateChat(profile)}>Nhắn tin</button>
+                      <button type="button" onClick={() => inviteParty(profile.userId)}>Tổ đội</button>
                       <button type="button" disabled={profile.status !== "none"} onClick={() => sendRequest(profile.userId)}>
-                        {profile.status === "friends" ? "Friend" : profile.status === "pending_sent" ? "Pending" : "Add"}
+                        {profile.status === "friends" ? "Bạn bè" : profile.status === "pending_sent" ? "Đang chờ" : "Thêm"}
                       </button>
-                      <button type="button" onClick={() => blockPlayer(profile.userId)}>Block</button>
+                      <button type="button" onClick={() => blockPlayer(profile.userId)}>Chặn</button>
                     </div>
                   </article>
                 ))}
@@ -249,13 +249,13 @@ export function SocialPanel() {
 
           {activeTab === "blocked" && (
             <div className="social-list">
-              {blocked.length === 0 && <p>No blocked players.</p>}
+              {blocked.length === 0 && <p>Không có người chơi bị chặn.</p>}
               {blocked.map((entry) => (
                 <article key={entry.user.userId}>
                   <ProfileLine profile={entry.user} />
                   <div>
                     <span>{new Date(entry.blockedAt).toLocaleDateString()}</span>
-                    <button type="button" onClick={() => unblockPlayer(entry.user.userId)}>Unblock</button>
+                    <button type="button" onClick={() => unblockPlayer(entry.user.userId)}>Bỏ chặn</button>
                   </div>
                 </article>
               ))}
@@ -275,7 +275,7 @@ function ProfileLine({ profile }: { profile: SocialProfileSummary }) {
   return (
     <div className="social-profile">
       <strong>{profile.displayName}</strong>
-      <span>Lv {profile.level} {profile.classId ?? "unclassed"} - CP {profile.combatPower}</span>
+      <span>Cấp {profile.level} {profile.classId ?? "chưa chọn lớp"} - Sức chiến đấu {profile.combatPower}</span>
       <small>{profile.playerName ?? profile.username} - {formatPresence(profile.onlineStatus)}</small>
     </div>
   );
@@ -288,7 +288,7 @@ function getCurrentCombatPower(player: NonNullable<ReturnType<typeof useGameStor
 }
 
 function formatPresence(status: SocialProfileSummary["onlineStatus"]) {
-  if (status === "online") return "online";
-  if (status === "offline") return "offline";
-  return "presence pending";
+  if (status === "online") return "trực tuyến";
+  if (status === "offline") return "ngoại tuyến";
+  return "chưa rõ trạng thái";
 }

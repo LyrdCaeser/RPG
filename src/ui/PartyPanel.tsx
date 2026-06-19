@@ -37,10 +37,10 @@ export function PartyPanel() {
     await Promise.all([
       getPartyMe()
         .then((response) => setParty(response.party))
-        .catch(() => addWarning("Party load failed.")),
+        .catch(() => addWarning("Tải tổ đội thất bại.")),
       getPartyInvites()
         .then((response) => setInvites(response.invites))
-        .catch(() => addWarning("Invites load failed."))
+        .catch(() => addWarning("Tải lời mời thất bại."))
     ]);
   }
 
@@ -56,9 +56,9 @@ export function PartyPanel() {
       })
       .catch((error) => {
         const message = error instanceof Error ? error.message.toLowerCase() : "";
-        if (message.includes("blocked")) addWarning("Target blocked.");
-        else if (message.includes("full")) addWarning("Party full.");
-        else addWarning("Invite failed.");
+        if (message.includes("blocked")) addWarning("Mục tiêu đã chặn.");
+        else if (message.includes("full")) addWarning("Tổ đội đã đầy.");
+        else addWarning("Mời thất bại.");
       })
       .finally(() => setBusy(false));
   }
@@ -71,34 +71,34 @@ export function PartyPanel() {
       })
       .catch((error) => {
         const message = error instanceof Error ? error.message.toLowerCase() : "";
-        if (message.includes("full")) addWarning("Party full.");
-        else if (message.includes("blocked")) addWarning("Target blocked.");
-        else addWarning("Accept invite failed.");
+        if (message.includes("full")) addWarning("Tổ đội đã đầy.");
+        else if (message.includes("blocked")) addWarning("Mục tiêu đã chặn.");
+        else addWarning("Chấp nhận lời mời thất bại.");
       });
   }
 
   function rejectInvite(inviteId: string) {
     void rejectPartyInvite(inviteId)
       .then((response) => setInvites(response.invites))
-      .catch(() => addWarning("Reject invite failed."));
+      .catch(() => addWarning("Từ chối lời mời thất bại."));
   }
 
   function leaveCurrentParty() {
     void leaveParty()
       .then((response) => setParty(response.party))
-      .catch(() => addWarning("Leave party failed."));
+      .catch(() => addWarning("Rời tổ đội thất bại."));
   }
 
   function kickMember(targetUserId: string) {
     void kickPartyMember(targetUserId)
       .then((response) => setParty(response.party))
-      .catch(() => addWarning("Kick failed."));
+      .catch(() => addWarning("Mời ra khỏi tổ đội thất bại."));
   }
 
   function transferLeader(targetUserId: string) {
     void transferPartyLeader(targetUserId)
       .then((response) => setParty(response.party))
-      .catch(() => addWarning("Transfer leader failed."));
+      .catch(() => addWarning("Chuyển trưởng nhóm thất bại."));
   }
 
   function changeSettings(nextParty: Party, field: "lootMode" | "expMode", value: string) {
@@ -106,19 +106,19 @@ export function PartyPanel() {
     const expMode = field === "expMode" ? value as Party["expMode"] : nextParty.expMode;
     void updatePartySettings(lootMode, expMode)
       .then((response) => setParty(response.party))
-      .catch(() => addWarning("Party settings update failed."));
+      .catch(() => addWarning("Cập nhật thiết lập tổ đội thất bại."));
   }
 
   return (
     <>
       <button type="button" className="party-toggle" onClick={() => setOpen((value) => !value)}>
-        Party
+        Tổ đội
       </button>
       {open && (
-        <section className="party-panel" aria-label="Party">
+        <section className="party-panel" aria-label="Tổ đội">
           <header>
-            <h2>Party</h2>
-            <button type="button" onClick={() => void refreshAll()}>Refresh</button>
+            <h2>Tổ đội</h2>
+            <button type="button" onClick={() => void refreshAll()}>Làm mới</button>
           </header>
 
           {party ? (
@@ -126,23 +126,23 @@ export function PartyPanel() {
               <div>
                 <strong>{party.members.length}/{party.maxMembers}</strong>
                 <span>{formatMode(party.lootMode)} - {formatMode(party.expMode)}</span>
-                <button type="button" onClick={leaveCurrentParty}>Leave</button>
+                <button type="button" onClick={leaveCurrentParty}>Rời</button>
               </div>
               {isLeader && (
                 <div className="party-settings">
                   <label>
-                    Loot
+                    Chia đồ
                     <select value={party.lootMode} onChange={(event) => changeSettings(party, "lootMode", event.target.value)}>
-                      <option value="free_for_all">Free for all</option>
-                      <option value="round_robin">Round robin</option>
-                      <option value="leader">Leader</option>
+                      <option value="free_for_all">Tự do</option>
+                      <option value="round_robin">Luân phiên</option>
+                      <option value="leader">Trưởng nhóm</option>
                     </select>
                   </label>
                   <label>
-                    EXP
+                    Kinh nghiệm
                     <select value={party.expMode} onChange={(event) => changeSettings(party, "expMode", event.target.value)}>
-                      <option value="nearby_only">Nearby only</option>
-                      <option value="equal_share">Equal share</option>
+                      <option value="nearby_only">Chỉ gần nhau</option>
+                      <option value="equal_share">Chia đều</option>
                     </select>
                   </label>
                 </div>
@@ -151,12 +151,12 @@ export function PartyPanel() {
                 {party.members.map((member) => (
                   <article key={member.user.userId} data-role={member.role}>
                     <strong>{member.user.displayName}{member.role === "leader" ? " *" : ""}</strong>
-                    <span>Lv {member.user.level} {member.user.classId ?? "unclassed"} - CP {member.user.combatPower}</span>
-                    <small>{member.mapId ?? "unknown map"} - {member.user.playerName ?? member.user.username}</small>
+                    <span>Cấp {member.user.level} {member.user.classId ?? "chưa chọn lớp"} - Sức chiến đấu {member.user.combatPower}</span>
+                    <small>{member.mapId ?? "bản đồ không rõ"} - {member.user.playerName ?? member.user.username}</small>
                     {isLeader && member.user.userId !== account.id && (
                       <div>
-                        <button type="button" onClick={() => transferLeader(member.user.userId)}>Leader</button>
-                        <button type="button" onClick={() => kickMember(member.user.userId)}>Kick</button>
+                        <button type="button" onClick={() => transferLeader(member.user.userId)}>Trưởng nhóm</button>
+                        <button type="button" onClick={() => kickMember(member.user.userId)}>Mời ra</button>
                       </div>
                     )}
                   </article>
@@ -164,7 +164,7 @@ export function PartyPanel() {
               </div>
             </div>
           ) : (
-            <p className="party-empty">No party.</p>
+            <p className="party-empty">Chưa có tổ đội.</p>
           )}
 
           <div className="party-invite-form">
@@ -174,31 +174,31 @@ export function PartyPanel() {
               onKeyDown={(event) => {
                 if (event.key === "Enter" && target.trim()) sendInvite();
               }}
-              aria-label="Player ID or username"
+              aria-label="ID người chơi hoặc tên đăng nhập"
             />
-            <button type="button" disabled={busy || !target.trim()} onClick={sendInvite}>Invite</button>
+            <button type="button" disabled={busy || !target.trim()} onClick={sendInvite}>Mời</button>
           </div>
 
           <div className="party-invites">
-            <h3>Incoming</h3>
-            {incoming.length === 0 && <p>No incoming invites.</p>}
+            <h3>Lời mời đến</h3>
+            {incoming.length === 0 && <p>Không có lời mời đến.</p>}
             {incoming.map((invite) => (
               <article key={invite.id}>
                 <strong>{invite.fromUser.displayName}</strong>
-                <span>Lv {invite.fromUser.level} {invite.fromUser.classId ?? "unclassed"} - CP {invite.fromUser.combatPower}</span>
+                <span>Cấp {invite.fromUser.level} {invite.fromUser.classId ?? "chưa chọn lớp"} - Sức chiến đấu {invite.fromUser.combatPower}</span>
                 <div>
-                  <button type="button" onClick={() => acceptInvite(invite.id)}>Accept</button>
-                  <button type="button" onClick={() => rejectInvite(invite.id)}>Reject</button>
+                  <button type="button" onClick={() => acceptInvite(invite.id)}>Chấp nhận</button>
+                  <button type="button" onClick={() => rejectInvite(invite.id)}>Từ chối</button>
                 </div>
               </article>
             ))}
 
-            <h3>Outgoing</h3>
-            {outgoing.length === 0 && <p>No outgoing invites.</p>}
+            <h3>Lời mời đã gửi</h3>
+            {outgoing.length === 0 && <p>Không có lời mời đã gửi.</p>}
             {outgoing.map((invite) => (
               <article key={invite.id}>
                 <strong>{invite.toUser.displayName}</strong>
-                <span>Pending</span>
+                <span>Đang chờ</span>
               </article>
             ))}
           </div>
@@ -209,5 +209,12 @@ export function PartyPanel() {
 }
 
 function formatMode(value: string) {
-  return value.replaceAll("_", " ");
+  const labels: Record<string, string> = {
+    free_for_all: "Tự do",
+    round_robin: "Luân phiên",
+    leader: "Theo trưởng nhóm",
+    nearby_only: "Chỉ gần nhau",
+    equal_share: "Chia đều"
+  };
+  return labels[value] ?? value.replaceAll("_", " ");
 }

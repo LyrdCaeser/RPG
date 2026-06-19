@@ -19,13 +19,13 @@ export function MountPanel() {
   const refresh = () => {
     void getMountsMe()
       .then((response) => setMounts(response.mounts))
-      .catch(() => addWarning("Mount load failed."));
+      .catch(() => addWarning("Tải thú cưỡi thất bại."));
   };
 
   const equip = (mountId: string) => {
     const definition = findMountDefinition(mountId);
     if (definition && player.level < definition.unlockLevel) {
-      addWarning("Level too low for mount.");
+      addWarning("Cấp quá thấp để dùng thú cưỡi.");
       return;
     }
     void equipMount(mountId, player)
@@ -34,7 +34,7 @@ export function MountPanel() {
         setPlayer(response.player);
         setMounted(false);
       })
-      .catch((error) => addWarning(error instanceof Error ? error.message : "Mount equip failed."));
+      .catch((error) => addWarning(error instanceof Error ? error.message : "Trang bị thú cưỡi thất bại."));
   };
 
   const unequip = () => {
@@ -44,21 +44,21 @@ export function MountPanel() {
         setPlayer(response.player);
         setMounted(false);
       })
-      .catch(() => addWarning("Mount unequip failed."));
+      .catch(() => addWarning("Gỡ thú cưỡi thất bại."));
   };
 
   return (
-    <section className="mount-panel" aria-label="Mounts">
+    <section className="mount-panel" aria-label="Thú cưỡi">
       <header>
-        <h2>Mounts</h2>
-        <button type="button" onClick={refresh}>Refresh</button>
+        <h2>Thú cưỡi</h2>
+        <button type="button" onClick={refresh}>Làm mới</button>
       </header>
       {activeMount && activeDefinition && (
         <div className="mount-active">
           <strong>{activeDefinition.icon} {activeDefinition.name}</strong>
-          <span>{mounted ? "Mounted" : "Equipped"} - +{activeDefinition.moveSpeedBonus} speed</span>
-          <small>Press M to mount or dismount on maps that allow mounts.</small>
-          <button type="button" onClick={unequip}>Unequip</button>
+          <span>{mounted ? "Đang cưỡi" : "Đã trang bị"} - +{activeDefinition.moveSpeedBonus} tốc độ</span>
+          <small>Nhấn M để cưỡi hoặc xuống thú cưỡi ở bản đồ cho phép.</small>
+          <button type="button" onClick={unequip}>Gỡ</button>
         </div>
       )}
       <div className="mount-list">
@@ -69,10 +69,10 @@ export function MountPanel() {
           return (
             <article key={definition.mountId} data-active={active} data-owned={owned}>
               <strong>{definition.icon} {definition.name}</strong>
-              <span>{definition.rarity} - +{definition.moveSpeedBonus} speed - Lv {definition.unlockLevel}</span>
+              <span>{definition.rarity} - +{definition.moveSpeedBonus} tốc độ - Cấp {definition.unlockLevel}</span>
               <p>{definition.description}</p>
               <button type="button" disabled={!owned || active || locked} onClick={() => equip(definition.mountId)}>
-                {owned ? (locked ? "Level Locked" : active ? "Equipped" : "Equip") : "Not Owned"}
+                {owned ? (locked ? "Chưa đủ cấp" : active ? "Đã trang bị" : "Trang bị") : "Chưa sở hữu"}
               </button>
             </article>
           );

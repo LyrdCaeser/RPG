@@ -3,8 +3,8 @@ import type { PetDefinition } from "./types.js";
 export const petDefinitions: PetDefinition[] = [
   {
     petId: "moon_fox",
-    name: "Moon Fox",
-    description: "A quiet fox that sharpens focus and magic.",
+    name: "Cáo trăng",
+    description: "Một chú cáo trầm lặng giúp tăng tập trung và phép thuật.",
     rarity: "uncommon",
     type: "support",
     baseStats: { intelligence: 1, magicAttack: 2, maxMp: 6 },
@@ -15,8 +15,8 @@ export const petDefinitions: PetDefinition[] = [
   },
   {
     petId: "slime_buddy",
-    name: "Slime Buddy",
-    description: "A cheerful slime that adds vitality.",
+    name: "Bạn slime",
+    description: "Một slime vui vẻ giúp tăng thể lực.",
     rarity: "common",
     type: "defense",
     baseStats: { vitality: 1, defense: 1, maxHp: 10 },
@@ -26,8 +26,8 @@ export const petDefinitions: PetDefinition[] = [
   },
   {
     petId: "silver_wolf",
-    name: "Silver Wolf",
-    description: "A loyal wolf that boosts attack and speed.",
+    name: "Sói bạc",
+    description: "Một con sói trung thành giúp tăng tấn công và tốc độ.",
     rarity: "rare",
     type: "attack",
     baseStats: { strength: 2, attack: 3, moveSpeed: 8 },
@@ -38,8 +38,8 @@ export const petDefinitions: PetDefinition[] = [
   },
   {
     petId: "herb_sprite",
-    name: "Herb Sprite",
-    description: "A tiny sprite that helps gatherers and improves luck.",
+    name: "Tinh linh thảo dược",
+    description: "Một tinh linh nhỏ giúp người thu thập và tăng may mắn.",
     rarity: "uncommon",
     type: "gather",
     baseStats: { luck: 3, maxMp: 4 },
@@ -49,8 +49,8 @@ export const petDefinitions: PetDefinition[] = [
   },
   {
     petId: "crystal_drake",
-    name: "Crystal Drake",
-    description: "A rare drake with balanced offensive bonuses.",
+    name: "Rồng pha lê nhỏ",
+    description: "Một rồng nhỏ hiếm với các chỉ số tấn công cân bằng.",
     rarity: "epic",
     type: "rare",
     baseStats: { strength: 2, intelligence: 2, attack: 3, magicAttack: 3, critRate: 2 },

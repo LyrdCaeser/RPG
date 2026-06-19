@@ -36,7 +36,7 @@ export function GuildLeaderboardPanel() {
       setEntries(leaderboard.entries);
       setGuildRank(leaderboard.guildRank ?? rank.entry);
     } catch {
-      addWarning("Guild leaderboard load failed.");
+      addWarning("Không tải được bảng xếp hạng bang hội.");
     } finally {
       setLoading(false);
     }
@@ -46,10 +46,10 @@ export function GuildLeaderboardPanel() {
     setLoading(true);
     try {
       await refreshGuildLeaderboard();
-      addNotice("Guild leaderboard refreshed.");
+      addNotice("Đã làm mới bảng xếp hạng bang hội.");
       await load(type);
     } catch {
-      addWarning("Guild leaderboard refresh failed.");
+      addWarning("Làm mới bảng xếp hạng bang hội thất bại.");
     } finally {
       setLoading(false);
     }
@@ -58,8 +58,8 @@ export function GuildLeaderboardPanel() {
   return (
     <article className="guild-card guild-leaderboard-panel">
       <header>
-        <strong>Guild Leaderboard</strong>
-        <button type="button" disabled={loading} onClick={() => void refresh()}>Refresh</button>
+        <strong>Bảng xếp hạng bang hội</strong>
+        <button type="button" disabled={loading} onClick={() => void refresh()}>Làm mới</button>
       </header>
       <select value={type} onChange={(event) => setType(event.target.value as GuildLeaderboardCategory)}>
         {categories.map((category) => (
@@ -68,19 +68,19 @@ export function GuildLeaderboardPanel() {
       </select>
       {guildRank ? (
         <p className="guild-rank-summary">
-          Current guild rank: #{guildRank.rank} - {guildRank.score}
+          Hạng bang hội hiện tại: #{guildRank.rank} - {guildRank.score}
         </p>
       ) : (
-        <p className="guild-warning">Guild rank unavailable.</p>
+        <p className="guild-warning">Không có hạng bang hội.</p>
       )}
       <div className="guild-leaderboard-list">
-        {entries.length === 0 && <p className="guild-warning">No guild rankings yet.</p>}
+        {entries.length === 0 && <p className="guild-warning">Chưa có xếp hạng bang hội.</p>}
         {entries.map((entry) => (
           <article key={`${entry.guildId}-${entry.rank}`}>
             <span>#{entry.rank}</span>
             <strong>[{entry.tag}] {entry.name}</strong>
             <em>{entry.score}</em>
-            <small>Lv {entry.level} - {entry.memberCount} members</small>
+            <small>Cấp {entry.level} - {entry.memberCount} thành viên</small>
           </article>
         ))}
       </div>
@@ -89,5 +89,15 @@ export function GuildLeaderboardPanel() {
 }
 
 function formatCategory(category: GuildLeaderboardCategory) {
-  return category.replaceAll("_", " ");
+  const labels: Record<GuildLeaderboardCategory, string> = {
+    guild_level: "Cấp bang hội",
+    guild_exp: "Kinh nghiệm bang hội",
+    member_count: "Số thành viên",
+    guild_contribution: "Cống hiến bang hội",
+    guild_boss_kills: "Hạ boss bang hội",
+    guild_boss_damage: "Sát thương boss bang hội",
+    guild_storage_gold: "Vàng trong kho",
+    guild_quest_points: "Điểm nhiệm vụ bang hội"
+  };
+  return labels[category];
 }

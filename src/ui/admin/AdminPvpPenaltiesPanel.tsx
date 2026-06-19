@@ -63,7 +63,7 @@ export function AdminPvpPenaltiesPanel() {
         setLoaded(true);
       })
       .catch((caught) => {
-        const message = adminPvpPenaltyWarning(caught, "PvP penalty refresh failed.");
+        const message = adminPvpPenaltyWarning(caught, "Làm mới án phạt đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -91,11 +91,11 @@ export function AdminPvpPenaltiesPanel() {
       .then((response) => {
         setPenalties(response.penalties);
         setForm(emptyPenaltyForm);
-        addNotice("PvP penalty apply succeeded.");
+        addNotice("Đã áp dụng án phạt đấu trường.");
         notifyAdminPvpModerationRefresh();
       })
       .catch((caught) => {
-        const message = adminPvpPenaltyWarning(caught, "PvP penalty apply failed.");
+        const message = adminPvpPenaltyWarning(caught, "Áp dụng án phạt đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -103,9 +103,9 @@ export function AdminPvpPenaltiesPanel() {
   }
 
   function liftPenalty(penalty: PvPPenalty) {
-    const liftReason = window.prompt("Lift reason");
+    const liftReason = window.prompt("Lý do gỡ án phạt");
     if (!liftReason?.trim()) {
-      addWarning("Lift reason is required.");
+      addWarning("Cần nhập lý do gỡ án phạt.");
       return;
     }
     setLoading(true);
@@ -113,11 +113,11 @@ export function AdminPvpPenaltiesPanel() {
     void liftAdminPvpPenalty(penalty.penaltyId, liftReason.trim())
       .then((response) => {
         setPenalties(response.penalties);
-        addNotice("PvP penalty lift succeeded.");
+        addNotice("Đã gỡ án phạt đấu trường.");
         notifyAdminPvpModerationRefresh();
       })
       .catch((caught) => {
-        const message = adminPvpPenaltyWarning(caught, "PvP penalty lift failed.");
+        const message = adminPvpPenaltyWarning(caught, "Gỡ án phạt đấu trường thất bại.");
         setError(message);
         addWarning(message);
       })
@@ -127,17 +127,17 @@ export function AdminPvpPenaltiesPanel() {
   return (
     <div className="admin-pvp-penalties">
       <section className="admin-form">
-        <h3>Apply PvP Penalty</h3>
+        <h3>Áp dụng án phạt đấu trường</h3>
         <div className="admin-form-grid">
           <label>
-            Target player ID
+            ID người chơi mục tiêu
             <input
               value={form.targetPlayerId}
               onChange={(event) => setForm((current) => ({ ...current, targetPlayerId: event.target.value }))}
             />
           </label>
           <label>
-            Penalty type
+            Loại án phạt
             <select
               value={form.penaltyType}
               onChange={(event) => {
@@ -151,24 +151,24 @@ export function AdminPvpPenaltiesPanel() {
             >
               {typeFilters.filter((type) => type !== "all").map((type) => (
                 <option key={type} value={type}>
-                  {type}
+                  {formatPenaltyType(type)}
                 </option>
               ))}
             </select>
           </label>
           <label>
-            Duration mode
+            Chế độ thời hạn
             <select
               value={form.durationMode}
               onChange={(event) => setForm((current) => ({ ...current, durationMode: event.target.value as DurationMode }))}
             >
-              <option value="none">warning/no expiry</option>
-              <option value="expires_at">expires_at datetime</option>
-              <option value="permanent">permanent</option>
+              <option value="none">cảnh cáo/không hết hạn</option>
+              <option value="expires_at">ngày giờ hết hạn</option>
+              <option value="permanent">vĩnh viễn</option>
             </select>
           </label>
           <label>
-            Expires at
+            Hết hạn lúc
             <input
               type="datetime-local"
               value={form.expiresAt}
@@ -177,43 +177,43 @@ export function AdminPvpPenaltiesPanel() {
             />
           </label>
           <label>
-            Reason
+            Lý do
             <input value={form.reason} onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))} />
           </label>
           <label>
-            Details
+            Chi tiết
             <input value={form.details} onChange={(event) => setForm((current) => ({ ...current, details: event.target.value }))} />
           </label>
         </div>
         <div className="admin-row-actions">
           <button type="button" onClick={applyPenalty} disabled={loading || Boolean(validatePenaltyForm(form))}>
-            Apply
+            Áp dụng
           </button>
           <button type="button" onClick={() => setForm(emptyPenaltyForm)} disabled={loading}>
-            Clear
+            Xóa form
           </button>
         </div>
       </section>
 
       <section className="admin-table admin-pvp-penalty-table">
         <div className="admin-table-header">
-          <h3>PvP Penalties</h3>
+          <h3>Án phạt đấu trường</h3>
           <button type="button" onClick={loadPenalties} disabled={loading}>
-            Refresh
+            Làm mới
           </button>
         </div>
         <div className="admin-actions">
           <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as PenaltyStatusFilter)}>
             {statusFilters.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {formatPenaltyStatus(status)}
               </option>
             ))}
           </select>
           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value as PenaltyTypeFilter)}>
             {typeFilters.map((type) => (
               <option key={type} value={type}>
-                {type}
+                {formatPenaltyType(type)}
               </option>
             ))}
           </select>
@@ -223,38 +223,38 @@ export function AdminPvpPenaltiesPanel() {
             onKeyDown={(event) => {
               if (event.key === "Enter") void loadPenalties();
             }}
-            aria-label="Filter by target player ID"
+            aria-label="Lọc theo ID người chơi mục tiêu"
           />
           <button type="button" onClick={loadPenalties} disabled={loading}>
-            Filter
+            Lọc
           </button>
         </div>
-        {loading ? <span className="admin-loading">Loading</span> : null}
+        {loading ? <span className="admin-loading">Đang tải</span> : null}
         {error ? <div className="admin-denied">{error}</div> : null}
-        {!loaded ? null : penalties.length === 0 ? <p>No PvP penalties recorded.</p> : null}
+        {!loaded ? null : penalties.length === 0 ? <p>Chưa có án phạt đấu trường.</p> : null}
         {penalties.map((penalty) => (
           <article key={penalty.penaltyId} data-revoked={penalty.status !== "active"}>
-            <strong>{penalty.penaltyType}</strong>
+            <strong>{formatPenaltyType(penalty.penaltyType)}</strong>
             <span>{penalty.penaltyId}</span>
             <span>{penalty.targetPlayer.displayName}</span>
             <span>{penalty.targetPlayer.playerId}</span>
             <button type="button" onClick={() => requestOpenAdminPvpPlayerProfile(penalty.targetPlayer.playerId)}>
-              Open Profile
+              Mở hồ sơ
             </button>
-            <span>{penalty.status}</span>
+            <span>{formatPenaltyStatus(penalty.status)}</span>
             <span>{penalty.reason}</span>
-            <span>{penalty.details || "No details"}</span>
-            <span>Starts {formatDate(penalty.startsAt)}</span>
-            <span>{penalty.permanent ? "Permanent" : penalty.expiresAt ? `Expires ${formatDate(penalty.expiresAt)}` : "No expiry"}</span>
-            <span>Created by {penalty.createdByAdminId}</span>
-            <span>Created {formatDate(penalty.createdAt)}</span>
-            <span>Updated {formatDate(penalty.updatedAt)}</span>
-            <span>{penalty.liftedByAdminId ? `Lifted by ${penalty.liftedByAdminId}` : "Not lifted"}</span>
-            <span>{penalty.liftedAt ? `Lifted ${formatDate(penalty.liftedAt)}` : "No lift time"}</span>
-            <span>{penalty.liftReason || "No lift reason"}</span>
+            <span>{penalty.details || "Không có chi tiết"}</span>
+            <span>Bắt đầu {formatDate(penalty.startsAt)}</span>
+            <span>{penalty.permanent ? "Vĩnh viễn" : penalty.expiresAt ? `Hết hạn ${formatDate(penalty.expiresAt)}` : "Không hết hạn"}</span>
+            <span>Tạo bởi {penalty.createdByAdminId}</span>
+            <span>Tạo {formatDate(penalty.createdAt)}</span>
+            <span>Cập nhật {formatDate(penalty.updatedAt)}</span>
+            <span>{penalty.liftedByAdminId ? `Gỡ bởi ${penalty.liftedByAdminId}` : "Chưa gỡ"}</span>
+            <span>{penalty.liftedAt ? `Gỡ ${formatDate(penalty.liftedAt)}` : "Chưa có thời điểm gỡ"}</span>
+            <span>{penalty.liftReason || "Chưa có lý do gỡ"}</span>
             <div className="admin-row-actions">
               <button type="button" onClick={() => liftPenalty(penalty)} disabled={loading || penalty.status !== "active"}>
-                Lift
+                Gỡ
               </button>
             </div>
           </article>
@@ -265,17 +265,17 @@ export function AdminPvpPenaltiesPanel() {
 }
 
 function validatePenaltyForm(form: PenaltyFormState) {
-  if (!form.targetPlayerId.trim()) return "target_player_id is required.";
-  if (!form.reason.trim()) return "Penalty reason is required.";
-  if (form.reason.trim().length > 240) return "Penalty reason is too long.";
-  if (form.details.length > 2000) return "Penalty details are too long.";
+  if (!form.targetPlayerId.trim()) return "Cần nhập target_player_id.";
+  if (!form.reason.trim()) return "Cần nhập lý do án phạt.";
+  if (form.reason.trim().length > 240) return "Lý do án phạt quá dài.";
+  if (form.details.length > 2000) return "Chi tiết án phạt quá dài.";
   if (form.penaltyType !== "warning" && form.durationMode === "none") {
-    return "Suspensions and bans require expires_at or permanent.";
+    return "Đình chỉ và cấm cần ngày hết hạn hoặc trạng thái vĩnh viễn.";
   }
   if (form.durationMode === "expires_at") {
     const expiresAt = new Date(form.expiresAt);
-    if (!Number.isFinite(expiresAt.getTime())) return "expires_at must be a valid datetime.";
-    if (expiresAt.getTime() <= Date.now()) return "expires_at must be in the future.";
+    if (!Number.isFinite(expiresAt.getTime())) return "expires_at phải là ngày giờ hợp lệ.";
+    if (expiresAt.getTime() <= Date.now()) return "expires_at phải ở tương lai.";
   }
   return "";
 }
@@ -292,7 +292,7 @@ function adminPvpPenaltyWarning(error: unknown, fallback: string) {
     lower.includes("connection timeout") ||
     lower.includes("timeout expired")
   ) {
-    return "database unavailable";
+    return "Cơ sở dữ liệu không khả dụng.";
   }
   if (message) return message;
   return fallback;
@@ -300,4 +300,26 @@ function adminPvpPenaltyWarning(error: unknown, fallback: string) {
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString();
+}
+
+function formatPenaltyType(type: PenaltyTypeFilter) {
+  const labels: Record<string, string> = {
+    all: "tất cả",
+    warning: "cảnh cáo",
+    ranked_suspension: "đình chỉ xếp hạng",
+    duel_suspension: "đình chỉ tay đôi",
+    pvp_full_ban: "cấm toàn bộ đấu trường",
+    shop_suspension: "đình chỉ cửa hàng"
+  };
+  return labels[type] ?? type;
+}
+
+function formatPenaltyStatus(status: PenaltyStatusFilter) {
+  const labels: Record<string, string> = {
+    all: "tất cả",
+    active: "đang hiệu lực",
+    expired: "hết hạn",
+    lifted: "đã gỡ"
+  };
+  return labels[status] ?? status;
 }

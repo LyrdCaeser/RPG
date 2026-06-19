@@ -27,8 +27,8 @@ export function GuildQuestPanel() {
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("guild")) addWarning("Not in guild.");
-        else addWarning("Guild quest load failed.");
+        if (text.includes("guild")) addWarning("Bạn chưa ở trong bang hội.");
+        else addWarning("Không tải được nhiệm vụ bang hội.");
       });
   }
 
@@ -39,13 +39,13 @@ export function GuildQuestPanel() {
         setQuests(response.quests);
         setInventorySnapshot(response.inventory);
         setPlayer(response.player);
-        addNotice("Guild quest reward claimed.");
+        addNotice("Đã nhận thưởng nhiệm vụ bang hội.");
       })
       .catch((error) => {
         const text = error instanceof Error ? error.message.toLowerCase() : "";
-        if (text.includes("guild")) addWarning("Not in guild.");
-        else if (text.includes("reward")) addWarning("Reward claim failed.");
-        else addWarning("Guild quest claim failed.");
+        if (text.includes("guild")) addWarning("Bạn chưa ở trong bang hội.");
+        else if (text.includes("reward")) addWarning("Nhận thưởng thất bại.");
+        else addWarning("Nhận nhiệm vụ bang hội thất bại.");
       })
       .finally(() => setBusyQuestId(null));
   }
@@ -53,10 +53,10 @@ export function GuildQuestPanel() {
   return (
     <article className="guild-card guild-quest-panel">
       <header>
-        <strong>Guild Quests</strong>
-        <button type="button" onClick={() => void refresh()}>Refresh</button>
+        <strong>Nhiệm vụ bang hội</strong>
+        <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
-      {definitions.length === 0 && <p className="guild-warning">No guild quests available.</p>}
+      {definitions.length === 0 && <p className="guild-warning">Không có nhiệm vụ bang hội.</p>}
       <div className="guild-quest-list">
         {definitions.map((definition) => {
           const quest = questById.get(definition.guildQuestId);
@@ -67,7 +67,7 @@ export function GuildQuestPanel() {
                   <strong>{definition.title}</strong>
                   <span>{formatType(definition.type)} - {formatType(definition.resetType ?? "none")}</span>
                 </div>
-                <span>{quest?.state ?? "locked"}</span>
+                <span>{formatQuestState(quest?.state ?? "locked")}</span>
               </header>
               <p>{definition.description}</p>
               <div className="guild-quest-objectives">
@@ -83,22 +83,22 @@ export function GuildQuestPanel() {
                 })}
               </div>
               <div className="guild-quest-rewards">
-                <span>Guild EXP {definition.guildExpReward}</span>
-                <span>Contribution {definition.contributionPoints}</span>
-                {definition.rewards.gold ? <span>{definition.rewards.gold} gold</span> : null}
-                {definition.rewards.exp ? <span>{definition.rewards.exp} EXP</span> : null}
+                <span>Kinh nghiệm bang hội {definition.guildExpReward}</span>
+                <span>Cống hiến {definition.contributionPoints}</span>
+                {definition.rewards.gold ? <span>{definition.rewards.gold} vàng</span> : null}
+                {definition.rewards.exp ? <span>{definition.rewards.exp} kinh nghiệm</span> : null}
                 {(definition.rewards.items ?? []).map((item) => {
                   const itemDefinition = findRuntimeItemDefinition(item.itemId);
                   return <span key={item.itemId}>{itemDefinition?.name ?? item.itemId} x{item.quantity}</span>;
                 })}
               </div>
-              <small>Member contribution: {quest?.memberContribution ?? 0}</small>
+              <small>Cống hiến thành viên: {quest?.memberContribution ?? 0}</small>
               <button
                 type="button"
                 disabled={busyQuestId === definition.guildQuestId || quest?.state !== "claimable"}
                 onClick={() => claim(definition.guildQuestId)}
               >
-                {quest?.state === "claimed" ? "Claimed" : "Claim Reward"}
+                {quest?.state === "claimed" ? "Đã nhận" : "Nhận thưởng"}
               </button>
             </article>
           );
@@ -109,5 +109,26 @@ export function GuildQuestPanel() {
 }
 
 function formatType(value: string) {
-  return value.replaceAll("_", " ");
+  const labels: Record<string, string> = {
+    daily: "hằng ngày",
+    weekly: "hằng tuần",
+    none: "không lặp",
+    kill_enemy: "hạ kẻ địch",
+    gather_node: "thu thập",
+    dungeon_clear: "dọn hầm ngục",
+    boss_defeat: "hạ boss"
+  };
+  return labels[value] ?? value.replaceAll("_", " ");
+}
+
+function formatQuestState(value: string) {
+  const labels: Record<string, string> = {
+    locked: "Đã khóa",
+    active: "Đang làm",
+    completed: "Hoàn thành",
+    claimable: "Có thể nhận",
+    claimed: "Đã nhận",
+    expired: "Hết hạn"
+  };
+  return labels[value] ?? value;
 }
