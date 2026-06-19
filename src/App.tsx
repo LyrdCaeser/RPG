@@ -527,11 +527,11 @@ export default function App() {
     );
   }
 
-  const classSelectionOpen = !player.classId;
+  const classSelectionOpen = Boolean(player && !player.classId);
 
   return (
     <main className="shell">
-      <GameCanvas initialPlayer={player} />
+      <GameCanvas key={`${player.id}:${player.classId ?? "no-class"}`} initialPlayer={player} />
       <div className="ui-layer">
         {classSelectionOpen ? (
           <>

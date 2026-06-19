@@ -135,7 +135,17 @@ export const useGameStore = create<GameState>((set) => ({
   pvpPanelOpen: false,
   warnings: [],
   notices: [],
-  setPlayer: (player) => set({ player }),
+  setPlayer: (player) =>
+    set((state) => ({
+      player:
+        state.player && state.player.id === player.id
+          ? {
+              ...player,
+              classId: player.classId ?? state.player.classId,
+              stats: player.stats ?? state.player.stats
+            }
+          : player
+    })),
   setAccount: (account) => set({ account }),
   setSaveStatus: (saveStatus) => set({ saveStatus }),
   setQuests: (quests) => set({ quests }),

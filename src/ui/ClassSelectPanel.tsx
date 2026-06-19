@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getClasses, getSkillsMe, selectPlayerClass } from "../api/client";
-import type { CharacterClassDefinition, CharacterClassId } from "../data/types";
+import { getClasses, getPlayerMe, getSkillsMe, selectPlayerClass } from "../api/client";
+import type { CharacterClassDefinition, CharacterClassId, PlayerSnapshot } from "../data/types";
 import { useGameStore } from "../store/useGameStore";
 
 export function ClassSelectPanel() {
@@ -10,7 +10,7 @@ export function ClassSelectPanel() {
   const setHotbar = useGameStore((state) => state.setHotbar);
   const addWarning = useGameStore((state) => state.addWarning);
   const [classes, setClasses] = useState<CharacterClassDefinition[]>([]);
-  const [busy, setBusy] = useState(false);
+  const [selectingClassId, setSelectingClassId] = useState<CharacterClassId | null>(null);
 
   useEffect(() => {
     void getClasses()
@@ -20,19 +20,35 @@ export function ClassSelectPanel() {
 
   if (!player || player.classId) return null;
 
+  const syncSelectedClass = async (candidate?: PlayerSnapshot) => {
+    const selectedPlayer = candidate?.classId ? candidate : (await getPlayerMe()).player;
+    setPlayer(selectedPlayer);
+    if (!selectedPlayer.classId) return false;
+
+    const skillsResponse = await getSkillsMe();
+    setSkills(skillsResponse.skills);
+    setHotbar(skillsResponse.hotbar);
+    return true;
+  };
+
   const selectClass = (classId: CharacterClassId) => {
-    setBusy(true);
+    if (selectingClassId) return;
+    setSelectingClassId(classId);
     void selectPlayerClass(classId)
-      .then((response) => {
-        setPlayer(response.player);
-        return getSkillsMe();
+      .then((response) => syncSelectedClass(response.player))
+      .then((selected) => {
+        if (!selected) addWarning("Lớp đã được lưu nhưng chưa tải lại được nhân vật.");
       })
-      .then((response) => {
-        setSkills(response.skills);
-        setHotbar(response.hotbar);
+      .catch(async () => {
+        try {
+          const selected = await syncSelectedClass();
+          if (selected) return;
+        } catch {
+          // The final warning below is the user-facing failure state.
+        }
+        addWarning("Không chọn được lớp.");
       })
-      .catch(() => addWarning("Không chọn được lớp."))
-      .finally(() => setBusy(false));
+      .finally(() => setSelectingClassId(null));
   };
 
   return (
@@ -44,17 +60,20 @@ export function ClassSelectPanel() {
           <span>Chọn phong cách chiến đấu để bước vào thế giới.</span>
         </header>
         <div className="class-select-grid">
-          {classes.map((definition) => (
-            <article className="class-card" key={definition.classId}>
-              <div>
-                <strong>{definition.name}</strong>
-                <span>{definition.description}</span>
-              </div>
-              <button type="button" onClick={() => selectClass(definition.classId)} disabled={busy}>
-                Chọn lớp này
-              </button>
-            </article>
-          ))}
+          {classes.map((definition) => {
+            const selecting = selectingClassId === definition.classId;
+            return (
+              <article className="class-card" key={definition.classId}>
+                <div>
+                  <strong>{definition.name}</strong>
+                  <span>{definition.description}</span>
+                </div>
+                <button type="button" onClick={() => selectClass(definition.classId)} disabled={selecting}>
+                  {selecting ? "Đang chọn..." : "Chọn lớp này"}
+                </button>
+              </article>
+            );
+          })}
         </div>
       </section>
     </>
