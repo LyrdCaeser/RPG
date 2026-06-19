@@ -3836,10 +3836,34 @@ button:disabled {
   gap: 12px;
 }
 
+.dialogue header div {
+  display: grid;
+  gap: 3px;
+}
+
+.dialogue header span {
+  color: #d6c89e;
+  font-size: 12px;
+}
+
 .dialogue p,
 .battle-panel p {
   margin: 10px 0 0;
   color: #d8e1dd;
+}
+
+.npc-dialogue-panel {
+  border-color: rgba(226, 190, 97, 0.72);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(42, 30, 20, 0.95), rgba(18, 31, 29, 0.94)),
+    radial-gradient(circle at 15% 0%, rgba(226, 190, 97, 0.14), transparent 38%);
+}
+
+.npc-dialogue-panel p {
+  min-height: 44px;
+  color: #f2ead1;
+  line-height: 1.5;
 }
 
 .dialogue-quest {
@@ -3852,14 +3876,44 @@ button:disabled {
   padding-top: 12px;
 }
 
+.dialogue-quest div {
+  display: grid;
+  gap: 4px;
+}
+
+.dialogue-quest small {
+  color: #e2be61;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .dialogue-quest span {
   color: #b7c7c1;
   font-size: 13px;
 }
 
 .dialogue-quest button {
-  grid-row: 1 / span 2;
   grid-column: 2;
+}
+
+.dialogue footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.dialogue footer span {
+  color: #9fb2ad;
+  font-size: 12px;
+}
+
+.dialogue footer div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .battle-panel {

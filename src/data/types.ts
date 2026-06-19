@@ -265,9 +265,11 @@ export interface MapTransitionState {
 export interface NpcDefinition {
   id: string;
   name: string;
+  role?: string;
   x: number;
   y: number;
   dialogue: Partial<Record<QuestState | "default", string[]>>;
+  tutorialDialogue?: string[];
   questId?: string;
 }
 

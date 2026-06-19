@@ -3,8 +3,8 @@ import type { QuestDefinition, PlayerQuest } from "./types.js";
 export const questDefinitions: QuestDefinition[] = [
   {
     id: "first-steps",
-    title: "Những bước đầu",
-    summary: "Nói chuyện với Trưởng lão Mira, thu thập đá mốc nứt và dọn slime gần tường.",
+    title: "Những bước đầu tiên",
+    summary: "Nói chuyện với Trưởng lão Mira, kiểm tra đá mốc nứt và dọn Slime xanh gần tường làng.",
     giverNpcId: "elder-mira",
     unlocksQuestIds: ["iron-memory"],
     objectives: [
@@ -37,8 +37,8 @@ export const questDefinitions: QuestDefinition[] = [
   },
   {
     id: "iron-memory",
-    title: "Ký ức sắt",
-    summary: "Thu thập quặng sắt cho Oro và thử lưỡi kiếm với ma trơi bụi.",
+    title: "Ký ức sát đá",
+    summary: "Thu thập quặng sắt cho Oro và thử lưỡi kiếm với Ma trơi bụi ngoài rừng trắng.",
     giverNpcId: "blacksmith-oro",
     unlocksQuestIds: ["scout-route"],
     objectives: [
@@ -46,7 +46,7 @@ export const questDefinitions: QuestDefinition[] = [
         id: "talk-oro",
         type: "talk_to_npc",
         targetId: "blacksmith-oro",
-        label: "Trao đổi về lò rèn với Oro",
+        label: "Trao đổi với Oro ở lò rèn",
         requiredCount: 1
       },
       {
@@ -71,9 +71,10 @@ export const questDefinitions: QuestDefinition[] = [
   },
   {
     id: "scout-route",
-    title: "Tuyến trinh sát",
-    summary: "Nói chuyện với Lyra, thu hồi thẻ trinh sát và đánh bại Hộ vệ cổ.",
+    title: "Tuyến đường trinh sát",
+    summary: "Giúp Lyra thu hồi thẻ trinh sát và đánh bại Hộ vệ cổ đang chặn tuyến đường.",
     giverNpcId: "scout-lyra",
+    unlocksQuestIds: ["gate-fire"],
     objectives: [
       {
         id: "talk-lyra",
@@ -100,6 +101,71 @@ export const questDefinitions: QuestDefinition[] = [
     rewardGold: 30,
     rewardExp: 40,
     rewardItems: [{ itemId: "iron-ring", quantity: 1 }]
+  },
+  {
+    id: "gate-fire",
+    title: "Ánh lửa bên cổng làng",
+    summary: "Giúp thợ rèn Borin giữ đèn cổng cháy qua màn sương trắng.",
+    giverNpcId: "blacksmith-borin",
+    unlocksQuestIds: ["white-forest-trace"],
+    objectives: [
+      {
+        id: "talk-borin",
+        type: "talk_to_npc",
+        targetId: "blacksmith-borin",
+        label: "Nói chuyện với thợ rèn Borin",
+        requiredCount: 1
+      },
+      {
+        id: "collect-wild-herb",
+        type: "collect_item",
+        targetId: "wild-herb",
+        label: "Thu thập thảo dược hoang",
+        requiredCount: 2
+      },
+      {
+        id: "collect-moonwood",
+        type: "collect_item",
+        targetId: "moonwood",
+        label: "Thu thập gỗ trăng",
+        requiredCount: 1
+      }
+    ],
+    rewardGold: 18,
+    rewardExp: 30,
+    rewardItems: [{ itemId: "mp-potion", quantity: 1 }]
+  },
+  {
+    id: "white-forest-trace",
+    title: "Dấu vết trong rừng trắng",
+    summary: "Theo dấu ánh sáng lạ trong rừng trắng và mang pha lê trắng về cho Người gác cổng.",
+    giverNpcId: "gate-warden",
+    objectives: [
+      {
+        id: "talk-gate-warden",
+        type: "talk_to_npc",
+        targetId: "gate-warden",
+        label: "Nói chuyện với Người gác cổng",
+        requiredCount: 1
+      },
+      {
+        id: "collect-moon-crystal",
+        type: "collect_item",
+        targetId: "moon-crystal",
+        label: "Thu thập pha lê trắng",
+        requiredCount: 1
+      },
+      {
+        id: "clear-wisp-trace",
+        type: "kill_enemy",
+        targetId: "wisp-01",
+        label: "Đánh bại Ma trơi bụi quanh dấu vết",
+        requiredCount: 2
+      }
+    ],
+    rewardGold: 25,
+    rewardExp: 45,
+    rewardItems: [{ itemId: "moon-necklace", quantity: 1 }]
   }
 ];
 

@@ -219,6 +219,7 @@ function toNpcDefinition(content: AdminNpcContent): NpcDefinition {
   return {
     id: content.npcId,
     name: content.name,
+    role: content.role,
     x: content.x,
     y: content.y,
     dialogue: content.dialogue,

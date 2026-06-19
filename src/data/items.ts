@@ -172,7 +172,7 @@ export const itemDefinitions: ItemDefinition[] = [
   },
   {
     id: "moon-crystal",
-    name: "Pha lê trăng",
+    name: "Pha lê trắng",
     icon: "^",
     type: "material",
     rarity: "uncommon",

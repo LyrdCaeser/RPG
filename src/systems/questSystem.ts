@@ -1,6 +1,7 @@
 import { getRuntimeQuestDefinitions } from "../data/runtimeContent";
 import type {
   NpcDefinition,
+  PlayerOnboarding,
   PlayerQuest,
   QuestDefinition,
   QuestObjective,
@@ -54,7 +55,15 @@ export function areQuestObjectivesComplete(definition: QuestDefinition, playerQu
   return definition.objectives.every((objective) => isObjectiveComplete(playerQuest, objective));
 }
 
-export function getNpcDialogue(npc: NpcDefinition, quests: PlayerQuest[]) {
+export function getNpcDialogue(npc: NpcDefinition, quests: PlayerQuest[], onboarding?: PlayerOnboarding | null) {
+  if (
+    npc.tutorialDialogue?.length &&
+    onboarding?.tutorialStatus === "active" &&
+    (onboarding.tutorialStepId === "talk_to_mira" || onboarding.tutorialStepId === "accept_first_quest")
+  ) {
+    return npc.tutorialDialogue;
+  }
+
   const npcQuest = getNpcQuest(npc, quests);
   const state = npcQuest?.playerQuest.state ?? "default";
   return npc.dialogue[state] ?? npc.dialogue.default ?? [];
@@ -144,6 +153,15 @@ function clampObjectiveCount(value: unknown, objective: QuestObjective) {
 }
 
 export function questActionLabel(state: QuestState) {
+  const labels: Record<QuestState, string> = {
+    available: "Nhận nhiệm vụ",
+    active: "Đang thực hiện",
+    completed: "Hoàn thành",
+    claimed: "Đã nhận",
+    locked: "Đã khóa"
+  };
+  return labels[state] ?? "Đã khóa";
+
   switch (state) {
     case "available":
       return "Chấp nhận";

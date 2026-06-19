@@ -12,7 +12,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "village-to-forest",
-        name: "Đường rừng trăng",
+        name: "Đường rừng trắng",
         x: 1184,
         y: 192,
         targetMapId: "moon_forest",
@@ -32,7 +32,9 @@ export const mapDefinitions: MapDefinition[] = [
     npcSpawns: [
       { npcId: "elder-mira", x: 256, y: 224 },
       { npcId: "blacksmith-oro", x: 704, y: 352 },
-      { npcId: "scout-lyra", x: 416, y: 672 }
+      { npcId: "scout-lyra", x: 416, y: 672 },
+      { npcId: "blacksmith-borin", x: 1008, y: 704 },
+      { npcId: "gate-warden", x: 1144, y: 784 }
     ],
     enemySpawns: [],
     collectibleIds: [],
@@ -44,7 +46,7 @@ export const mapDefinitions: MapDefinition[] = [
   },
   {
     mapId: "moon_forest",
-    name: "Rừng trăng",
+    name: "Rừng trắng",
     type: "field",
     width: 1600,
     height: 1152,
@@ -136,7 +138,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "dungeon-exit",
-        name: "Lối ra rừng trăng",
+        name: "Lối ra rừng trắng",
         x: 160,
         y: 128,
         targetMapId: "moon_forest",
