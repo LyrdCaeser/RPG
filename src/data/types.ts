@@ -1669,6 +1669,26 @@ export interface DailySnapshot {
   wallet: WalletSnapshot;
 }
 
+export interface WeeklyMissionStatus {
+  missionId: string;
+  title: string;
+  description: string;
+  objectiveLabel: string;
+  progress: number;
+  target: number;
+  completed: boolean;
+  claimed: boolean;
+  rewards: EventReward;
+  rewardMailId?: string | null;
+  claimedAt?: string | null;
+  updatedAt: string;
+}
+
+export interface WeeklySnapshot {
+  weekKey: string;
+  missions: WeeklyMissionStatus[];
+}
+
 export interface TopupPackage {
   packageId: string;
   name: string;

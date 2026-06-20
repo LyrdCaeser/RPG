@@ -693,6 +693,29 @@ create table if not exists mailbox_claims (
   primary key (user_id, mail_id)
 );
 
+create table if not exists weekly_mission_progress (
+  user_id uuid not null references users(id) on delete cascade,
+  week_key text not null,
+  mission_id text not null,
+  progress integer not null default 0 check (progress >= 0),
+  target integer not null check (target > 0),
+  claimed_at timestamptz,
+  reward_mail_id uuid references player_mailbox(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, week_key, mission_id)
+);
+
+create table if not exists weekly_mission_claims (
+  user_id uuid not null references users(id) on delete cascade,
+  week_key text not null,
+  mission_id text not null,
+  rewards_json jsonb not null default '{}'::jsonb,
+  reward_mail_id uuid references player_mailbox(id) on delete set null,
+  claimed_at timestamptz not null default now(),
+  primary key (user_id, week_key, mission_id)
+);
+
 create table if not exists player_friend_requests (
   id uuid primary key default gen_random_uuid(),
   from_user_id uuid not null references users(id) on delete cascade,
@@ -1602,6 +1625,10 @@ create index if not exists wallet_shop_purchases_transaction_idx on wallet_shop_
 create index if not exists daily_checkin_claims_user_claimed_idx on daily_checkin_claims (user_id, claimed_at desc);
 create index if not exists daily_quest_progress_user_date_idx on daily_quest_progress (user_id, quest_date);
 create index if not exists daily_quest_progress_date_claimed_idx on daily_quest_progress (quest_date, claimed_at);
+create index if not exists weekly_mission_progress_user_week_idx on weekly_mission_progress (user_id, week_key);
+create index if not exists weekly_mission_progress_week_claimed_idx on weekly_mission_progress (week_key, claimed_at);
+create index if not exists weekly_mission_claims_user_week_idx on weekly_mission_claims (user_id, week_key);
+create index if not exists weekly_mission_claims_mail_idx on weekly_mission_claims (reward_mail_id);
 create index if not exists topup_packages_enabled_order_idx on topup_packages (enabled, display_order);
 create index if not exists topup_requests_user_created_idx on topup_requests (user_id, created_at desc);
 create index if not exists topup_requests_status_created_idx on topup_requests (status, created_at desc);

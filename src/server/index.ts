@@ -45,6 +45,7 @@ import pvpRouter from "./routes/pvp.js";
 import topupRouter from "./routes/topup.js";
 import walletRouter from "./routes/wallet.js";
 import dailyRouter from "./routes/daily.js";
+import weeklyRouter from "./routes/weekly.js";
 import { isAuthError } from "./auth.js";
 
 const app = express();
@@ -110,6 +111,7 @@ app.use("/api/pvp", pvpRouter);
 app.use("/api/topup", topupRouter);
 app.use("/api/wallet", walletRouter);
 app.use("/api/daily", dailyRouter);
+app.use("/api/weekly", weeklyRouter);
 
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "not found" });

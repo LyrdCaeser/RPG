@@ -139,7 +139,8 @@ import type {
   WalletCurrency,
   WalletShopItem,
   WalletShopPurchase,
-  WalletSnapshot
+  WalletSnapshot,
+  WeeklySnapshot
 } from "../data/types";
 
 let sessionToken: string | null = null;
@@ -334,6 +335,17 @@ export function recordDailyProgress(payload: { eventType: "kill_enemy" | "collec
   return requestJson<{ updated: DailySnapshot["quests"]; snapshot: DailySnapshot }>("/api/daily/progress", {
     method: "POST",
     body: JSON.stringify(payload)
+  });
+}
+
+export function getWeeklyMe() {
+  return requestJson<WeeklySnapshot>("/api/weekly/me");
+}
+
+export function claimWeeklyMission(missionId: string) {
+  return requestJson<{ mission: WeeklySnapshot["missions"][number]; snapshot: WeeklySnapshot }>("/api/weekly/claim", {
+    method: "POST",
+    body: JSON.stringify({ missionId })
   });
 }
 
