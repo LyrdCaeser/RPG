@@ -450,6 +450,8 @@ export interface ShopDefinition {
 export interface EventReward {
   exp?: number;
   gold?: number;
+  blueDiamond?: number;
+  redRuby?: number;
   pvpPoints?: number;
   items?: ItemStack[];
   pets?: PetReward[];
@@ -597,10 +599,28 @@ export interface MailboxMessage {
   title: string;
   message: string;
   rewards: EventReward;
+  status: "unread" | "read" | "claimed" | "expired";
   read: boolean;
   claimed: boolean;
+  expired: boolean;
   createdAt: string;
   expiresAt?: string;
+  readAt?: string;
+  claimedAt?: string;
+}
+
+export interface AdminMailboxSentMessage {
+  id: string;
+  recipientUserId: string;
+  recipientDisplayName?: string;
+  senderName: string;
+  title: string;
+  message: string;
+  rewards: EventReward;
+  createdByAdminId?: string;
+  createdAt: string;
+  expiresAt?: string;
+  claimedAt?: string;
 }
 
 export interface SocialProfileSummary {

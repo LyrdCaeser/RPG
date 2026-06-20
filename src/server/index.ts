@@ -100,6 +100,7 @@ app.use("/api/achievements", achievementsRouter);
 app.use("/api/titles", titlesRouter);
 app.use("/api/collections", collectionsRouter);
 app.use("/api/mailbox", mailboxRouter);
+app.use("/api/mail", mailboxRouter);
 app.use("/api/admin", adminMailboxRouter);
 app.use("/api/social", socialRouter);
 app.use("/api/chat", chatRouter);

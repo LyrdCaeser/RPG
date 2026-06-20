@@ -6,11 +6,22 @@ import type { AdminMailboxSendPayload, EventReward } from "../../data/types.js";
 import { writeAdminAudit } from "../adminAudit.js";
 import { requireAdmin } from "../adminGuard.js";
 import { getRuntimeContentDefinitions, getStaticRuntimeContentDefinitions } from "../contentDefinitions.js";
-import { sendMailboxMessage } from "../mailboxPersistence.js";
+import { query } from "../db.js";
+import { getAdminSentMailbox, sendMailboxMessage } from "../mailboxPersistence.js";
 
 const router = Router();
 
-router.post("/mailbox/send", async (req, res, next) => {
+router.get("/mail/sent", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    res.json({ mail: await getAdminSentMailbox() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post(["/mailbox/send", "/mail/send"], async (req, res, next) => {
   try {
     const admin = await requireAdmin(req, res);
     if (!admin) return;
@@ -22,6 +33,11 @@ router.post("/mailbox/send", async (req, res, next) => {
     }
     if (!payload.userId || !payload.title) {
       res.status(400).json({ error: "userId and title are required." });
+      return;
+    }
+    const target = await query<{ id: string }>(`select id from users where id = $1 and deleted_at is null`, [payload.userId]);
+    if (!target.rows[0]) {
+      res.status(404).json({ error: "Recipient user was not found." });
       return;
     }
     const validationError = await validateRewards(payload.rewards);
@@ -37,7 +53,8 @@ router.post("/mailbox/send", async (req, res, next) => {
       title: payload.title,
       message: payload.message,
       rewards: payload.rewards,
-      expiresAt: payload.expiresAt
+      expiresAt: payload.expiresAt,
+      createdByAdminId: admin.userId
     });
     await writeAdminAudit(admin.userId, "admin.mailbox.send", "mailbox", mailId, {
       targetUserId: payload.userId,
@@ -46,6 +63,16 @@ router.post("/mailbox/send", async (req, res, next) => {
       expiresAt: payload.expiresAt ?? null
     });
     res.json({ mailId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/mail/send-all", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    res.status(501).json({ error: "Gửi thư cho tất cả người chơi chưa bật trong giai đoạn này." });
   } catch (error) {
     next(error);
   }
@@ -66,6 +93,8 @@ function normalizePayload(value: AdminMailboxSendPayload): AdminMailboxSendPaylo
 function normalizeRewards(rewards: EventReward): EventReward {
   return {
     gold: Math.max(0, Math.trunc(Number(rewards.gold ?? 0))),
+    blueDiamond: Math.max(0, Math.trunc(Number(rewards.blueDiamond ?? 0))),
+    redRuby: Math.max(0, Math.trunc(Number(rewards.redRuby ?? 0))),
     exp: Math.max(0, Math.trunc(Number(rewards.exp ?? 0))),
     items: Array.isArray(rewards.items)
       ? rewards.items.map((item) => ({ itemId: String(item.itemId ?? ""), quantity: Math.max(1, Math.trunc(Number(item.quantity ?? 1))) }))
@@ -77,6 +106,14 @@ function normalizeRewards(rewards: EventReward): EventReward {
 }
 
 async function validateRewards(rewards: EventReward) {
+  if (
+    Number(rewards.gold ?? 0) < 0 ||
+    Number(rewards.blueDiamond ?? 0) < 0 ||
+    Number(rewards.redRuby ?? 0) < 0 ||
+    Number(rewards.exp ?? 0) < 0
+  ) {
+    return "Reward amounts must be non-negative.";
+  }
   const content = await getRuntimeContentDefinitions().catch(() => getStaticRuntimeContentDefinitions());
   const itemIds = new Set(content.items.map((item) => item.id));
   const invalidItem = rewards.items?.find((item) => !itemIds.has(item.itemId));

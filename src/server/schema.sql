@@ -675,6 +675,9 @@ create table if not exists player_mailbox (
   expires_at timestamptz
 );
 
+alter table player_mailbox
+  add column if not exists created_by_admin_id uuid references users(id) on delete set null;
+
 create table if not exists mailbox_reads (
   user_id uuid not null references users(id) on delete cascade,
   mail_id uuid not null references player_mailbox(id) on delete cascade,
@@ -1630,6 +1633,7 @@ create index if not exists player_collections_user_category_idx on player_collec
 create index if not exists collection_claims_user_claimed_idx on collection_claims (user_id, claimed_at desc);
 create index if not exists player_mailbox_user_created_idx on player_mailbox (user_id, created_at desc);
 create index if not exists player_mailbox_user_expires_idx on player_mailbox (user_id, expires_at);
+create index if not exists player_mailbox_admin_created_idx on player_mailbox (created_by_admin_id, created_at desc);
 create index if not exists mailbox_reads_user_idx on mailbox_reads (user_id, read_at desc);
 create index if not exists mailbox_claims_user_idx on mailbox_claims (user_id, claimed_at desc);
 create index if not exists player_friend_requests_to_status_idx on player_friend_requests (to_user_id, status, created_at desc);

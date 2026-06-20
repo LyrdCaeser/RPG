@@ -76,6 +76,7 @@ import type {
   Party,
   PartyInvite,
   AchievementProgressEvent,
+  AdminMailboxSentMessage,
   PlayerPvPPenaltyAppeal,
   PlayerPvPPenalty,
   PlayerPvPPenaltySummary,
@@ -706,11 +707,11 @@ export function claimCollectionSet(setId: string, player: PlayerSnapshot) {
 }
 
 export function getMailboxMe() {
-  return requestJson<{ mail: MailboxMessage[] }>("/api/mailbox/me");
+  return requestJson<{ mail: MailboxMessage[] }>("/api/mail/me");
 }
 
 export function markMailboxRead(mailId: string) {
-  return requestJson<{ mail: MailboxMessage[] }>("/api/mailbox/read", {
+  return requestJson<{ mail: MailboxMessage[] }>("/api/mail/read", {
     method: "POST",
     body: JSON.stringify({ mailId })
   });
@@ -721,18 +722,23 @@ export function claimMailboxMail(mailId: string, player: PlayerSnapshot) {
     InventorySnapshot & {
       mail: MailboxMessage[];
       player: PlayerSnapshot;
+      wallet?: WalletSnapshot;
       pets?: PlayerPet[];
       mounts?: PlayerMount[];
       titles?: PlayerTitle[];
     }
-  >("/api/mailbox/claim", {
+  >("/api/mail/claim", {
     method: "POST",
     body: JSON.stringify({ mailId, player })
   });
 }
 
+export function getAdminMailboxSent() {
+  return requestJson<{ mail: AdminMailboxSentMessage[] }>("/api/admin/mail/sent");
+}
+
 export function sendAdminMailbox(payload: AdminMailboxSendPayload) {
-  return requestJson<{ mailId: string }>("/api/admin/mailbox/send", {
+  return requestJson<{ mailId: string }>("/api/admin/mail/send", {
     method: "POST",
     body: JSON.stringify(payload)
   });

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import type { PoolClient } from "pg";
 import type { EquipmentSlot, EquippedItem, InventoryItem, InventorySnapshot, PlayerSnapshot } from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { getRuntimeContentDefinitions, getStaticRuntimeContentDefinitions } from "../contentDefinitions.js";
@@ -164,6 +165,16 @@ export async function getInventorySnapshot(userId: string): Promise<InventorySna
 
 export async function addInventoryItem(userId: string, itemId: string, quantityDelta: number) {
   await query(
+    `insert into player_inventory (user_id, item_id, quantity, metadata)
+     values ($1, $2, greatest(0, $3), '{}'::jsonb)
+     on conflict (user_id, item_id)
+     do update set quantity = greatest(0, player_inventory.quantity + $3), updated_at = now()`,
+    [userId, itemId, quantityDelta]
+  );
+}
+
+export async function addInventoryItemWithClient(client: PoolClient, userId: string, itemId: string, quantityDelta: number) {
+  await client.query(
     `insert into player_inventory (user_id, item_id, quantity, metadata)
      values ($1, $2, greatest(0, $3), '{}'::jsonb)
      on conflict (user_id, item_id)

@@ -6,6 +6,7 @@ import { useGameStore } from "../store/useGameStore";
 export function MailboxPanel() {
   const player = useGameStore((state) => state.player);
   const setPlayer = useGameStore((state) => state.setPlayer);
+  const setWallet = useGameStore((state) => state.setWallet);
   const setInventorySnapshot = useGameStore((state) => state.setInventorySnapshot);
   const setPets = useGameStore((state) => state.setPets);
   const setMounts = useGameStore((state) => state.setMounts);
@@ -14,6 +15,7 @@ export function MailboxPanel() {
   const addWarning = useGameStore((state) => state.addWarning);
   const [mail, setMail] = useState<MailboxMessage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
     void refresh();
@@ -29,14 +31,16 @@ export function MailboxPanel() {
   }
 
   function read(mailId: string) {
+    setBusyId(mailId);
     void markMailboxRead(mailId)
       .then((response) => setMail(response.mail))
-      .catch(() => addWarning("Không đánh dấu đọc được thư."));
+      .catch(() => addWarning("Không đánh dấu đã đọc được thư."))
+      .finally(() => setBusyId(null));
   }
 
   function claim(mailItem: MailboxMessage) {
     if (!player) return;
-    if (mailItem.expiresAt && new Date(mailItem.expiresAt).getTime() <= Date.now()) {
+    if (mailItem.expired) {
       addWarning("Thư đã hết hạn.");
       return;
     }
@@ -44,10 +48,12 @@ export function MailboxPanel() {
       addWarning("Thư đã được nhận.");
       return;
     }
+    setBusyId(mailItem.id);
     void claimMailboxMail(mailItem.id, player)
       .then((response) => {
         setMail(response.mail);
         setPlayer(response.player);
+        if (response.wallet) setWallet(response.wallet);
         setInventorySnapshot(response);
         if (response.pets) setPets(response.pets);
         if (response.mounts) setMounts(response.mounts);
@@ -61,8 +67,9 @@ export function MailboxPanel() {
         const message = error instanceof Error ? error.message : "Không nhận được thư.";
         if (message.toLowerCase().includes("expired")) addWarning("Thư đã hết hạn.");
         else if (message.toLowerCase().includes("already")) addWarning("Thư đã được nhận.");
-        else addWarning("Không nhận được thư.");
-      });
+        else addWarning(message);
+      })
+      .finally(() => setBusyId(null));
   }
 
   function reportCollection(category: "items" | "pets" | "mounts" | "titles", entryId: string, amount = 1) {
@@ -77,11 +84,12 @@ export function MailboxPanel() {
         <h2>Thư</h2>
         <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
+      {mail.length === 0 ? <p>Hộp thư trống.</p> : null}
       <div className="mailbox-list">
         {mail.map((item) => (
           <button type="button" key={item.id} data-active={selected?.id === item.id} data-read={item.read} onClick={() => setSelectedId(item.id)}>
             <strong>{item.title}</strong>
-            <span>{item.read ? "đã đọc" : "chưa đọc"} - {item.claimed ? "đã nhận" : "chưa nhận"}</span>
+            <span>{statusLabel(item.status)} - {formatDate(item.createdAt)}</span>
           </button>
         ))}
       </div>
@@ -92,13 +100,16 @@ export function MailboxPanel() {
             <span>{selected.senderName}</span>
           </header>
           <small>
-            {new Date(selected.createdAt).toLocaleString()} {selected.expiresAt ? `- hết hạn ${new Date(selected.expiresAt).toLocaleString()}` : ""}
+            {formatDate(selected.createdAt)} {selected.expiresAt ? `- hết hạn ${formatDate(selected.expiresAt)}` : ""}
           </small>
           <p>{selected.message}</p>
           <em>{formatReward(selected.rewards)}</em>
+          {selected.expired ? <p className="warning-text">Thư đã hết hạn, không thể nhận quà.</p> : null}
           <div>
-            <button type="button" disabled={selected.read} onClick={() => read(selected.id)}>Đánh dấu đã đọc</button>
-            <button type="button" disabled={selected.claimed || !hasReward(selected.rewards)} onClick={() => claim(selected)}>Nhận</button>
+            <button type="button" disabled={selected.read || busyId === selected.id} onClick={() => read(selected.id)}>Đánh dấu đã đọc</button>
+            <button type="button" disabled={busyId === selected.id || selected.claimed || selected.expired || !hasReward(selected.rewards)} onClick={() => claim(selected)}>
+              {selected.claimed ? "Đã nhận" : "Nhận quà"}
+            </button>
           </div>
         </article>
       )}
@@ -107,16 +118,38 @@ export function MailboxPanel() {
 }
 
 function hasReward(reward: EventReward) {
-  return Boolean(reward.gold || reward.exp || reward.items?.length || reward.pets?.length || reward.mounts?.length || reward.titles?.length);
+  return Boolean(
+    reward.gold ||
+      reward.blueDiamond ||
+      reward.redRuby ||
+      reward.exp ||
+      reward.items?.length ||
+      reward.pets?.length ||
+      reward.mounts?.length ||
+      reward.titles?.length
+  );
 }
 
 function formatReward(reward: EventReward) {
   const parts: string[] = [];
+  if (reward.gold) parts.push(`${reward.gold} Vàng`);
+  if (reward.blueDiamond) parts.push(`${reward.blueDiamond} Kim Cương Lam`);
+  if (reward.redRuby) parts.push(`${reward.redRuby} Ruby Đỏ`);
   if (reward.exp) parts.push(`${reward.exp} kinh nghiệm`);
-  if (reward.gold) parts.push(`${reward.gold} vàng`);
   for (const item of reward.items ?? []) parts.push(`${item.quantity} ${item.itemId}`);
   for (const pet of reward.pets ?? []) parts.push(`thú đồng hành ${pet.petId}`);
   for (const mount of reward.mounts ?? []) parts.push(`thú cưỡi ${mount.mountId}`);
   for (const title of reward.titles ?? []) parts.push(`danh hiệu ${title.titleId}`);
   return parts.length ? parts.join(", ") : "Không có đính kèm";
+}
+
+function statusLabel(status: MailboxMessage["status"]) {
+  if (status === "claimed") return "Đã nhận";
+  if (status === "expired") return "Hết hạn";
+  if (status === "read") return "Đã đọc";
+  return "Chưa đọc";
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleString();
 }
