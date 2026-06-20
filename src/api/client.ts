@@ -135,6 +135,8 @@ import type {
   RuntimeContentDefinitions,
   UpgradeRuleDefinition,
   WalletCurrency,
+  WalletShopItem,
+  WalletShopPurchase,
   WalletSnapshot
 } from "../data/types";
 
@@ -286,6 +288,28 @@ export function getWalletMe() {
   return requestJson<WalletSnapshot>("/api/wallet/me");
 }
 
+export function getWalletShopItems() {
+  return requestJson<{ items: WalletShopItem[] }>("/api/shop/items");
+}
+
+export function getWalletShopPurchases() {
+  return requestJson<{ purchases: WalletShopPurchase[] }>("/api/shop/purchases");
+}
+
+export function buyWalletShopItem(shopItemId: string, quantity = 1) {
+  return requestJson<
+    InventorySnapshot & {
+      wallet: WalletSnapshot;
+      player: PlayerSnapshot;
+      purchase: WalletShopPurchase;
+      transaction: WalletSnapshot["transactions"][number];
+    }
+  >("/api/shop/buy", {
+    method: "POST",
+    body: JSON.stringify({ shopItemId, quantity })
+  });
+}
+
 export function getTopupPackages() {
   return requestJson<{ packages: TopupPackage[]; activeSales: TopupSale[] }>("/api/topup/packages");
 }
@@ -326,6 +350,35 @@ export function adjustAdminWallet(payload: {
   return requestJson<{ balances: WalletSnapshot["balances"]; transaction: WalletSnapshot["transactions"][number] }>("/api/admin/wallet/adjust", {
     method: "POST",
     body: JSON.stringify(payload)
+  });
+}
+
+export function getAdminShopItems() {
+  return requestJson<{ items: WalletShopItem[] }>("/api/admin/shop/items");
+}
+
+export function saveAdminShopItem(payload: {
+  shopItemId: string;
+  itemId: string;
+  name: string;
+  description: string;
+  currencyType: WalletCurrency;
+  price: number;
+  stockLimit?: number;
+  enabled: boolean;
+  category: WalletShopItem["category"];
+  displayOrder: number;
+}) {
+  return requestJson<{ item: WalletShopItem }>("/api/admin/shop/save", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function toggleAdminShopItem(shopItemId: string, enabled: boolean) {
+  return requestJson<{ item: WalletShopItem }>("/api/admin/shop/toggle", {
+    method: "POST",
+    body: JSON.stringify({ shopItemId, enabled })
   });
 }
 
@@ -2012,14 +2065,14 @@ export function getShop(npcId: string) {
 }
 
 export function buyShopItem(npcId: string, itemId: string, player: PlayerSnapshot, quantity = 1) {
-  return requestJson<InventorySnapshot & { player: PlayerSnapshot }>("/api/shop/buy", {
+  return requestJson<InventorySnapshot & { player: PlayerSnapshot; wallet?: WalletSnapshot }>("/api/shop/buy", {
     method: "POST",
     body: JSON.stringify({ npcId, itemId, quantity, player })
   });
 }
 
 export function sellShopItem(npcId: string, itemId: string, player: PlayerSnapshot, quantity = 1) {
-  return requestJson<InventorySnapshot & { player: PlayerSnapshot }>("/api/shop/sell", {
+  return requestJson<InventorySnapshot & { player: PlayerSnapshot; wallet?: WalletSnapshot }>("/api/shop/sell", {
     method: "POST",
     body: JSON.stringify({ npcId, itemId, quantity, player })
   });

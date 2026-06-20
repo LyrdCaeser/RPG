@@ -7,6 +7,7 @@ import { ADMIN_PVP_PLAYER_PROFILE_OPEN_EVENT } from "./adminPvpRefreshEvents";
 const AdminPlayersPanel = lazy(() => import("./AdminPlayersPanel").then((module) => ({ default: module.AdminPlayersPanel })));
 const AdminTopupPanel = lazy(() => import("./AdminTopupPanel").then((module) => ({ default: module.AdminTopupPanel })));
 const AdminWalletPanel = lazy(() => import("./AdminWalletPanel").then((module) => ({ default: module.AdminWalletPanel })));
+const AdminWalletShopPanel = lazy(() => import("./AdminWalletShopPanel").then((module) => ({ default: module.AdminWalletShopPanel })));
 const AdminContentPanel = lazy(() => import("./AdminContentPanel").then((module) => ({ default: module.AdminContentPanel })));
 const AdminMailboxPanel = lazy(() => import("./AdminMailboxPanel").then((module) => ({ default: module.AdminMailboxPanel })));
 const AdminGiftcodesPanel = lazy(() => import("./AdminGiftcodesPanel").then((module) => ({ default: module.AdminGiftcodesPanel })));
@@ -36,6 +37,7 @@ const tabs = [
   "Tổng quan",
   "Người chơi",
   "Ví tiền",
+  "Cửa hàng ví tiền",
   "Duyệt nạp Ruby",
   "NPCs",
   "Nhiệm vụ",
@@ -153,6 +155,7 @@ export function AdminPanel({
               <Suspense fallback={<div className="admin-loading">Đang tải khu quản trị</div>}>
                 {activeTab === "Người chơi" && <AdminPlayersPanel />}
                 {activeTab === "Ví tiền" && <AdminWalletPanel />}
+                {activeTab === "Cửa hàng ví tiền" && <AdminWalletShopPanel />}
                 {activeTab === "Duyệt nạp Ruby" && <AdminTopupPanel />}
                 {activeTab === "NPCs" && <AdminContentPanel kind="npcs" />}
                 {activeTab === "Nhiệm vụ" && <AdminContentPanel kind="quests" />}

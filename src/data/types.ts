@@ -27,6 +27,7 @@ export type UserRole = "player" | "moderator" | "admin" | "owner";
 export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
 export type WalletCurrency = "red_ruby" | "gold" | "blue_diamond";
+export type WalletShopCategory = "normal" | "ruby" | "blue_diamond";
 export type TopupRequestStatus = "pending" | "approved" | "rejected" | "cancelled";
 export type TopupSaleType = "normal_sale" | "big_sale";
 export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
@@ -1579,6 +1580,37 @@ export interface WalletTransaction {
 export interface WalletSnapshot {
   balances: WalletBalances;
   transactions: WalletTransaction[];
+}
+
+export interface WalletShopItem {
+  shopItemId: string;
+  itemId: string;
+  name: string;
+  description: string;
+  currencyType: WalletCurrency;
+  price: number;
+  stockLimit?: number;
+  enabled: boolean;
+  category: WalletShopCategory;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  totalPurchased: number;
+  soldOut: boolean;
+}
+
+export interface WalletShopPurchase {
+  purchaseId: string;
+  userId: string;
+  shopItemId: string;
+  itemId: string;
+  itemName: string | null;
+  currencyType: WalletCurrency;
+  price: number;
+  quantity: number;
+  totalPrice: number;
+  walletTransactionId: string;
+  createdAt: string;
 }
 
 export interface TopupPackage {

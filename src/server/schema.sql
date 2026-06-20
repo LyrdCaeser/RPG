@@ -272,6 +272,38 @@ create table if not exists wallet_transactions (
   check (reference_id is null or length(reference_id) <= 160)
 );
 
+create table if not exists wallet_shop_items (
+  shop_item_id text primary key,
+  item_id text not null,
+  name text not null,
+  description text not null default '',
+  currency_type text not null check (currency_type in ('red_ruby', 'gold', 'blue_diamond')),
+  price bigint not null check (price > 0),
+  stock_limit integer check (stock_limit is null or stock_limit > 0),
+  enabled boolean not null default true,
+  category text not null check (category in ('normal', 'ruby', 'blue_diamond')),
+  display_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (length(trim(shop_item_id)) > 0 and length(shop_item_id) <= 80),
+  check (length(trim(item_id)) > 0 and length(item_id) <= 120),
+  check (length(trim(name)) > 0 and length(name) <= 120),
+  check (length(description) <= 400)
+);
+
+create table if not exists wallet_shop_purchases (
+  purchase_id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  shop_item_id text not null references wallet_shop_items(shop_item_id),
+  item_id text not null,
+  currency_type text not null check (currency_type in ('red_ruby', 'gold', 'blue_diamond')),
+  price bigint not null check (price > 0),
+  quantity integer not null check (quantity > 0),
+  total_price bigint not null check (total_price > 0),
+  wallet_transaction_id uuid not null references wallet_transactions(id),
+  created_at timestamptz not null default now()
+);
+
 create table if not exists topup_packages (
   package_id text primary key,
   name text not null,
@@ -352,6 +384,17 @@ values
   ('ruby_1000000', 'Gói Ruby Đỏ 1.000.000đ', 1000000, 12000, 0, true, 60),
   ('ruby_2650000', 'Gói Ruby Đỏ 2.650.000đ', 2650000, 33000, 0, true, 70)
 on conflict (package_id) do nothing;
+
+insert into wallet_shop_items (shop_item_id, item_id, name, description, currency_type, price, stock_limit, enabled, category, display_order)
+values
+  ('normal_hp_potion', 'hp-potion', 'Bình máu', 'Hồi máu cơ bản cho hành trình đầu game.', 'gold', 20, null, true, 'normal', 10),
+  ('normal_mp_potion', 'mp-potion', 'Bình nội lực', 'Hồi nội lực để tiếp tục dùng kỹ năng.', 'gold', 24, null, true, 'normal', 20),
+  ('normal_wild_herb', 'wild-herb', 'Thảo dược hoang', 'Nguyên liệu phổ thông dùng cho chế tác và nhiệm vụ.', 'gold', 12, null, true, 'normal', 30),
+  ('ruby_moon_crystal', 'moon-crystal', 'Pha lê trắng', 'Nguyên liệu hiếm, tiện lợi nhưng không phá cân bằng chiến đấu.', 'red_ruby', 35, null, true, 'ruby', 10),
+  ('ruby_wisp_dust', 'wisp-dust', 'Bụi ma trơi', 'Nguyên liệu phát sáng dành cho người muốn tiết kiệm thời gian thu thập.', 'red_ruby', 22, null, true, 'ruby', 20),
+  ('blue_sentinel_core', 'sentinel-core', 'Lõi hộ vệ', 'Nguyên liệu hiếm từ hộ vệ cổ, dành cho trao đổi đặc biệt.', 'blue_diamond', 8, null, true, 'blue_diamond', 10),
+  ('blue_moonwood', 'moonwood', 'Gỗ trắng', 'Vật liệu đặc biệt dùng trong chế tác hiếm.', 'blue_diamond', 3, null, true, 'blue_diamond', 20)
+on conflict (shop_item_id) do nothing;
 
 create table if not exists player_map_progress (
   user_id uuid not null references users(id) on delete cascade,
@@ -1524,6 +1567,11 @@ create index if not exists player_admin_grants_user_created_idx on player_admin_
 create index if not exists wallet_transactions_user_created_idx on wallet_transactions (user_id, created_at desc);
 create index if not exists wallet_transactions_currency_created_idx on wallet_transactions (currency, created_at desc);
 create index if not exists wallet_transactions_created_by_idx on wallet_transactions (created_by, created_at desc);
+create index if not exists wallet_shop_items_enabled_category_order_idx on wallet_shop_items (enabled, category, display_order);
+create index if not exists wallet_shop_items_item_idx on wallet_shop_items (item_id);
+create index if not exists wallet_shop_purchases_user_created_idx on wallet_shop_purchases (user_id, created_at desc);
+create index if not exists wallet_shop_purchases_shop_item_idx on wallet_shop_purchases (shop_item_id, created_at desc);
+create index if not exists wallet_shop_purchases_transaction_idx on wallet_shop_purchases (wallet_transaction_id);
 create index if not exists topup_packages_enabled_order_idx on topup_packages (enabled, display_order);
 create index if not exists topup_requests_user_created_idx on topup_requests (user_id, created_at desc);
 create index if not exists topup_requests_status_created_idx on topup_requests (status, created_at desc);

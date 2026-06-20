@@ -7,10 +7,12 @@ import { useGameStore } from "../store/useGameStore";
 export function ShopPanel() {
   const npc = useGameStore((state) => state.activeShopNpc);
   const player = useGameStore((state) => state.player);
+  const wallet = useGameStore((state) => state.wallet);
   const inventory = useGameStore((state) => state.inventory);
   const closeShop = useGameStore((state) => state.closeShop);
   const setPlayer = useGameStore((state) => state.setPlayer);
   const setInventorySnapshot = useGameStore((state) => state.setInventorySnapshot);
+  const setWallet = useGameStore((state) => state.setWallet);
   const addWarning = useGameStore((state) => state.addWarning);
   const [shop, setShop] = useState<ShopDefinition | null>(null);
   const [shopMessage, setShopMessage] = useState("Cần tiếp tế không?");
@@ -37,19 +39,16 @@ export function ShopPanel() {
   async function buy(itemId: string) {
     const item = findRuntimeItemDefinition(itemId);
     if (!item || !player) return;
-    const price = item.buyPrice ?? item.sellPrice * 2;
-    if (player.gold < price) {
-      setShopMessage("Không đủ vàng để mua món đó.");
-      addWarning("Không đủ vàng.");
-      return;
-    }
     try {
       const response = await buyShopItem(npcId, itemId, player);
       setInventorySnapshot(response);
       setPlayer(response.player);
-      setShopMessage("Lựa chọn tốt. Nó là của bạn.");
-    } catch {
-      addWarning("Mua thất bại. Hành trang và vàng chưa được lưu.");
+      if (response.wallet) setWallet(response.wallet);
+      setShopMessage("Lựa chọn tốt. Giao dịch đã được ghi vào ví/ledger.");
+    } catch (error) {
+      const text = error instanceof Error ? error.message : "Mua thất bại. Hành trang và ví chưa được lưu.";
+      setShopMessage(text);
+      addWarning(text);
     }
   }
 
@@ -59,6 +58,7 @@ export function ShopPanel() {
       const response = await sellShopItem(npcId, itemId, player);
       setInventorySnapshot(response);
       setPlayer(response.player);
+      if (response.wallet) setWallet(response.wallet);
       setShopMessage("Ta sẽ dùng được món này. Vàng đã vào túi bạn.");
     } catch {
       addWarning("Bán thất bại. Hành trang và vàng chưa được lưu.");
@@ -69,7 +69,7 @@ export function ShopPanel() {
     <section className="shop-panel" aria-label="Cửa hàng">
       <header>
         <h2>{shop.name}</h2>
-        <span>{player.gold} vàng</span>
+        <span>{wallet ? `${wallet.balances.gold} vàng trong ví` : `${player.gold} vàng nhân vật`}</span>
         <button type="button" onClick={closeShop} aria-label="Đóng cửa hàng">
           x
         </button>
@@ -85,7 +85,7 @@ export function ShopPanel() {
               <article className="shop-row" key={stack.itemId}>
                 <span>{item.icon}</span>
                 <strong>{item.name}</strong>
-                <em>{item.buyPrice ?? item.sellPrice * 2}g</em>
+                <em>{item.buyPrice ?? item.sellPrice * 2} vàng</em>
                 <button type="button" onClick={() => buy(item.id)}>
                   Mua
                 </button>
@@ -103,8 +103,10 @@ export function ShopPanel() {
               return (
                 <article className="shop-row" key={stack.itemId}>
                   <span>{item.icon}</span>
-                  <strong>{item.name} x{stack.quantity}</strong>
-                  <em>{item.sellPrice}g</em>
+                  <strong>
+                    {item.name} x{stack.quantity}
+                  </strong>
+                  <em>{item.sellPrice} vàng</em>
                   <button type="button" onClick={() => sell(item.id)}>
                     Bán
                   </button>

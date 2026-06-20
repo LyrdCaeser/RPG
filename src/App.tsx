@@ -55,6 +55,7 @@ import { MailboxPanel } from "./ui/MailboxPanel";
 import { ChatPanel } from "./ui/ChatPanel";
 import { SettingsPanel } from "./ui/SettingsPanel";
 import { WalletPanel } from "./ui/WalletPanel";
+import { WalletShopPanel } from "./ui/WalletShopPanel";
 import { TopupPanel } from "./ui/TopupPanel";
 import { IntroStoryPanel } from "./ui/IntroStoryPanel";
 import { GuidanceLevelPanel } from "./ui/GuidanceLevelPanel";
@@ -70,7 +71,20 @@ const AUTOSAVE_INTERVAL_MS = 20000;
 const AdminPanel = lazy(() => import("./ui/admin/AdminPanel").then((module) => ({ default: module.AdminPanel })));
 const GuildPanel = lazy(() => import("./ui/GuildPanel").then((module) => ({ default: module.GuildPanel })));
 const PvPPanel = lazy(() => import("./ui/PvPPanel").then((module) => ({ default: module.PvPPanel })));
-type ActivePanel = "inventory" | "skills" | "quests" | "map" | "mail" | "guild" | "pvp" | "wallet" | "topup" | "settings" | "admin" | null;
+type ActivePanel =
+  | "inventory"
+  | "skills"
+  | "quests"
+  | "map"
+  | "mail"
+  | "guild"
+  | "pvp"
+  | "wallet"
+  | "shop"
+  | "topup"
+  | "settings"
+  | "admin"
+  | null;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -767,6 +781,7 @@ export default function App() {
                   {activePanel === "map" && <MinimapPanel />}
                   {activePanel === "mail" && <MailboxPanel />}
                   {activePanel === "wallet" && <WalletPanel />}
+                  {activePanel === "shop" && <WalletShopPanel />}
                   {activePanel === "topup" && <TopupPanel />}
                   {activePanel === "settings" && <SettingsPanel onClose={closeActivePanel} />}
                   {activePanel === "admin" && isAdmin && (
@@ -814,6 +829,7 @@ function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
     { panel: "map", label: "Bản đồ" },
     { panel: "mail", label: "Thư" },
     { panel: "wallet", label: "Ví tiền" },
+    { panel: "shop", label: "Cửa hàng" },
     { panel: "topup", label: "Nạp Ruby" },
     { panel: "guild", label: "Bang hội" },
     { panel: "pvp", label: "Đấu trường" },
@@ -888,6 +904,7 @@ function panelTitle(panel: Exclude<ActivePanel, null>) {
     map: "Bản đồ",
     mail: "Thư",
     wallet: "Ví tiền",
+    shop: "Cửa hàng",
     topup: "Nạp Ruby Đỏ",
     guild: "Bang hội",
     pvp: "Đấu trường",
