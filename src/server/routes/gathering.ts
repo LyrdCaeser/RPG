@@ -4,6 +4,7 @@ import { findPetDefinition } from "../../data/pets.js";
 import type { PlayerSnapshot } from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { query } from "../db.js";
+import { recordDailyQuestProgress } from "../daily.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
 import { getPlayerPetsSnapshot, grantPetExperience } from "../rewardPersistence.js";
@@ -64,7 +65,7 @@ router.post("/collect", async (req, res, next) => {
     await query(
       `insert into gathering_results (user_id, node_id, map_id, drops_json, player_snapshot)
        values ($1, $2, $3, $4, $5)`,
-      [userId, node.nodeId, node.mapId, drops, savedPlayer]
+      [userId, node.nodeId, node.mapId, JSON.stringify(drops), savedPlayer]
     );
     let petBonusSaveFailed = false;
     if (petBonus) {
@@ -73,7 +74,7 @@ router.post("/collect", async (req, res, next) => {
         await query(
           `insert into pet_gathering_results (user_id, pet_id, node_id, map_id, bonus_json, drops_json, player_snapshot)
            values ($1, $2, $3, $4, $5, $6, $7)`,
-          [userId, activePet.pet_id, node.nodeId, node.mapId, petBonus, drops, savedPlayer]
+          [userId, activePet.pet_id, node.nodeId, node.mapId, petBonus, JSON.stringify(drops), savedPlayer]
         );
         await grantPetExperience(userId, activePet.pet_id, 6 + bonusQuantity * 2, "gathering", { nodeId: node.nodeId, petBonus });
       } catch {
@@ -87,6 +88,10 @@ router.post("/collect", async (req, res, next) => {
        do update set gathered_count = player_gathering_history.gathered_count + 1, last_gathered_at = now()`,
       [userId, node.nodeId]
     );
+    const collectedQuantity = drops.reduce((total, drop) => total + drop.quantity, 0);
+    if (collectedQuantity > 0) {
+      await recordDailyQuestProgress(userId, { eventType: "collect_material", amount: collectedQuantity });
+    }
 
     res.json({ ...(await getInventorySnapshot(userId)), player: savedPlayer, drops, petBonus, petBonusSaveFailed, pets: await getPlayerPetsSnapshot(userId) });
   } catch (error) {

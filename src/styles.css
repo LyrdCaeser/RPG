@@ -3109,6 +3109,7 @@ button:disabled {
 .major-panel-body .mailbox-panel,
 .major-panel-body .wallet-panel,
 .major-panel-body .wallet-shop-panel,
+.major-panel-body .daily-panel,
 .major-panel-body .topup-panel,
 .major-panel-body .guild-panel,
 .major-panel-body .pvp-panel,
@@ -3727,6 +3728,100 @@ button:disabled {
   border-radius: 8px;
   padding: 9px;
   background: rgba(14, 24, 21, 0.68);
+}
+
+.daily-panel {
+  display: grid;
+  gap: 14px;
+  color: #edf7ef;
+}
+
+.daily-panel header,
+.daily-checkin-card,
+.daily-quest-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.daily-panel h2,
+.daily-panel h3 {
+  margin: 0;
+  color: #fff1b8;
+}
+
+.daily-panel p,
+.daily-panel span,
+.daily-panel small {
+  color: #b9c7c1;
+}
+
+.daily-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.daily-tabs button[data-active="true"] {
+  border-color: #d6b86a;
+  color: #fff1b8;
+  background: linear-gradient(180deg, rgba(76, 60, 31, 0.92), rgba(35, 36, 24, 0.88));
+}
+
+.daily-message,
+.daily-empty {
+  border: 1px solid #5f765f;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(8, 15, 13, 0.66);
+}
+
+.daily-checkin-card,
+.daily-quest-card {
+  border: 1px solid #5f765f;
+  border-radius: 10px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(31, 45, 39, 0.9), rgba(10, 18, 16, 0.92));
+  box-shadow: inset 0 1px 0 #fff4c916;
+}
+
+.daily-checkin-card > div,
+.daily-quest-card > div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.daily-quest-list {
+  display: grid;
+  gap: 10px;
+}
+
+.daily-quest-card[data-complete="true"] {
+  border-color: #7fbf7b;
+}
+
+.daily-quest-card[data-claimed="true"] {
+  opacity: 0.75;
+}
+
+.daily-quest-card progress {
+  width: min(360px, 100%);
+  accent-color: #d6b86a;
+}
+
+.daily-rewards {
+  display: grid;
+  gap: 3px;
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(8, 15, 13, 0.44);
+}
+
+.daily-rewards strong {
+  color: #f5d98d;
 }
 
 .admin-wallet-shop-editor,

@@ -1613,6 +1613,42 @@ export interface WalletShopPurchase {
   createdAt: string;
 }
 
+export interface DailyReward {
+  gold?: number;
+  blueDiamond?: number;
+  items?: ItemStack[];
+}
+
+export interface DailyCheckinStatus {
+  claimed: boolean;
+  streakDay: number;
+  rewards: DailyReward;
+  claimedAt: string | null;
+}
+
+export interface DailyQuestStatus {
+  questId: string;
+  title: string;
+  description: string;
+  objectiveLabel: string;
+  requiredCount: number;
+  progress: number;
+  completed: boolean;
+  claimed: boolean;
+  rewards: DailyReward;
+  questDate: string;
+  completedAt: string | null;
+  claimedAt: string | null;
+  updatedAt: string;
+}
+
+export interface DailySnapshot {
+  serverDate: string;
+  checkin: DailyCheckinStatus;
+  quests: DailyQuestStatus[];
+  wallet: WalletSnapshot;
+}
+
 export interface TopupPackage {
   packageId: string;
   name: string;

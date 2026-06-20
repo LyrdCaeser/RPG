@@ -3,6 +3,7 @@ import type { BattleResult, PlayerSnapshot } from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { getRuntimeContentDefinitions, getStaticRuntimeContentDefinitions } from "../contentDefinitions.js";
 import { query } from "../db.js";
+import { recordDailyQuestProgress } from "../daily.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
 
@@ -27,6 +28,7 @@ router.post("/result", async (req, res, next) => {
        values ($1, $2, $3, $4, $5, $6, $7)`,
       [userId, enemy.id, enemy.name, savedPlayer.level, enemy.expReward, enemy.goldReward, savedPlayer]
     );
+    await recordDailyQuestProgress(userId, { eventType: "kill_enemy", targetId: enemy.id, amount: 1 });
 
     const result: BattleResult = {
       enemyId: enemy.id,

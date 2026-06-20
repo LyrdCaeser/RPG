@@ -304,6 +304,30 @@ create table if not exists wallet_shop_purchases (
   created_at timestamptz not null default now()
 );
 
+create table if not exists daily_checkin_claims (
+  user_id uuid not null references users(id) on delete cascade,
+  claim_date date not null,
+  streak_day integer not null check (streak_day >= 1 and streak_day <= 7),
+  rewards_json jsonb not null default '{}'::jsonb,
+  wallet_transaction_ids jsonb not null default '[]'::jsonb,
+  claimed_at timestamptz not null default now(),
+  primary key (user_id, claim_date)
+);
+
+create table if not exists daily_quest_progress (
+  user_id uuid not null references users(id) on delete cascade,
+  quest_id text not null,
+  quest_date date not null,
+  progress integer not null default 0 check (progress >= 0),
+  completed_at timestamptz,
+  claimed_at timestamptz,
+  rewards_json jsonb not null default '{}'::jsonb,
+  wallet_transaction_ids jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, quest_id, quest_date)
+);
+
 create table if not exists topup_packages (
   package_id text primary key,
   name text not null,
@@ -1572,6 +1596,9 @@ create index if not exists wallet_shop_items_item_idx on wallet_shop_items (item
 create index if not exists wallet_shop_purchases_user_created_idx on wallet_shop_purchases (user_id, created_at desc);
 create index if not exists wallet_shop_purchases_shop_item_idx on wallet_shop_purchases (shop_item_id, created_at desc);
 create index if not exists wallet_shop_purchases_transaction_idx on wallet_shop_purchases (wallet_transaction_id);
+create index if not exists daily_checkin_claims_user_claimed_idx on daily_checkin_claims (user_id, claimed_at desc);
+create index if not exists daily_quest_progress_user_date_idx on daily_quest_progress (user_id, quest_date);
+create index if not exists daily_quest_progress_date_claimed_idx on daily_quest_progress (quest_date, claimed_at);
 create index if not exists topup_packages_enabled_order_idx on topup_packages (enabled, display_order);
 create index if not exists topup_requests_user_created_idx on topup_requests (user_id, created_at desc);
 create index if not exists topup_requests_status_created_idx on topup_requests (status, created_at desc);

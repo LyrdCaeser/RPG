@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { recordDailyProgress } from "../api/client";
 import { gameEvents } from "../game/events";
 import { getNpcDialogue, getNpcQuest, questActionLabel } from "../systems/questSystem";
 import { useGameStore } from "../store/useGameStore";
@@ -24,6 +25,9 @@ export function DialogueBox({ onQuestSaved }: DialogueBoxProps) {
       targetId: npc.id,
       amount: 1
     });
+    if (npc.id === "elder-mira") {
+      void recordDailyProgress({ eventType: "talk_to_npc", targetId: npc.id, amount: 1 }).catch(() => undefined);
+    }
   }, [npc]);
 
   if (!npc) return null;

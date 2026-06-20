@@ -56,6 +56,7 @@ import type {
   DuelResult,
   FriendRequest,
   FriendSummary,
+  DailySnapshot,
   GuidanceLevel,
   Guild,
   GuildApplication,
@@ -307,6 +308,31 @@ export function buyWalletShopItem(shopItemId: string, quantity = 1) {
   >("/api/shop/buy", {
     method: "POST",
     body: JSON.stringify({ shopItemId, quantity })
+  });
+}
+
+export function getDailyMe() {
+  return requestJson<DailySnapshot>("/api/daily/me");
+}
+
+export function claimDailyCheckin() {
+  return requestJson<{ checkin: DailySnapshot["checkin"]; snapshot: DailySnapshot }>("/api/daily/checkin/claim", {
+    method: "POST",
+    body: JSON.stringify({})
+  });
+}
+
+export function claimDailyQuest(questId: string) {
+  return requestJson<{ quest: DailySnapshot["quests"][number]; snapshot: DailySnapshot }>("/api/daily/quests/claim", {
+    method: "POST",
+    body: JSON.stringify({ questId })
+  });
+}
+
+export function recordDailyProgress(payload: { eventType: "kill_enemy" | "collect_material" | "talk_to_npc"; targetId?: string; amount?: number }) {
+  return requestJson<{ updated: DailySnapshot["quests"]; snapshot: DailySnapshot }>("/api/daily/progress", {
+    method: "POST",
+    body: JSON.stringify(payload)
   });
 }
 

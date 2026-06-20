@@ -56,6 +56,7 @@ import { ChatPanel } from "./ui/ChatPanel";
 import { SettingsPanel } from "./ui/SettingsPanel";
 import { WalletPanel } from "./ui/WalletPanel";
 import { WalletShopPanel } from "./ui/WalletShopPanel";
+import { DailyPanel } from "./ui/DailyPanel";
 import { TopupPanel } from "./ui/TopupPanel";
 import { IntroStoryPanel } from "./ui/IntroStoryPanel";
 import { GuidanceLevelPanel } from "./ui/GuidanceLevelPanel";
@@ -81,6 +82,7 @@ type ActivePanel =
   | "pvp"
   | "wallet"
   | "shop"
+  | "daily"
   | "topup"
   | "settings"
   | "admin"
@@ -782,6 +784,7 @@ export default function App() {
                   {activePanel === "mail" && <MailboxPanel />}
                   {activePanel === "wallet" && <WalletPanel />}
                   {activePanel === "shop" && <WalletShopPanel />}
+                  {activePanel === "daily" && <DailyPanel />}
                   {activePanel === "topup" && <TopupPanel />}
                   {activePanel === "settings" && <SettingsPanel onClose={closeActivePanel} />}
                   {activePanel === "admin" && isAdmin && (
@@ -830,6 +833,7 @@ function GameMenu({ activePanel, isAdmin, onOpen }: GameMenuProps) {
     { panel: "mail", label: "Thư" },
     { panel: "wallet", label: "Ví tiền" },
     { panel: "shop", label: "Cửa hàng" },
+    { panel: "daily", label: "Hoạt động ngày" },
     { panel: "topup", label: "Nạp Ruby" },
     { panel: "guild", label: "Bang hội" },
     { panel: "pvp", label: "Đấu trường" },
@@ -905,6 +909,7 @@ function panelTitle(panel: Exclude<ActivePanel, null>) {
     mail: "Thư",
     wallet: "Ví tiền",
     shop: "Cửa hàng",
+    daily: "Hoạt động ngày",
     topup: "Nạp Ruby Đỏ",
     guild: "Bang hội",
     pvp: "Đấu trường",
