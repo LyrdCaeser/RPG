@@ -134,6 +134,27 @@ export async function claimWeeklyMission(userId: string, missionId: string) {
   }
 }
 
+export async function recordWeeklyProgress(userId: string, missionId: string, amount = 1) {
+  const definition = weeklyMissionDefinitions.find((mission) => mission.missionId === missionId);
+  if (!definition) return null;
+  const increment = Math.max(1, Math.trunc(Number(amount)));
+  const weekKey = await getServerWeekKey();
+  await ensureWeeklyMissionRows(userId, weekKey);
+  const result = await query<WeeklyMissionRow>(
+    `update weekly_mission_progress
+     set progress = least(target, progress + $4),
+         updated_at = now()
+     where user_id = $1
+       and week_key = $2
+       and mission_id = $3
+       and claimed_at is null
+       and progress < target
+     returning user_id::text, week_key, mission_id, progress, target, claimed_at, reward_mail_id::text, created_at, updated_at`,
+    [userId, weekKey, missionId, increment]
+  );
+  return result.rows[0] ? toWeeklyMission(result.rows[0]) : null;
+}
+
 export class WeeklyMissionError extends Error {
   constructor(message: string) {
     super(message);

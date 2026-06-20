@@ -6,6 +6,7 @@ import { query } from "../db.js";
 import { recordDailyQuestProgress } from "../daily.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
+import { recordWeeklyProgress } from "../weekly.js";
 
 const router = Router();
 
@@ -29,6 +30,7 @@ router.post("/result", async (req, res, next) => {
       [userId, enemy.id, enemy.name, savedPlayer.level, enemy.expReward, enemy.goldReward, savedPlayer]
     );
     await recordDailyQuestProgress(userId, { eventType: "kill_enemy", targetId: enemy.id, amount: 1 });
+    await recordWeeklyProgress(userId, "defeat_any_monsters_30", 1);
 
     const result: BattleResult = {
       enemyId: enemy.id,

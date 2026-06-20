@@ -2,6 +2,7 @@ import type { PoolClient } from "pg";
 import { getPool, query } from "./db.js";
 import { adjustWallet } from "./wallet.js";
 import { getWalletSnapshot } from "./wallet.js";
+import { recordWeeklyProgress } from "./weekly.js";
 
 type DailyQuestEventType = "kill_enemy" | "collect_material" | "talk_to_npc";
 
@@ -179,6 +180,7 @@ export async function claimDailyQuest(userId: string, questId: string) {
       [userId, questId, today, JSON.stringify(definition.rewards), JSON.stringify(transactionIds)]
     );
     await client.query("commit");
+    await recordWeeklyProgress(userId, "complete_daily_quests_7", 1);
     return { quest: toDailyQuest(updated.rows[0]), snapshot: await getDailySnapshot(userId) };
   } catch (error) {
     try {
