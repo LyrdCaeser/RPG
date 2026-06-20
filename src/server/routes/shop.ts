@@ -13,6 +13,13 @@ import { getInventorySnapshot } from "./inventory.js";
 const router = Router();
 const maxQuantity = 99;
 
+class ShopPurchaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ShopPurchaseError";
+  }
+}
+
 interface WalletShopItemRow {
   shop_item_id: string;
   item_id: string;
@@ -126,6 +133,10 @@ router.post("/buy", async (req, res, next) => {
       res.status(400).json({ error: "Không đủ tiền trong ví để mua vật phẩm này." });
       return;
     }
+    if (error instanceof ShopPurchaseError) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
     next(error);
   } finally {
     client.release();
@@ -178,10 +189,10 @@ async function buyWalletShopItem(client: PoolClient, userId: string, shopItemId:
     [shopItemId]
   );
   const item = result.rows[0];
-  if (!item || !item.enabled) throw new Error("Vật phẩm cửa hàng không khả dụng.");
+  if (!item || !item.enabled) throw new ShopPurchaseError("Vật phẩm cửa hàng không khả dụng.");
 
   const runtimeItem = await getRuntimeItemDefinition(item.item_id);
-  if (!runtimeItem) throw new Error("Vật phẩm chưa có dữ liệu hành trang an toàn nên không thể mua.");
+  if (!runtimeItem) throw new ShopPurchaseError("Vật phẩm chưa có dữ liệu hành trang an toàn nên không thể mua.");
 
   if (item.stock_limit !== null) {
     const sold = await client.query<{ total: string }>(
@@ -191,7 +202,7 @@ async function buyWalletShopItem(client: PoolClient, userId: string, shopItemId:
       [shopItemId]
     );
     if (Number(sold.rows[0]?.total ?? 0) + quantity > item.stock_limit) {
-      throw new Error("Vật phẩm đã hết hàng.");
+      throw new ShopPurchaseError("Vật phẩm đã hết hàng.");
     }
   }
 
@@ -231,10 +242,10 @@ async function buyNpcShopItem(
   const shop = shopDefinitions.find((candidate) => candidate.npcId === npcId);
   const item = await getRuntimeItemDefinition(itemId);
   if (!shop || !item || !shop.items.some((shopItem) => shopItem.itemId === itemId)) {
-    throw new Error("Cửa hàng hoặc vật phẩm không hợp lệ.");
+    throw new ShopPurchaseError("Cửa hàng hoặc vật phẩm không hợp lệ.");
   }
   const unitPrice = item.buyPrice ?? item.sellPrice * 2;
-  if (!unitPrice || unitPrice <= 0) throw new Error("Vật phẩm này không thể mua.");
+  if (!unitPrice || unitPrice <= 0) throw new ShopPurchaseError("Vật phẩm này không thể mua.");
   const totalPrice = unitPrice * quantity;
   const wallet = await adjustWallet(client, {
     userId,
