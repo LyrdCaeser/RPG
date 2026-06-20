@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { cancelTopupRequest, createTopupRequest, getMyTopupRequests, getTopupPackages } from "../api/client";
-import type { TopupPackage, TopupRequest, TopupRequestStatus } from "../data/types";
+import type { TopupPackage, TopupRequest, TopupRequestStatus, TopupSale } from "../data/types";
 import { useGameStore } from "../store/useGameStore";
 
 const statusLabels: Record<TopupRequestStatus, string> = {
@@ -13,6 +13,7 @@ const statusLabels: Record<TopupRequestStatus, string> = {
 export function TopupPanel() {
   const addWarning = useGameStore((state) => state.addWarning);
   const [packages, setPackages] = useState<TopupPackage[]>([]);
+  const [activeSales, setActiveSales] = useState<TopupSale[]>([]);
   const [requests, setRequests] = useState<TopupRequest[]>([]);
   const [playerNote, setPlayerNote] = useState("");
   const [busyPackageId, setBusyPackageId] = useState("");
@@ -25,6 +26,7 @@ export function TopupPanel() {
     void Promise.all([getTopupPackages(), getMyTopupRequests()])
       .then(([packageResponse, requestResponse]) => {
         setPackages(packageResponse.packages);
+        setActiveSales(packageResponse.activeSales);
         setRequests(requestResponse.requests);
       })
       .catch((error) => {
@@ -89,6 +91,24 @@ export function TopupPanel() {
       </p>
       {message && <p className="topup-message">{message}</p>}
 
+      {activeSales.length > 0 && (
+        <div className="topup-sale-banners">
+          {activeSales.map((sale) => (
+            <article key={sale.id} className="topup-sale-banner" data-sale-type={sale.saleType}>
+              <strong>{sale.saleType === "big_sale" ? "SALE BIG" : "SALE Bình Thường"}: {sale.name}</strong>
+              <span>
+                {sale.bonusPercent > 0 ? `+${sale.bonusPercent}%` : ""}
+                {sale.bonusPercent > 0 && sale.bonusRedRuby > 0 ? " và " : ""}
+                {sale.bonusRedRuby > 0 ? `+${formatNumber(sale.bonusRedRuby)} Ruby Đỏ` : ""}
+              </span>
+              <small>
+                {formatDate(sale.startsAt)} - {formatDate(sale.endsAt)}
+              </small>
+            </article>
+          ))}
+        </div>
+      )}
+
       <label className="topup-note">
         Ghi chú cho ADMIN
         <input
@@ -104,10 +124,12 @@ export function TopupPanel() {
           <p className="topup-empty">Hiện chưa có gói nạp Ruby Đỏ đang bật từ cơ sở dữ liệu.</p>
         ) : (
           packages.map((item) => (
-            <article key={item.packageId} className="topup-package-card">
+            <article key={item.packageId} className="topup-package-card" data-sale-type={item.activeSale?.saleType ?? "none"}>
               <span>{formatVnd(item.priceVnd)}</span>
-              <strong>{formatNumber(item.redRubyAmount + item.bonusRedRuby)} Ruby Đỏ</strong>
+              <strong>{formatNumber(item.finalRedRubyAmount ?? item.redRubyAmount + item.bonusRedRuby)} Ruby Đỏ</strong>
+              {item.activeSale && <em>{item.activeSale.saleType === "big_sale" ? "SALE BIG" : "SALE Bình Thường"}</em>}
               {item.bonusRedRuby > 0 && <small>Thưởng {formatNumber(item.bonusRedRuby)} Ruby Đỏ</small>}
+              {(item.saleBonusRedRuby ?? 0) > 0 && <small>Sale thưởng {formatNumber(item.saleBonusRedRuby ?? 0)} Ruby Đỏ</small>}
               <button type="button" onClick={() => submitRequest(item)} disabled={Boolean(busyPackageId) || loading}>
                 {busyPackageId === item.packageId ? "Đang tạo" : "Tạo yêu cầu nạp"}
               </button>
@@ -128,6 +150,8 @@ export function TopupPanel() {
                 <span>
                   {formatVnd(request.priceVnd)} · {formatNumber(request.redRubyAmount + request.bonusRedRuby)} Ruby Đỏ
                 </span>
+                {request.saleName && <small>Sale: {request.saleName} (+{formatNumber(request.saleBonusRedRuby)} Ruby Đỏ)</small>}
+                <small>Tổng nhận: {formatNumber(request.finalRedRubyAmount)} Ruby Đỏ</small>
                 <small>{formatDate(request.createdAt)}</small>
                 {request.adminNote && <small>Ghi chú ADMIN: {request.adminNote}</small>}
               </div>

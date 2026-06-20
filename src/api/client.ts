@@ -94,6 +94,7 @@ import type {
   TopupPackage,
   TopupRequest,
   TopupRequestStatus,
+  TopupSale,
   PvPMatchState,
   PvPPenalty,
   PvPPenaltyAppealStatus,
@@ -286,7 +287,7 @@ export function getWalletMe() {
 }
 
 export function getTopupPackages() {
-  return requestJson<{ packages: TopupPackage[] }>("/api/topup/packages");
+  return requestJson<{ packages: TopupPackage[]; activeSales: TopupSale[] }>("/api/topup/packages");
 }
 
 export function getMyTopupRequests() {
@@ -330,6 +331,61 @@ export function adjustAdminWallet(payload: {
 
 export function getAdminTopupRequests(status: TopupRequestStatus | "all" = "pending") {
   return requestJson<{ requests: AdminTopupRequest[] }>(`/api/admin/topup/requests?status=${encodeURIComponent(status)}`);
+}
+
+export function getAdminTopupPackages() {
+  return requestJson<{ packages: TopupPackage[] }>("/api/admin/topup/packages");
+}
+
+export function saveAdminTopupPackage(payload: {
+  packageId: string;
+  name: string;
+  priceVnd: number;
+  redRubyAmount: number;
+  bonusRedRuby: number;
+  enabled: boolean;
+  displayOrder: number;
+}) {
+  return requestJson<{ package: TopupPackage }>("/api/admin/topup/packages/save", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function toggleAdminTopupPackage(packageId: string, enabled: boolean) {
+  return requestJson<{ package: TopupPackage }>("/api/admin/topup/packages/toggle", {
+    method: "POST",
+    body: JSON.stringify({ packageId, enabled })
+  });
+}
+
+export function getAdminTopupSales() {
+  return requestJson<{ sales: TopupSale[] }>("/api/admin/topup/sales");
+}
+
+export function saveAdminTopupSale(payload: {
+  id?: string;
+  name: string;
+  saleType: TopupSale["saleType"];
+  startsAt: string;
+  endsAt: string;
+  enabled: boolean;
+  bonusPercent: number;
+  bonusRedRuby: number;
+  appliesToAll: boolean;
+  packageIds: string[];
+}) {
+  return requestJson<{ sale: TopupSale }>("/api/admin/topup/sales/save", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function toggleAdminTopupSale(saleId: string, enabled: boolean) {
+  return requestJson<{ sale: TopupSale }>("/api/admin/topup/sales/toggle", {
+    method: "POST",
+    body: JSON.stringify({ saleId, enabled })
+  });
 }
 
 export function approveAdminTopupRequest(payload: { requestId: string; adminNote?: string }) {

@@ -28,6 +28,7 @@ export type SaveStatus = "idle" | "saving" | "saved" | "failed";
 export type UiLanguage = "vi" | "en" | "zh" | "ja";
 export type WalletCurrency = "red_ruby" | "gold" | "blue_diamond";
 export type TopupRequestStatus = "pending" | "approved" | "rejected" | "cancelled";
+export type TopupSaleType = "normal_sale" | "big_sale";
 export type GuidanceLevel = "newbie" | "trainer" | "master_cg";
 export type TutorialStatus = "not_started" | "active" | "skipped" | "completed";
 export type TutorialStepId =
@@ -1586,8 +1587,13 @@ export interface TopupPackage {
   priceVnd: number;
   redRubyAmount: number;
   bonusRedRuby: number;
+  saleBonusRedRuby?: number;
+  finalRedRubyAmount?: number;
+  activeSale?: TopupSale | null;
   enabled: boolean;
   displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TopupRequest {
@@ -1598,6 +1604,10 @@ export interface TopupRequest {
   priceVnd: number;
   redRubyAmount: number;
   bonusRedRuby: number;
+  saleId: string | null;
+  saleName: string | null;
+  saleBonusRedRuby: number;
+  finalRedRubyAmount: number;
   status: TopupRequestStatus;
   playerNote: string;
   adminNote: string;
@@ -1611,6 +1621,22 @@ export interface TopupRequest {
 export interface AdminTopupRequest extends TopupRequest {
   username: string;
   displayName: string;
+}
+
+export interface TopupSale {
+  id: string;
+  name: string;
+  saleType: TopupSaleType;
+  startsAt: string;
+  endsAt: string;
+  enabled: boolean;
+  bonusPercent: number;
+  bonusRedRuby: number;
+  appliesToAll: boolean;
+  packageIds: string[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string | null;
 }
 
 export interface PlayerOnboarding {

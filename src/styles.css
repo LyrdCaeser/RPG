@@ -3648,6 +3648,32 @@ button:disabled {
   background: rgba(8, 15, 13, 0.66);
 }
 
+.topup-sale-banners {
+  display: grid;
+  gap: 8px;
+}
+
+.topup-sale-banner {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #9a7c48;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(68, 47, 25, 0.88), rgba(20, 24, 18, 0.9));
+}
+
+.topup-sale-banner[data-sale-type="big_sale"] {
+  border-color: #d95c5c;
+  background:
+    radial-gradient(circle at 92% 0, rgba(255, 91, 91, 0.26), transparent 34%),
+    linear-gradient(180deg, rgba(77, 31, 31, 0.92), rgba(20, 24, 18, 0.92));
+}
+
+.topup-sale-banner strong,
+.topup-sale-banner span {
+  color: #fff1b8;
+}
+
 .topup-note {
   display: grid;
   gap: 6px;
@@ -3687,6 +3713,17 @@ button:disabled {
 .topup-package-card strong {
   color: #ffb9b9;
   font-size: 18px;
+}
+
+.topup-package-card em {
+  width: fit-content;
+  border: 1px solid #d95c5c;
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: #ffe1d8;
+  background: rgba(79, 28, 28, 0.74);
+  font-size: 11px;
+  font-style: normal;
 }
 
 .topup-history {
@@ -3729,6 +3766,64 @@ button:disabled {
 .admin-note-field textarea {
   min-height: 88px;
   resize: vertical;
+}
+
+.admin-topup-config {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-topup-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(10, 18, 16, 0.54);
+}
+
+.admin-topup-list {
+  display: grid;
+  gap: 8px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.admin-topup-list article {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 9px;
+  background: rgba(14, 24, 21, 0.68);
+}
+
+.admin-topup-list article[data-disabled="true"] {
+  opacity: 0.62;
+}
+
+.admin-topup-list article > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-package-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 7px;
+  max-height: 120px;
+  overflow: auto;
+}
+
+.admin-package-checks label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #dce7df;
+  font-size: 12px;
 }
 
 .danger-zone {

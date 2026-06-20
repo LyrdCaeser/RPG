@@ -305,6 +305,43 @@ create table if not exists topup_requests (
   check (admin_note is null or length(admin_note) <= 240)
 );
 
+create table if not exists topup_sales (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  sale_type text not null check (sale_type in ('normal_sale', 'big_sale')),
+  starts_at timestamptz not null,
+  ends_at timestamptz not null,
+  enabled boolean not null default true,
+  bonus_percent integer not null default 0 check (bonus_percent >= 0 and bonus_percent <= 1000),
+  bonus_red_ruby integer not null default 0 check (bonus_red_ruby >= 0),
+  applies_to_all boolean not null default true,
+  created_by uuid references users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (length(trim(name)) > 0 and length(name) <= 120),
+  check (ends_at > starts_at),
+  check (bonus_percent > 0 or bonus_red_ruby > 0)
+);
+
+create table if not exists topup_sale_packages (
+  sale_id uuid not null references topup_sales(id) on delete cascade,
+  package_id text not null references topup_packages(package_id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (sale_id, package_id)
+);
+
+alter table topup_requests add column if not exists sale_id uuid references topup_sales(id) on delete set null;
+alter table topup_requests add column if not exists sale_name text;
+alter table topup_requests add column if not exists sale_bonus_red_ruby integer not null default 0 check (sale_bonus_red_ruby >= 0);
+alter table topup_requests add column if not exists final_red_ruby_amount integer;
+
+update topup_requests
+set final_red_ruby_amount = red_ruby_amount + bonus_red_ruby + sale_bonus_red_ruby
+where final_red_ruby_amount is null;
+
+alter table topup_requests alter column final_red_ruby_amount set default 0;
+alter table topup_requests alter column final_red_ruby_amount set not null;
+
 insert into topup_packages (package_id, name, price_vnd, red_ruby_amount, bonus_red_ruby, enabled, display_order)
 values
   ('ruby_25000', 'Gói Ruby Đỏ 25.000đ', 25000, 250, 0, true, 10),
@@ -1492,6 +1529,9 @@ create index if not exists topup_requests_user_created_idx on topup_requests (us
 create index if not exists topup_requests_status_created_idx on topup_requests (status, created_at desc);
 create index if not exists topup_requests_package_idx on topup_requests (package_id, created_at desc);
 create unique index if not exists topup_requests_wallet_transaction_unique_idx on topup_requests (wallet_transaction_id) where wallet_transaction_id is not null;
+create index if not exists topup_sales_enabled_window_idx on topup_sales (enabled, starts_at, ends_at);
+create index if not exists topup_sales_type_idx on topup_sales (sale_type, enabled, starts_at desc);
+create index if not exists topup_sale_packages_package_idx on topup_sale_packages (package_id, sale_id);
 create index if not exists player_map_progress_user_visited_idx on player_map_progress (user_id, visited_at desc);
 create index if not exists dungeon_results_user_created_idx on dungeon_results (user_id, created_at desc);
 create index if not exists dungeon_clears_user_idx on dungeon_clears (user_id, clear_count desc);
