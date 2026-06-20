@@ -84,5 +84,5 @@ export function GameCanvas({ initialPlayer }: GameCanvasProps) {
     };
   }, []);
 
-  return <div ref={hostRef} className="game-host" aria-label="RPG map" />;
+  return <div ref={hostRef} className="game-host" aria-label="Bản đồ Kingdom 3" />;
 }

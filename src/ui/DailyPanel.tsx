@@ -22,7 +22,7 @@ export function DailyPanel() {
         setSnapshot(response);
         setWallet(response.wallet);
       })
-      .catch((error) => showError(error, "Không tải được hoạt động ngày."))
+      .catch((error) => showError(error, "Không tải được Nhật Lệnh."))
       .finally(() => setBusy(""));
   };
 
@@ -50,9 +50,9 @@ export function DailyPanel() {
         setSnapshot(response.snapshot);
         setWallet(response.snapshot.wallet);
         await refreshInventoryIfNeeded(response.checkin.rewards);
-        setMessage("Đã nhận thưởng điểm danh hôm nay.");
+        setMessage("Đã nhận thưởng Ký Danh Thần Miếu hôm nay.");
       })
-      .catch((error) => showError(error, "Nhận thưởng điểm danh thất bại."))
+      .catch((error) => showError(error, "Nhận thưởng Ký Danh Thần Miếu thất bại."))
       .finally(() => setBusy(""));
   };
 
@@ -68,16 +68,16 @@ export function DailyPanel() {
         await refreshInventoryIfNeeded(response.quest.rewards);
         setMessage(`Đã nhận thưởng: ${response.quest.title}.`);
       })
-      .catch((error) => showError(error, "Nhận thưởng nhiệm vụ ngày thất bại."))
+      .catch((error) => showError(error, "Nhận thưởng Nhật Lệnh Thôn Làng thất bại."))
       .finally(() => setBusy(""));
   };
 
   return (
-    <section className="daily-panel" aria-label="Hoạt động ngày">
+    <section className="daily-panel" aria-label="Nhật Lệnh">
       <header>
         <div>
-          <h2>Hoạt động ngày</h2>
-          <p>Điểm danh và nhiệm vụ ngày được lưu bằng cơ sở dữ liệu, dùng giờ máy chủ.</p>
+          <h2>Nhật Lệnh</h2>
+          <p>Ký Danh Thần Miếu và Nhật Lệnh Thôn Làng được lưu bằng cơ sở dữ liệu, dùng giờ máy chủ.</p>
         </div>
         <button type="button" onClick={loadDaily} disabled={busy === "load"}>
           {busy === "load" ? "Đang tải" : "Làm mới"}
@@ -86,23 +86,23 @@ export function DailyPanel() {
 
       {message && <p className="daily-message">{message}</p>}
 
-      <nav className="daily-tabs" aria-label="Mục hoạt động ngày">
+      <nav className="daily-tabs" aria-label="Mục Nhật Lệnh">
         <button type="button" data-active={activeTab === "checkin"} onClick={() => setActiveTab("checkin")}>
-          Điểm danh
+          Ký Danh Thần Miếu
         </button>
         <button type="button" data-active={activeTab === "quests"} onClick={() => setActiveTab("quests")}>
-          Nhiệm vụ ngày
+          Nhật Lệnh Thôn Làng
         </button>
       </nav>
 
       {!snapshot ? (
-        <p className="daily-empty">{busy === "load" ? "Đang tải hoạt động ngày." : "Chưa tải được hoạt động ngày."}</p>
+        <p className="daily-empty">{busy === "load" ? "Đang tải Nhật Lệnh." : "Chưa tải được Nhật Lệnh."}</p>
       ) : activeTab === "checkin" ? (
         <article className="daily-checkin-card">
           <div>
-            <span>Ngày máy chủ: {snapshot.serverDate}</span>
+            <span>Ngày của máy chủ: {snapshot.serverDate}</span>
             <h3>Chuỗi ngày {snapshot.checkin.streakDay}</h3>
-            <p>{snapshot.checkin.claimed ? "Bạn đã nhận thưởng điểm danh hôm nay." : "Bạn có thể nhận thưởng điểm danh hôm nay."}</p>
+            <p>{snapshot.checkin.claimed ? "Bạn đã nhận thưởng Ký Danh Thần Miếu hôm nay." : "Bạn có thể nhận thưởng Ký Danh Thần Miếu hôm nay."}</p>
             <RewardList rewards={snapshot.checkin.rewards} />
           </div>
           <button type="button" onClick={claimCheckin} disabled={snapshot.checkin.claimed || busy === "checkin"}>

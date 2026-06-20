@@ -9,6 +9,12 @@ const currencyLabels: Record<WalletCurrency, string> = {
   blue_diamond: "Kim Cương Lam"
 };
 
+const currencyDescriptions: Record<WalletCurrency, string> = {
+  red_ruby: "Huyết ngọc thần quyền, chỉ từ nạp hoặc quà quản trị; không nhận từ Nhật Lệnh hay Tuần Lệnh.",
+  gold: "Đồng tiền thông dụng của vương quốc.",
+  blue_diamond: "Tinh thể mana lam ngưng tụ từ Tuần Lệnh và thử thách hiếm."
+};
+
 export function WalletPanel() {
   const wallet = useGameStore((state) => state.wallet);
   const setWallet = useGameStore((state) => state.setWallet);
@@ -53,9 +59,9 @@ export function WalletPanel() {
       {wallet ? (
         <>
           <div className="wallet-balance-grid">
-            <WalletBalance label="Ruby Đỏ" value={wallet.balances.redRuby} tone="ruby" />
-            <WalletBalance label="Vàng" value={wallet.balances.gold} tone="gold" />
-            <WalletBalance label="Kim Cương Lam" value={wallet.balances.blueDiamond} tone="diamond" />
+            <WalletBalance label="Ruby Đỏ" value={wallet.balances.redRuby} tone="ruby" description={currencyDescriptions.red_ruby} />
+            <WalletBalance label="Vàng" value={wallet.balances.gold} tone="gold" description={currencyDescriptions.gold} />
+            <WalletBalance label="Kim Cương Lam" value={wallet.balances.blueDiamond} tone="diamond" description={currencyDescriptions.blue_diamond} />
           </div>
 
           <section className="wallet-ledger" aria-label="Lịch sử giao dịch">
@@ -91,11 +97,12 @@ export function WalletPanel() {
   );
 }
 
-function WalletBalance({ label, value, tone }: { label: string; value: number; tone: "ruby" | "gold" | "diamond" }) {
+function WalletBalance({ label, value, tone, description }: { label: string; value: number; tone: "ruby" | "gold" | "diamond"; description: string }) {
   return (
     <article className="wallet-balance" data-tone={tone}>
       <span>{label}</span>
       <strong>{formatNumber(value)}</strong>
+      <small>{description}</small>
     </article>
   );
 }

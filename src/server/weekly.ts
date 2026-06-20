@@ -101,9 +101,9 @@ export async function claimWeeklyMission(userId: string, missionId: string) {
     const mailId = await sendMailboxMessageWithClient(client, {
       userId,
       senderType: "system",
-      senderName: "Hoạt động tuần",
-      title: `Thưởng tuần: ${definition.title}`,
-      message: "Phần thưởng nhiệm vụ tuần đã được gửi vào thư. Hãy mở Thư để nhận quà.",
+      senderName: "Tuần Lệnh",
+      title: `Thưởng Tuần Lệnh: ${definition.title}`,
+      message: "Phần thưởng Tuần Lệnh đã được gửi vào Thư Quạ Đêm. Hãy mở Thư Quạ Đêm để nhận quà.",
       rewards: definition.rewards
     });
     const insertedClaim = await client.query<WeeklyClaimRow>(

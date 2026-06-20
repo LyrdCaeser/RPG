@@ -3,7 +3,7 @@ import type { MapDefinition } from "./types.js";
 export const mapDefinitions: MapDefinition[] = [
   {
     mapId: "starter_village",
-    name: "Làng khởi đầu",
+    name: "Làng Khởi Nguyên",
     type: "town",
     width: 1344,
     height: 1024,
@@ -55,7 +55,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "forest-to-village",
-        name: "Làng khởi đầu",
+        name: "Làng Khởi Nguyên",
         x: 96,
         y: 256,
         targetMapId: "starter_village",
@@ -96,7 +96,7 @@ export const mapDefinitions: MapDefinition[] = [
     portals: [
       {
         id: "field-to-village",
-        name: "Làng khởi đầu",
+        name: "Làng Khởi Nguyên",
         x: 96,
         y: 736,
         targetMapId: "starter_village",

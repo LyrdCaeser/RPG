@@ -53,7 +53,7 @@ const tabs = [
   "Mùa đấu trường",
   "Thưởng đấu trường",
   "Cửa hàng đấu trường",
-  "Thư",
+  "Thư Quạ Đêm",
   "Mã quà",
   "Cấm",
   "Nhật ký kiểm toán"
@@ -173,7 +173,7 @@ export function AdminPanel({
                 {activeTab === "Mùa đấu trường" && <AdminPvpSeasonsPanel />}
                 {activeTab === "Thưởng đấu trường" && <AdminPvpSeasonRewardsPanel />}
                 {activeTab === "Cửa hàng đấu trường" && <AdminPvpShopPanel />}
-                {activeTab === "Thư" && <AdminMailboxPanel />}
+                {activeTab === "Thư Quạ Đêm" && <AdminMailboxPanel />}
                 {activeTab === "Mã quà" && <AdminGiftcodesPanel />}
                 {activeTab === "Cấm" && <AdminBansPanel />}
                 {activeTab === "Nhật ký kiểm toán" && <AdminAuditLogsPanel />}

@@ -27,25 +27,25 @@ export function MailboxPanel() {
   function refresh() {
     return getMailboxMe()
       .then((response) => setMail(response.mail))
-      .catch(() => addWarning("Không tải được thư."));
+      .catch(() => addWarning("Không tải được Thư Quạ Đêm."));
   }
 
   function read(mailId: string) {
     setBusyId(mailId);
     void markMailboxRead(mailId)
       .then((response) => setMail(response.mail))
-      .catch(() => addWarning("Không đánh dấu đã đọc được thư."))
+      .catch(() => addWarning("Không đánh dấu đã đọc được Thư Quạ Đêm."))
       .finally(() => setBusyId(null));
   }
 
   function claim(mailItem: MailboxMessage) {
     if (!player) return;
     if (mailItem.expired) {
-      addWarning("Thư đã hết hạn.");
+      addWarning("Thư Quạ Đêm đã hết hạn.");
       return;
     }
     if (mailItem.claimed) {
-      addWarning("Thư đã được nhận.");
+      addWarning("Thư Quạ Đêm đã được nhận.");
       return;
     }
     setBusyId(mailItem.id);
@@ -64,9 +64,9 @@ export function MailboxPanel() {
         for (const title of response.titles ?? []) reportCollection("titles", title.titleId);
       })
       .catch((error) => {
-        const message = error instanceof Error ? error.message : "Không nhận được thư.";
-        if (message.toLowerCase().includes("expired")) addWarning("Thư đã hết hạn.");
-        else if (message.toLowerCase().includes("already")) addWarning("Thư đã được nhận.");
+        const message = error instanceof Error ? error.message : "Không nhận được Thư Quạ Đêm.";
+        if (message.toLowerCase().includes("expired")) addWarning("Thư Quạ Đêm đã hết hạn.");
+        else if (message.toLowerCase().includes("already")) addWarning("Thư Quạ Đêm đã được nhận.");
         else addWarning(message);
       })
       .finally(() => setBusyId(null));
@@ -79,12 +79,12 @@ export function MailboxPanel() {
   }
 
   return (
-    <section className="mailbox-panel" aria-label="Thư">
+    <section className="mailbox-panel" aria-label="Thư Quạ Đêm">
       <header>
-        <h2>Thư</h2>
+        <h2>Thư Quạ Đêm</h2>
         <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
-      {mail.length === 0 ? <p>Hộp thư trống.</p> : null}
+      {mail.length === 0 ? <p>Hộp Thư Quạ Đêm đang trống.</p> : null}
       <div className="mailbox-list">
         {mail.map((item) => (
           <button type="button" key={item.id} data-active={selected?.id === item.id} data-read={item.read} onClick={() => setSelectedId(item.id)}>
@@ -104,9 +104,9 @@ export function MailboxPanel() {
           </small>
           <p>{selected.message}</p>
           <em>{formatReward(selected.rewards)}</em>
-          {selected.expired ? <p className="warning-text">Thư đã hết hạn, không thể nhận quà.</p> : null}
+          {selected.expired ? <p className="warning-text">Thư Quạ Đêm đã hết hạn, không thể nhận quà.</p> : null}
           <div>
-            <button type="button" disabled={selected.read || busyId === selected.id} onClick={() => read(selected.id)}>Đánh dấu đã đọc</button>
+            <button type="button" disabled={selected.read || busyId === selected.id} onClick={() => read(selected.id)}>Đánh dấu đã đọc thư</button>
             <button type="button" disabled={busyId === selected.id || selected.claimed || selected.expired || !hasReward(selected.rewards)} onClick={() => claim(selected)}>
               {selected.claimed ? "Đã nhận" : "Nhận quà"}
             </button>

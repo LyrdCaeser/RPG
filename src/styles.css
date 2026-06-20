@@ -3561,6 +3561,13 @@ button:disabled {
   font-size: 18px;
 }
 
+.wallet-balance small {
+  display: block;
+  margin-top: 6px;
+  color: #a7b9b3;
+  line-height: 1.35;
+}
+
 .wallet-message,
 .admin-wallet-message,
 .wallet-empty {

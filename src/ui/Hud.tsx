@@ -51,7 +51,7 @@ export function Hud() {
         <span>Lớp</span>
         <strong>{player.classId ?? "-"}</strong>
       </div>
-      <div className="hud-map">{player.mapId}</div>
+      <div className="hud-map">{displayMapName(player.mapId)}</div>
       {activeTitle && <div className="hud-title">{activeTitle.name}</div>}
       {nearbyNpc && <div className="interact-prompt">E: {nearbyNpc.name}</div>}
     </section>
@@ -60,4 +60,9 @@ export function Hud() {
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value);
+}
+
+function displayMapName(mapId: string) {
+  if (mapId === "starter_village") return "Làng Khởi Nguyên";
+  return mapId.replace(/[_-]/g, " ");
 }

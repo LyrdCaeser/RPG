@@ -78,7 +78,7 @@ export function WalletShopPanel() {
       <header>
         <div>
           <h2>Cửa hàng</h2>
-          <p>Mua vật phẩm bằng Vàng, Ruby Đỏ hoặc Kim Cương Lam. Mọi giao dịch đều được ghi vào ledger ví.</p>
+          <p>Mua vật phẩm bằng Vàng, Ruby Đỏ hoặc Kim Cương Lam. Vàng là đồng tiền thông dụng, Kim Cương Lam là tinh thể mana lam hiếm, Ruby Đỏ chỉ đến từ nạp hoặc quà quản trị.</p>
         </div>
         <button type="button" onClick={loadShop} disabled={loading}>
           {loading ? "Đang tải" : "Làm mới"}

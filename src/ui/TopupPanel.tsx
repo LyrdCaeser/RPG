@@ -80,6 +80,7 @@ export function TopupPanel() {
         <div>
           <h2>Nạp Ruby Đỏ</h2>
           <p>Zalo Admin: <strong>0856848557</strong></p>
+          <p>Ruby Đỏ là huyết ngọc thần quyền, chỉ nhận từ nạp đã duyệt hoặc quà quản trị. Nhật Lệnh và Tuần Lệnh không trao Ruby Đỏ.</p>
         </div>
         <button type="button" onClick={loadTopup} disabled={loading}>
           {loading ? "Đang tải" : "Làm mới"}

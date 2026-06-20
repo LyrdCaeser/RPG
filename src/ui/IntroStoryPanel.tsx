@@ -5,7 +5,7 @@ interface IntroStoryPanelProps {
 
 export function IntroStoryPanel({ busy, onComplete }: IntroStoryPanelProps) {
   return (
-    <section className="story-panel intro-story-panel" aria-label="Mở đầu RPG Phiêu Lưu">
+    <section className="story-panel intro-story-panel" aria-label="Mở đầu Kingdom 3">
       <div className="story-banner" aria-hidden="true">
         <span className="story-moon" />
         <span className="story-castle" />
@@ -16,7 +16,7 @@ export function IntroStoryPanel({ busy, onComplete }: IntroStoryPanelProps) {
       </div>
       <article className="story-copy">
         <p className="story-kicker">Biên niên sử vương quốc</p>
-        <h1>RPG Phiêu Lưu</h1>
+        <h1>Kingdom 3</h1>
         <p>
           Lục địa Asteria từng được bảo hộ bởi những tinh linh cổ xưa. Khi các cổng bóng tối thức tỉnh,
           quái vật tràn qua rừng sâu, hầm ngục và những pháo đài bị lãng quên.

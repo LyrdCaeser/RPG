@@ -14,7 +14,7 @@ export function WeeklyPanel() {
     setMessage("");
     void getWeeklyMe()
       .then((response) => setSnapshot(response))
-      .catch((error) => showError(error, "Không tải được hoạt động tuần."))
+      .catch((error) => showError(error, "Không tải được Tuần Lệnh."))
       .finally(() => setBusy(""));
   };
 
@@ -34,18 +34,18 @@ export function WeeklyPanel() {
     void claimWeeklyMission(missionId)
       .then((response) => {
         setSnapshot(response.snapshot);
-        setMessage("Thưởng tuần đã được gửi vào Thư. Hãy mở Thư để nhận quà.");
+        setMessage("Thưởng tuần đã được gửi vào Thư Quạ Đêm. Hãy mở Thư Quạ Đêm để nhận quà.");
       })
       .catch((error) => showError(error, "Nhận thưởng tuần thất bại."))
       .finally(() => setBusy(""));
   }
 
   return (
-    <section className="weekly-panel" aria-label="Hoạt động tuần">
+    <section className="weekly-panel" aria-label="Tuần Lệnh">
       <header>
         <div>
-          <h2>Hoạt động tuần</h2>
-          <p>Nhiệm vụ tuần được ghi nhận từ hoạt động thật trong máy chủ. Phần thưởng sẽ gửi vào Thư.</p>
+          <h2>Tuần Lệnh</h2>
+          <p>Tuần Lệnh ghi nhận hoạt động thật trong máy chủ. Phần thưởng sẽ gửi vào Thư Quạ Đêm.</p>
         </div>
         <button type="button" onClick={loadWeekly} disabled={busy === "load"}>
           {busy === "load" ? "Đang tải" : "Làm mới"}
@@ -55,7 +55,7 @@ export function WeeklyPanel() {
       {message && <p className="weekly-message">{message}</p>}
 
       {!snapshot ? (
-        <p className="weekly-empty">{busy === "load" ? "Đang tải hoạt động tuần." : "Chưa tải được hoạt động tuần."}</p>
+        <p className="weekly-empty">{busy === "load" ? "Đang tải Tuần Lệnh." : "Chưa tải được Tuần Lệnh."}</p>
       ) : (
         <>
           <div className="weekly-meta">
@@ -74,7 +74,7 @@ export function WeeklyPanel() {
                   </strong>
                   <progress max={mission.target} value={mission.progress} />
                   <RewardList rewards={mission.rewards} />
-                  {mission.rewardMailId ? <small>Thư thưởng: {mission.rewardMailId}</small> : null}
+                  {mission.rewardMailId ? <small>Thư Quạ Đêm: {mission.rewardMailId}</small> : null}
                 </div>
                 <button type="button" onClick={() => claim(mission.missionId)} disabled={!mission.completed || mission.claimed || busy === mission.missionId}>
                   {mission.claimed ? "Đã gửi thư thưởng" : !mission.completed ? "Đang làm" : busy === mission.missionId ? "Đang gửi" : "Nhận qua thư"}

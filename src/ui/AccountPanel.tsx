@@ -70,7 +70,7 @@ export function AccountPanel({ onReady }: AccountPanelProps) {
         <div className="account-hero">
           <span className="account-crest" aria-hidden="true">✦</span>
           <p>Vương quốc trực tuyến</p>
-          <h1>RPG Phiêu Lưu</h1>
+          <h1>Kingdom 3</h1>
           <span>Đăng nhập hoặc tạo nhân vật khách để tiếp tục hành trình.</span>
         </div>
 
