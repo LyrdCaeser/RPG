@@ -98,7 +98,7 @@ export function AdminMailboxPanel() {
             value={form.redRuby}
             onChange={(event) => setForm((current) => ({ ...current, redRuby: Math.max(0, Math.trunc(Number(event.target.value))) }))}
           />
-          <small>Chỉ dùng cho quà quản trị owner/admin, sẽ ghi ledger Ruby Đỏ.</small>
+          <small>Chỉ dùng cho sắc chỉ Thần Điện Quang Hổ của owner/admin; Ruby Đỏ sẽ được ghi qua sổ ví.</small>
         </label>
         <label>
           ID vật phẩm
@@ -113,7 +113,7 @@ export function AdminMailboxPanel() {
 
       <h3>Lịch sử thư đã gửi</h3>
       <button type="button" onClick={() => void refreshSent()}>Làm mới</button>
-      {sentMail.length === 0 ? <p>Chưa có thư quà nào trong cơ sở dữ liệu.</p> : null}
+      {sentMail.length === 0 ? <p>Chưa có sắc thư quà nào được niêm qua Thần Điện Quang Hổ.</p> : null}
       <div className="admin-table compact">
         {sentMail.map((mail) => (
           <article key={mail.id}>

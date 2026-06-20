@@ -49,7 +49,7 @@ router.post(["/mailbox/send", "/mail/send"], async (req, res, next) => {
     const mailId = await sendMailboxMessage({
       userId: payload.userId,
       senderType: "admin",
-      senderName: payload.senderName || admin.displayName,
+      senderName: payload.senderName || "Thần Điện Quang Hổ",
       title: payload.title,
       message: payload.message,
       rewards: payload.rewards,

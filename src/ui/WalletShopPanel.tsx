@@ -36,7 +36,7 @@ export function WalletShopPanel() {
       .then(([itemResponse, purchaseResponse]) => {
         setItems(itemResponse.items);
         setPurchases(purchaseResponse.purchases);
-        setMessage("Đã tải cửa hàng từ cơ sở dữ liệu.");
+        setMessage("Đã mở sổ hàng của vương quốc.");
       })
       .catch((error) => showError(error, "Không tải được cửa hàng."))
       .finally(() => setLoading(false));
@@ -65,7 +65,7 @@ export function WalletShopPanel() {
       .then((response) => {
         setInventorySnapshot(response);
         setWallet(response.wallet);
-        setMessage(`Đã mua ${item.name}. Số dư ví đã được cập nhật qua ledger.`);
+        setMessage(`Đã mua ${item.name}. Sổ Mạch Giới đã ghi lại giao dịch.`);
         return getWalletShopPurchases();
       })
       .then((response) => setPurchases(response.purchases))
@@ -78,7 +78,7 @@ export function WalletShopPanel() {
       <header>
         <div>
           <h2>Cửa hàng</h2>
-          <p>Mua vật phẩm bằng Vàng, Ruby Đỏ hoặc Kim Cương Lam. Vàng là đồng tiền thông dụng, Kim Cương Lam là tinh thể mana lam hiếm, Ruby Đỏ chỉ đến từ nạp hoặc quà quản trị.</p>
+          <p>Mua vật phẩm bằng Vàng, Ruby Đỏ hoặc Kim Cương Lam. Vàng là tiền thông dụng, Kim Cương Lam là tinh thể mana lam hiếm, Ruby Đỏ là huyết ngọc thần quyền.</p>
         </div>
         <button type="button" onClick={loadShop} disabled={loading}>
           {loading ? "Đang tải" : "Làm mới"}
@@ -105,7 +105,7 @@ export function WalletShopPanel() {
 
       <div className="wallet-shop-grid">
         {visibleItems.length === 0 ? (
-          <p className="wallet-shop-empty">Không có vật phẩm đang bật trong danh mục này từ cơ sở dữ liệu.</p>
+          <p className="wallet-shop-empty">Không có vật phẩm đang mở bán trong danh mục này.</p>
         ) : (
           visibleItems.map((item) => (
             <article key={item.shopItemId} className="wallet-shop-card" data-currency={item.currencyType}>
@@ -133,7 +133,7 @@ export function WalletShopPanel() {
       <section className="wallet-shop-history" aria-label="Lịch sử mua hàng">
         <h3>Lịch sử mua gần đây</h3>
         {purchases.length === 0 ? (
-          <p className="wallet-shop-empty">Bạn chưa có giao dịch mua hàng nào từ cơ sở dữ liệu.</p>
+          <p className="wallet-shop-empty">Bạn chưa có giao dịch mua hàng nào trong sổ Mạch Giới.</p>
         ) : (
           <div className="wallet-shop-history-list">
             {purchases.slice(0, 8).map((purchase) => (

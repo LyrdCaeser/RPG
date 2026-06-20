@@ -77,7 +77,7 @@ export function DailyPanel() {
       <header>
         <div>
           <h2>Nhật Lệnh</h2>
-          <p>Ký Danh Thần Miếu và Nhật Lệnh Thôn Làng được lưu bằng cơ sở dữ liệu, dùng giờ máy chủ.</p>
+          <p>Ký Danh Thần Miếu và Nhật Lệnh Thôn Làng là lời thề mỗi ngày để giữ Mạch Giới quanh làng không phai.</p>
         </div>
         <button type="button" onClick={loadDaily} disabled={busy === "load"}>
           {busy === "load" ? "Đang tải" : "Làm mới"}
@@ -100,7 +100,7 @@ export function DailyPanel() {
       ) : activeTab === "checkin" ? (
         <article className="daily-checkin-card">
           <div>
-            <span>Ngày của máy chủ: {snapshot.serverDate}</span>
+            <span>Ngày nghi lễ: {snapshot.serverDate}</span>
             <h3>Chuỗi ngày {snapshot.checkin.streakDay}</h3>
             <p>{snapshot.checkin.claimed ? "Bạn đã nhận thưởng Ký Danh Thần Miếu hôm nay." : "Bạn có thể nhận thưởng Ký Danh Thần Miếu hôm nay."}</p>
             <RewardList rewards={snapshot.checkin.rewards} />

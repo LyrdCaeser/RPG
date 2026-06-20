@@ -103,7 +103,7 @@ export async function claimWeeklyMission(userId: string, missionId: string) {
       senderType: "system",
       senderName: "Tuần Lệnh",
       title: `Thưởng Tuần Lệnh: ${definition.title}`,
-      message: "Phần thưởng Tuần Lệnh đã được gửi vào Thư Quạ Đêm. Hãy mở Thư Quạ Đêm để nhận quà.",
+      message: "Ấn thưởng Tuần Lệnh đã được niêm qua Thư Quạ Đêm. Hãy mở Thư Quạ Đêm để nhận quà.",
       rewards: definition.rewards
     });
     const insertedClaim = await client.query<WeeklyClaimRow>(

@@ -45,7 +45,7 @@ export function WeeklyPanel() {
       <header>
         <div>
           <h2>Tuần Lệnh</h2>
-          <p>Tuần Lệnh ghi nhận hoạt động thật trong máy chủ. Phần thưởng sẽ gửi vào Thư Quạ Đêm.</p>
+          <p>Tuần Lệnh là lời thề lớn được khắc vào Mạch Giới. Phần thưởng sẽ gửi vào Thư Quạ Đêm.</p>
         </div>
         <button type="button" onClick={loadWeekly} disabled={busy === "load"}>
           {busy === "load" ? "Đang tải" : "Làm mới"}

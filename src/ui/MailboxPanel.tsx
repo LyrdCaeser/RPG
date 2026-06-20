@@ -84,7 +84,7 @@ export function MailboxPanel() {
         <h2>Thư Quạ Đêm</h2>
         <button type="button" onClick={() => void refresh()}>Làm mới</button>
       </header>
-      {mail.length === 0 ? <p>Hộp Thư Quạ Đêm đang trống.</p> : null}
+      {mail.length === 0 ? <p>Chưa có Thư Quạ Đêm nào được niêm ấn cho bạn.</p> : null}
       <div className="mailbox-list">
         {mail.map((item) => (
           <button type="button" key={item.id} data-active={selected?.id === item.id} data-read={item.read} onClick={() => setSelectedId(item.id)}>

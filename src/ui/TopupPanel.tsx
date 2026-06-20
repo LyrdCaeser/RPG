@@ -80,7 +80,7 @@ export function TopupPanel() {
         <div>
           <h2>Nạp Ruby Đỏ</h2>
           <p>Zalo Admin: <strong>0856848557</strong></p>
-          <p>Ruby Đỏ là huyết ngọc thần quyền, chỉ nhận từ nạp đã duyệt hoặc quà quản trị. Nhật Lệnh và Tuần Lệnh không trao Ruby Đỏ.</p>
+          <p>Ruby Đỏ là huyết ngọc thần quyền, chỉ nhận từ nạp đã duyệt hoặc sắc chỉ Thần Điện Quang Hổ. Nhật Lệnh và Tuần Lệnh không trao Ruby Đỏ.</p>
         </div>
         <button type="button" onClick={loadTopup} disabled={loading}>
           {loading ? "Đang tải" : "Làm mới"}
@@ -122,7 +122,7 @@ export function TopupPanel() {
 
       <div className="topup-package-grid">
         {packages.length === 0 ? (
-          <p className="topup-empty">Hiện chưa có gói nạp Ruby Đỏ đang bật từ cơ sở dữ liệu.</p>
+          <p className="topup-empty">Hiện chưa có gói nạp Ruby Đỏ nào đang mở.</p>
         ) : (
           packages.map((item) => (
             <article key={item.packageId} className="topup-package-card" data-sale-type={item.activeSale?.saleType ?? "none"}>
@@ -142,7 +142,7 @@ export function TopupPanel() {
       <section className="topup-history" aria-label="Lịch sử yêu cầu nạp">
         <h3>Lịch sử yêu cầu nạp</h3>
         {requests.length === 0 ? (
-          <p className="topup-empty">Bạn chưa có yêu cầu nạp nào từ cơ sở dữ liệu.</p>
+          <p className="topup-empty">Bạn chưa có yêu cầu nạp nào được ghi nhận.</p>
         ) : (
           requests.map((request) => (
             <article key={request.id} data-status={request.status}>

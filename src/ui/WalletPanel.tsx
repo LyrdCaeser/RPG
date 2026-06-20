@@ -10,7 +10,7 @@ const currencyLabels: Record<WalletCurrency, string> = {
 };
 
 const currencyDescriptions: Record<WalletCurrency, string> = {
-  red_ruby: "Huyết ngọc thần quyền, chỉ từ nạp hoặc quà quản trị; không nhận từ Nhật Lệnh hay Tuần Lệnh.",
+  red_ruby: "Huyết ngọc thần quyền, chỉ từ nạp đã duyệt hoặc sắc chỉ Thần Điện Quang Hổ; không nhận từ Nhật Lệnh hay Tuần Lệnh.",
   gold: "Đồng tiền thông dụng của vương quốc.",
   blue_diamond: "Tinh thể mana lam ngưng tụ từ Tuần Lệnh và thử thách hiếm."
 };
@@ -47,7 +47,7 @@ export function WalletPanel() {
       <header>
         <div>
           <h2>Ví tiền</h2>
-          <p>Số dư và lịch sử giao dịch được tải từ máy chủ.</p>
+          <p>Số dư và ấn ký giao dịch của bạn được ghi lại trong sổ Mạch Giới.</p>
         </div>
         <button type="button" onClick={loadWallet} disabled={loading}>
           {loading ? "Đang tải" : "Làm mới"}
@@ -67,7 +67,7 @@ export function WalletPanel() {
           <section className="wallet-ledger" aria-label="Lịch sử giao dịch">
             <h3>Lịch sử giao dịch gần đây</h3>
             {wallet.transactions.length === 0 ? (
-              <p className="wallet-empty">Chưa có giao dịch nào từ cơ sở dữ liệu.</p>
+              <p className="wallet-empty">Chưa có ấn ký giao dịch nào trong sổ Mạch Giới.</p>
             ) : (
               <div className="wallet-ledger-list">
                 {wallet.transactions.map((transaction) => (
