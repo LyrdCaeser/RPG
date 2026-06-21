@@ -5,6 +5,7 @@ import type { PlayerSnapshot } from "../../data/types.js";
 import { getCurrentUserId } from "../auth.js";
 import { query } from "../db.js";
 import { recordDailyQuestProgress } from "../daily.js";
+import { recordEventMissionProgress } from "../eventMissions.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
 import { getPlayerPetsSnapshot, grantPetExperience } from "../rewardPersistence.js";
@@ -93,6 +94,7 @@ router.post("/collect", async (req, res, next) => {
     if (collectedQuantity > 0) {
       await recordDailyQuestProgress(userId, { eventType: "collect_material", amount: collectedQuantity });
       await recordWeeklyProgress(userId, "collect_materials_30", collectedQuantity);
+      await recordEventMissionProgress(userId, "collect_materials", collectedQuantity);
     }
 
     res.json({ ...(await getInventorySnapshot(userId)), player: savedPlayer, drops, petBonus, petBonusSaveFailed, pets: await getPlayerPetsSnapshot(userId) });

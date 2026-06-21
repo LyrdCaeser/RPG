@@ -1,8 +1,9 @@
 import { Router } from "express";
 import type { EventState, GameEventDefinition, PlayerEvent, PlayerSnapshot } from "../../data/types.js";
-import { getCurrentUserId } from "../auth.js";
+import { getCurrentUserId, isAuthError } from "../auth.js";
 import { getRuntimeContentDefinitions, getStaticRuntimeContentDefinitions } from "../contentDefinitions.js";
 import { query } from "../db.js";
+import { EventMissionError, attachEventMissions, claimEventMission } from "../eventMissions.js";
 import { upsertLeaderboardScores } from "../leaderboardPersistence.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
@@ -23,9 +24,16 @@ interface EventRow {
 const router = Router();
 const states: EventState[] = ["locked", "scheduled", "active", "completed", "claimed", "expired"];
 
-router.get("/active", async (_req, res, next) => {
+router.get("/active", async (req, res, next) => {
   try {
-    res.json({ events: await getActiveKingdomEvents() });
+    const events = await getActiveKingdomEvents();
+    try {
+      const userId = await getCurrentUserId(req);
+      res.json({ events: await attachEventMissions(userId, events) });
+    } catch (error) {
+      if (!isAuthError(error)) throw error;
+      res.json({ events });
+    }
   } catch (error) {
     next(error);
   }
@@ -35,6 +43,24 @@ router.get("/history", async (_req, res, next) => {
   try {
     res.json({ events: await getKingdomEventHistory() });
   } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/missions/claim", async (req, res, next) => {
+  try {
+    const userId = await getCurrentUserId(req);
+    const missionId = String(req.body.missionId ?? req.body.mission_id ?? "").trim();
+    const result = await claimEventMission(userId, missionId);
+    res.json({
+      ...result,
+      events: await attachEventMissions(userId, await getActiveKingdomEvents())
+    });
+  } catch (error) {
+    if (error instanceof EventMissionError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
     next(error);
   }
 });

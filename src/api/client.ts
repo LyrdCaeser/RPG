@@ -6,6 +6,7 @@ import type {
   EnemyDefinition,
   EventState,
   AdminKingdomEventPayload,
+  AdminKingdomEventMissionPayload,
   AdminEnemyContent,
   AdminEventContent,
   AdminItemContent,
@@ -87,6 +88,7 @@ import type {
   PlayerCollection,
   PlayerEvent,
   KingdomEvent,
+  KingdomEventMission,
   MailboxMessage,
   PlayerMount,
   PlayerOnboarding,
@@ -2043,6 +2045,13 @@ export function getKingdomEventHistory() {
   return requestJson<{ events: KingdomEvent[] }>("/api/events/history");
 }
 
+export function claimKingdomEventMission(missionId: string) {
+  return requestJson<{ mission: KingdomEventMission; mailId: string; events: KingdomEvent[] }>("/api/events/missions/claim", {
+    method: "POST",
+    body: JSON.stringify({ missionId })
+  });
+}
+
 export function updateEvent(eventId: string, state: EventState, progress: Record<string, unknown> = {}) {
   return requestJson<{ event: PlayerEvent }>("/api/events/update", {
     method: "POST",
@@ -2077,6 +2086,24 @@ export function saveAdminKingdomEvent(payload: AdminKingdomEventPayload) {
 
 export function toggleAdminKingdomEvent(id: string, enabled: boolean) {
   return requestJson<{ event: KingdomEvent; events: KingdomEvent[] }>("/api/admin/events/toggle", {
+    method: "POST",
+    body: JSON.stringify({ id, enabled })
+  });
+}
+
+export function getAdminKingdomEventMissions(eventId: string) {
+  return requestJson<{ missions: KingdomEventMission[] }>(`/api/admin/events/${encodeURIComponent(eventId)}/missions`);
+}
+
+export function saveAdminKingdomEventMission(payload: AdminKingdomEventMissionPayload) {
+  return requestJson<{ mission: KingdomEventMission; missions: KingdomEventMission[] }>("/api/admin/events/missions/save", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function toggleAdminKingdomEventMission(id: string, enabled: boolean) {
+  return requestJson<{ mission: KingdomEventMission; missions: KingdomEventMission[] }>("/api/admin/events/missions/toggle", {
     method: "POST",
     body: JSON.stringify({ id, enabled })
   });

@@ -4,6 +4,7 @@ import { getCurrentUserId } from "../auth.js";
 import { getRuntimeContentDefinitions, getStaticRuntimeContentDefinitions } from "../contentDefinitions.js";
 import { query } from "../db.js";
 import { recordDailyQuestProgress } from "../daily.js";
+import { recordEventMissionProgress } from "../eventMissions.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
 import { recordWeeklyProgress } from "../weekly.js";
@@ -31,6 +32,7 @@ router.post("/result", async (req, res, next) => {
     );
     await recordDailyQuestProgress(userId, { eventType: "kill_enemy", targetId: enemy.id, amount: 1 });
     await recordWeeklyProgress(userId, "defeat_any_monsters_30", 1);
+    await recordEventMissionProgress(userId, "defeat_any_monsters", 1);
 
     const result: BattleResult = {
       enemyId: enemy.id,

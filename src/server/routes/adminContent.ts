@@ -21,6 +21,7 @@ import {
   getAdminQuests
 } from "../contentDefinitions.js";
 import { query } from "../db.js";
+import { EventMissionError, getAdminEventMissions, saveEventMission, toggleEventMission } from "../eventMissions.js";
 import { getKingdomEventHistory, saveKingdomEvent, toggleKingdomEvent, KingdomEventError } from "../kingdomEvents.js";
 
 const router = Router();
@@ -405,6 +406,57 @@ router.post("/events/toggle", async (req, res, next) => {
     res.json({ event, events: await getKingdomEventHistory() });
   } catch (error) {
     if (error instanceof KingdomEventError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+router.get("/events/:eventId/missions", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    const eventId = String(req.params.eventId ?? "").trim();
+    res.json({ missions: await getAdminEventMissions(eventId) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/events/missions/save", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    const mission = await saveEventMission(req.body);
+    await writeAdminAudit(admin.userId, "admin.kingdom_event_mission.save", "event_mission", mission.id, {
+      eventId: mission.eventId,
+      missionKey: mission.missionKey
+    });
+    res.json({ mission, missions: await getAdminEventMissions(mission.eventId) });
+  } catch (error) {
+    if (error instanceof EventMissionError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+router.post("/events/missions/toggle", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    const missionId = String(req.body.id ?? req.body.missionId ?? req.body.mission_id ?? "").trim();
+    const mission = await toggleEventMission(missionId, Boolean(req.body.enabled));
+    await writeAdminAudit(admin.userId, "admin.kingdom_event_mission.toggle", "event_mission", mission.id, {
+      eventId: mission.eventId,
+      missionKey: mission.missionKey,
+      enabled: mission.enabled
+    });
+    res.json({ mission, missions: await getAdminEventMissions(mission.eventId) });
+  } catch (error) {
+    if (error instanceof EventMissionError) {
       res.status(error.statusCode).json({ error: error.message });
       return;
     }

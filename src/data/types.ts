@@ -1934,6 +1934,27 @@ export interface AdminEventContent {
 }
 
 export type KingdomEventStatus = "active" | "upcoming" | "expired" | "disabled";
+export type KingdomEventMissionObjectiveType = "defeat_any_monsters" | "collect_materials" | "complete_daily_quests";
+
+export interface KingdomEventMission {
+  id: string;
+  eventId: string;
+  missionKey: string;
+  title: string;
+  description: string;
+  objectiveType: KingdomEventMissionObjectiveType;
+  objectiveLabel: string;
+  progress: number;
+  target: number;
+  completed: boolean;
+  claimed: boolean;
+  rewards: Pick<EventReward, "gold" | "blueDiamond" | "items">;
+  rewardMailId?: string | null;
+  claimedAt?: string | null;
+  enabled: boolean;
+  displayOrder: number;
+  updatedAt: string;
+}
 
 export interface KingdomEvent {
   id: string;
@@ -1949,6 +1970,7 @@ export interface KingdomEvent {
   createdBy?: string;
   createdAt: string;
   updatedAt: string;
+  missions?: KingdomEventMission[];
 }
 
 export interface AdminKingdomEventPayload {
@@ -1961,6 +1983,21 @@ export interface AdminKingdomEventPayload {
   endsAt: string;
   enabled: boolean;
   bannerTone?: string;
+}
+
+export interface AdminKingdomEventMissionPayload {
+  id?: string;
+  eventId: string;
+  missionKey: string;
+  title: string;
+  description?: string;
+  objectiveType: KingdomEventMissionObjectiveType;
+  target: number;
+  rewardGold?: number;
+  rewardBlueDiamond?: number;
+  rewardItems?: ItemStack[];
+  enabled: boolean;
+  displayOrder?: number;
 }
 
 export interface RuntimeContentDefinitions {

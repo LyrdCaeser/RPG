@@ -175,6 +175,45 @@ alter table game_events add column if not exists description text not null defau
 alter table game_events add column if not exists banner_tone text not null default 'moon';
 alter table game_events add column if not exists created_by uuid references users(id) on delete set null;
 
+create table if not exists event_missions (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null references game_events(id) on delete cascade,
+  mission_key text not null,
+  title text not null,
+  description text not null default '',
+  objective_type text not null check (objective_type in ('defeat_any_monsters', 'collect_materials', 'complete_daily_quests')),
+  target integer not null check (target > 0),
+  reward_gold integer not null default 0 check (reward_gold >= 0),
+  reward_blue_diamond integer not null default 0 check (reward_blue_diamond >= 0),
+  reward_items jsonb not null default '[]'::jsonb,
+  enabled boolean not null default true,
+  display_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (event_id, mission_key),
+  check (length(trim(mission_key)) > 0)
+);
+
+create table if not exists event_mission_progress (
+  user_id uuid not null references users(id) on delete cascade,
+  mission_id uuid not null references event_missions(id) on delete cascade,
+  progress integer not null default 0 check (progress >= 0),
+  target integer not null check (target > 0),
+  completed_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, mission_id)
+);
+
+create table if not exists event_mission_claims (
+  user_id uuid not null references users(id) on delete cascade,
+  mission_id uuid not null references event_missions(id) on delete cascade,
+  rewards_json jsonb not null default '{}'::jsonb,
+  reward_mail_id uuid,
+  claimed_at timestamptz not null default now(),
+  primary key (user_id, mission_id)
+);
+
 create table if not exists event_results (
   id bigserial primary key,
   user_id uuid not null references users(id) on delete cascade,
@@ -1749,6 +1788,10 @@ create index if not exists admin_events_enabled_idx on admin_events (enabled);
 create index if not exists game_events_active_window_idx on game_events (enabled, starts_at, ends_at);
 create index if not exists game_events_window_idx on game_events (starts_at, ends_at);
 create index if not exists game_events_created_idx on game_events (created_at desc);
+create index if not exists event_missions_event_idx on event_missions (event_id, enabled, display_order);
+create index if not exists event_missions_objective_idx on event_missions (objective_type, enabled);
+create index if not exists event_mission_progress_user_idx on event_mission_progress (user_id, updated_at desc);
+create index if not exists event_mission_claims_user_idx on event_mission_claims (user_id, claimed_at desc);
 create index if not exists pvp_profiles_rating_idx on pvp_profiles (rating desc, wins desc);
 create index if not exists pvp_profiles_ranked_idx on pvp_profiles (rating desc, ranked_wins desc, last_ranked_match_at desc);
 create index if not exists pvp_seasons_state_window_idx on pvp_seasons (state, start_at, end_at);

@@ -3931,8 +3931,7 @@ button:disabled {
   color: #edf7ef;
 }
 
-.kingdom-events-panel header,
-.kingdom-event-card {
+.kingdom-events-panel header {
   display: flex;
   justify-content: space-between;
   gap: 14px;
@@ -3979,6 +3978,10 @@ button:disabled {
 }
 
 .kingdom-event-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: flex-start;
   border: 1px solid #5f765f;
   border-radius: 10px;
   padding: 12px;
@@ -4049,9 +4052,82 @@ button:disabled {
   color: #f5d98d;
 }
 
+.kingdom-event-missions {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+  border-top: 1px solid #40564f;
+  padding-top: 10px;
+}
+
+.kingdom-event-mission {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 9px;
+  background: rgba(8, 15, 13, 0.42);
+}
+
+.kingdom-event-mission[data-complete="true"] {
+  border-color: #7fbf7b;
+}
+
+.kingdom-event-mission[data-claimed="true"] {
+  opacity: 0.75;
+}
+
+.kingdom-event-mission > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.kingdom-event-mission progress {
+  width: min(360px, 100%);
+  accent-color: #d6b86a;
+}
+
 .admin-kingdom-events .admin-form-grid textarea {
   min-height: 140px;
   resize: vertical;
+}
+
+.admin-kingdom-event-editor,
+.admin-kingdom-missions {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-kingdom-missions {
+  border-top: 1px solid #40564f;
+  padding-top: 12px;
+}
+
+.admin-kingdom-missions header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-kingdom-missions h3,
+.admin-kingdom-missions p {
+  margin: 0;
+}
+
+.admin-kingdom-missions p {
+  color: #b9c7c1;
+  font-size: 12px;
+}
+
+.admin-kingdom-mission-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 12px;
 }
 
 .admin-wallet-shop-editor,

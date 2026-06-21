@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getActiveKingdomEvents, getKingdomEventHistory } from "../api/client";
-import type { KingdomEvent } from "../data/types";
+import { claimKingdomEventMission, getActiveKingdomEvents, getKingdomEventHistory } from "../api/client";
+import type { EventReward, KingdomEvent, KingdomEventMission } from "../data/types";
 import { useGameStore } from "../store/useGameStore";
 
 type EventTab = "active" | "history";
@@ -11,6 +11,7 @@ export function KingdomEventsPanel() {
   const [historyEvents, setHistoryEvents] = useState<KingdomEvent[]>([]);
   const [activeTab, setActiveTab] = useState<EventTab>("active");
   const [loading, setLoading] = useState(false);
+  const [claimingMissionId, setClaimingMissionId] = useState("");
   const [message, setMessage] = useState("");
 
   const loadEvents = () => {
@@ -33,6 +34,22 @@ export function KingdomEventsPanel() {
   useEffect(loadEvents, []);
 
   const rows = activeTab === "active" ? activeEvents : historyEvents;
+
+  const claimMission = (mission: KingdomEventMission) => {
+    setClaimingMissionId(mission.id);
+    setMessage("");
+    void claimKingdomEventMission(mission.id)
+      .then((response) => {
+        setActiveEvents(response.events);
+        setMessage("Thưởng đã được gửi vào Thư Quạ Đêm.");
+      })
+      .catch((error) => {
+        const text = error instanceof Error ? error.message : "Không thể nhận thưởng Sắc Lệnh.";
+        setMessage(text);
+        addWarning(text);
+      })
+      .finally(() => setClaimingMissionId(""));
+  };
 
   return (
     <section className="kingdom-events-panel" aria-label="Sắc Lệnh Giới Hạn">
@@ -81,6 +98,30 @@ export function KingdomEventsPanel() {
                   <dd>{formatDate(event.endsAt)}</dd>
                 </div>
               </dl>
+              {activeTab === "active" && event.missions && event.missions.length > 0 ? (
+                <div className="kingdom-event-missions">
+                  {event.missions.map((mission) => (
+                    <article key={mission.id} className="kingdom-event-mission" data-complete={mission.completed} data-claimed={mission.claimed}>
+                      <div>
+                        <strong>{mission.title}</strong>
+                        <span>{mission.description}</span>
+                        <small>
+                          {mission.objectiveLabel}: {mission.progress}/{mission.target}
+                        </small>
+                        <progress value={mission.progress} max={mission.target} />
+                        <small>Thưởng: {rewardLabel(mission.rewards)}</small>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => claimMission(mission)}
+                        disabled={!mission.completed || mission.claimed || claimingMissionId === mission.id}
+                      >
+                        {mission.claimed ? "Đã gửi thư thưởng" : claimingMissionId === mission.id ? "Đang gửi" : "Nhận qua Thư Quạ Đêm"}
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
             </article>
           ))}
         </div>
@@ -94,6 +135,14 @@ function statusLabel(status: KingdomEvent["status"]) {
   if (status === "upcoming") return "Sắp mở";
   if (status === "expired") return "Đã khép lại";
   return "Đã tắt";
+}
+
+function rewardLabel(rewards: Pick<EventReward, "gold" | "blueDiamond" | "items">) {
+  const parts = [];
+  if (Number(rewards.gold ?? 0) > 0) parts.push(`${rewards.gold} Vàng`);
+  if (Number(rewards.blueDiamond ?? 0) > 0) parts.push(`${rewards.blueDiamond} Kim Cương Lam`);
+  for (const item of rewards.items ?? []) parts.push(`${item.quantity} x ${item.itemId}`);
+  return parts.length > 0 ? parts.join(", ") : "Không có thưởng";
 }
 
 function formatDate(value: string) {
