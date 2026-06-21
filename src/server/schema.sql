@@ -153,6 +153,28 @@ create table if not exists player_events (
   primary key (user_id, event_id)
 );
 
+create table if not exists game_events (
+  id uuid primary key default gen_random_uuid(),
+  event_key text not null unique,
+  title text not null,
+  subtitle text not null default '',
+  description text not null default '',
+  starts_at timestamptz not null,
+  ends_at timestamptz not null,
+  enabled boolean not null default false,
+  banner_tone text not null default 'moon',
+  created_by uuid references users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (length(trim(event_key)) > 0),
+  check (ends_at > starts_at)
+);
+
+alter table game_events add column if not exists subtitle text not null default '';
+alter table game_events add column if not exists description text not null default '';
+alter table game_events add column if not exists banner_tone text not null default 'moon';
+alter table game_events add column if not exists created_by uuid references users(id) on delete set null;
+
 create table if not exists event_results (
   id bigserial primary key,
   user_id uuid not null references users(id) on delete cascade,
@@ -1724,6 +1746,9 @@ create index if not exists admin_quests_enabled_idx on admin_quests (enabled);
 create index if not exists admin_items_enabled_idx on admin_items (enabled);
 create index if not exists admin_enemies_enabled_idx on admin_enemies (enabled);
 create index if not exists admin_events_enabled_idx on admin_events (enabled);
+create index if not exists game_events_active_window_idx on game_events (enabled, starts_at, ends_at);
+create index if not exists game_events_window_idx on game_events (starts_at, ends_at);
+create index if not exists game_events_created_idx on game_events (created_at desc);
 create index if not exists pvp_profiles_rating_idx on pvp_profiles (rating desc, wins desc);
 create index if not exists pvp_profiles_ranked_idx on pvp_profiles (rating desc, ranked_wins desc, last_ranked_match_at desc);
 create index if not exists pvp_seasons_state_window_idx on pvp_seasons (state, start_at, end_at);

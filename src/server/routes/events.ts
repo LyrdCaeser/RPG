@@ -7,6 +7,7 @@ import { upsertLeaderboardScores } from "../leaderboardPersistence.js";
 import { savePlayerSnapshot } from "../playerPersistence.js";
 import { enrichPlayerSnapshot } from "../playerStats.js";
 import { grantPetMountRewards } from "../rewardPersistence.js";
+import { getActiveKingdomEvents, getKingdomEventHistory } from "../kingdomEvents.js";
 import { addInventoryItem } from "./inventory.js";
 
 interface EventRow {
@@ -21,6 +22,22 @@ interface EventRow {
 
 const router = Router();
 const states: EventState[] = ["locked", "scheduled", "active", "completed", "claimed", "expired"];
+
+router.get("/active", async (_req, res, next) => {
+  try {
+    res.json({ events: await getActiveKingdomEvents() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/history", async (_req, res, next) => {
+  try {
+    res.json({ events: await getKingdomEventHistory() });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.get("/me", async (req, res, next) => {
   try {

@@ -21,6 +21,7 @@ import {
   getAdminQuests
 } from "../contentDefinitions.js";
 import { query } from "../db.js";
+import { getKingdomEventHistory, saveKingdomEvent, toggleKingdomEvent, KingdomEventError } from "../kingdomEvents.js";
 
 const router = Router();
 const itemTypes: ItemType[] = ["consumable", "weapon", "armor", "accessory", "material", "quest_item"];
@@ -368,8 +369,45 @@ router.get("/events", async (req, res, next) => {
   try {
     const admin = await requireAdmin(req, res);
     if (!admin) return;
+    if (String(req.query.scope ?? "") === "limited") {
+      res.json({ events: await getKingdomEventHistory() });
+      return;
+    }
     res.json({ events: await getAdminEvents() });
   } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/events/save", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    const event = await saveKingdomEvent(req.body, admin.userId);
+    await writeAdminAudit(admin.userId, "admin.kingdom_event.save", "game_event", event.id, { eventKey: event.eventKey });
+    res.json({ event, events: await getKingdomEventHistory() });
+  } catch (error) {
+    if (error instanceof KingdomEventError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+router.post("/events/toggle", async (req, res, next) => {
+  try {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+    const eventId = String(req.body.id ?? req.body.eventId ?? req.body.eventKey ?? "");
+    const event = await toggleKingdomEvent(eventId, Boolean(req.body.enabled));
+    await writeAdminAudit(admin.userId, "admin.kingdom_event.toggle", "game_event", event.id, { eventKey: event.eventKey, enabled: event.enabled });
+    res.json({ event, events: await getKingdomEventHistory() });
+  } catch (error) {
+    if (error instanceof KingdomEventError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
     next(error);
   }
 });

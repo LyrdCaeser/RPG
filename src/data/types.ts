@@ -1933,6 +1933,36 @@ export interface AdminEventContent {
   enabled: boolean;
 }
 
+export type KingdomEventStatus = "active" | "upcoming" | "expired" | "disabled";
+
+export interface KingdomEvent {
+  id: string;
+  eventKey: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  startsAt: string;
+  endsAt: string;
+  enabled: boolean;
+  bannerTone: string;
+  status: KingdomEventStatus;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminKingdomEventPayload {
+  id?: string;
+  eventKey: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  startsAt: string;
+  endsAt: string;
+  enabled: boolean;
+  bannerTone?: string;
+}
+
 export interface RuntimeContentDefinitions {
   npcs: NpcDefinition[];
   quests: QuestDefinition[];

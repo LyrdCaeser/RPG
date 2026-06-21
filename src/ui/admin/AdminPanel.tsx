@@ -9,6 +9,9 @@ const AdminTopupPanel = lazy(() => import("./AdminTopupPanel").then((module) => 
 const AdminWalletPanel = lazy(() => import("./AdminWalletPanel").then((module) => ({ default: module.AdminWalletPanel })));
 const AdminWalletShopPanel = lazy(() => import("./AdminWalletShopPanel").then((module) => ({ default: module.AdminWalletShopPanel })));
 const AdminContentPanel = lazy(() => import("./AdminContentPanel").then((module) => ({ default: module.AdminContentPanel })));
+const AdminKingdomEventsPanel = lazy(() =>
+  import("./AdminKingdomEventsPanel").then((module) => ({ default: module.AdminKingdomEventsPanel }))
+);
 const AdminMailboxPanel = lazy(() => import("./AdminMailboxPanel").then((module) => ({ default: module.AdminMailboxPanel })));
 const AdminGiftcodesPanel = lazy(() => import("./AdminGiftcodesPanel").then((module) => ({ default: module.AdminGiftcodesPanel })));
 const AdminBansPanel = lazy(() => import("./AdminBansPanel").then((module) => ({ default: module.AdminBansPanel })));
@@ -44,6 +47,7 @@ const tabs = [
   "Vật phẩm",
   "Kẻ địch",
   "Sự kiện",
+  "Quản Lý Sắc Lệnh",
   "Vận hành đấu trường",
   "Hàng đợi rủi ro",
   "Báo cáo đấu trường",
@@ -162,6 +166,7 @@ export function AdminPanel({
                 {activeTab === "Vật phẩm" && <AdminContentPanel kind="items" />}
                 {activeTab === "Kẻ địch" && <AdminContentPanel kind="enemies" />}
                 {activeTab === "Sự kiện" && <AdminContentPanel kind="events" />}
+                {activeTab === "Quản Lý Sắc Lệnh" && <AdminKingdomEventsPanel />}
                 {activeTab === "Vận hành đấu trường" && <AdminPvpOperationsPanel />}
                 {activeTab === "Hàng đợi rủi ro" && <AdminPvpRiskQueuePanel />}
                 {activeTab === "Báo cáo đấu trường" && <AdminPvpReportsPanel />}

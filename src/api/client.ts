@@ -5,6 +5,7 @@ import type {
   EquipmentSlot,
   EnemyDefinition,
   EventState,
+  AdminKingdomEventPayload,
   AdminEnemyContent,
   AdminEventContent,
   AdminItemContent,
@@ -85,6 +86,7 @@ import type {
   CollectionProgressEvent,
   PlayerCollection,
   PlayerEvent,
+  KingdomEvent,
   MailboxMessage,
   PlayerMount,
   PlayerOnboarding,
@@ -2033,6 +2035,14 @@ export function getEventsMe() {
   return requestJson<{ events: PlayerEvent[] }>("/api/events/me");
 }
 
+export function getActiveKingdomEvents() {
+  return requestJson<{ events: KingdomEvent[] }>("/api/events/active");
+}
+
+export function getKingdomEventHistory() {
+  return requestJson<{ events: KingdomEvent[] }>("/api/events/history");
+}
+
 export function updateEvent(eventId: string, state: EventState, progress: Record<string, unknown> = {}) {
   return requestJson<{ event: PlayerEvent }>("/api/events/update", {
     method: "POST",
@@ -2051,6 +2061,24 @@ export function saveBossResult(eventId: string, bossId: string, player: PlayerSn
   return requestJson<{ event: PlayerEvent; player: PlayerSnapshot; pets?: PlayerPet[]; mounts?: PlayerMount[] }>("/api/events/boss-result", {
     method: "POST",
     body: JSON.stringify({ eventId, bossId, player })
+  });
+}
+
+export function getAdminKingdomEvents() {
+  return requestJson<{ events: KingdomEvent[] }>("/api/admin/events?scope=limited");
+}
+
+export function saveAdminKingdomEvent(payload: AdminKingdomEventPayload) {
+  return requestJson<{ event: KingdomEvent; events: KingdomEvent[] }>("/api/admin/events/save", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function toggleAdminKingdomEvent(id: string, enabled: boolean) {
+  return requestJson<{ event: KingdomEvent; events: KingdomEvent[] }>("/api/admin/events/toggle", {
+    method: "POST",
+    body: JSON.stringify({ id, enabled })
   });
 }
 

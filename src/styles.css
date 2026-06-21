@@ -679,6 +679,7 @@ button:disabled {
 .admin-search input,
 .admin-form-grid input,
 .admin-form-grid select,
+.admin-form-grid textarea,
 .admin-json textarea {
   width: 100%;
   border: 1px solid #50675f;
@@ -3111,6 +3112,7 @@ button:disabled {
 .major-panel-body .wallet-shop-panel,
 .major-panel-body .daily-panel,
 .major-panel-body .weekly-panel,
+.major-panel-body .kingdom-events-panel,
 .major-panel-body .topup-panel,
 .major-panel-body .guild-panel,
 .major-panel-body .pvp-panel,
@@ -3921,6 +3923,135 @@ button:disabled {
 
 .weekly-rewards strong {
   color: #f5d98d;
+}
+
+.kingdom-events-panel {
+  display: grid;
+  gap: 14px;
+  color: #edf7ef;
+}
+
+.kingdom-events-panel header,
+.kingdom-event-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.kingdom-events-panel h2,
+.kingdom-events-panel h3 {
+  margin: 0;
+  color: #fff1b8;
+}
+
+.kingdom-events-panel p,
+.kingdom-events-panel span,
+.kingdom-events-panel strong,
+.kingdom-events-panel dt,
+.kingdom-events-panel dd {
+  color: #b9c7c1;
+}
+
+.kingdom-events-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kingdom-events-tabs button[data-active="true"] {
+  border-color: #d6b86a;
+  color: #fff1b8;
+  background: linear-gradient(180deg, rgba(76, 60, 31, 0.92), rgba(35, 36, 24, 0.88));
+}
+
+.kingdom-events-message,
+.kingdom-events-empty {
+  border: 1px solid #5f765f;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(8, 15, 13, 0.66);
+}
+
+.kingdom-events-list {
+  display: grid;
+  gap: 10px;
+}
+
+.kingdom-event-card {
+  border: 1px solid #5f765f;
+  border-radius: 10px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at 12% 0, rgba(214, 183, 92, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(31, 45, 39, 0.92), rgba(10, 18, 16, 0.94));
+  box-shadow: inset 0 1px 0 #fff4c916;
+}
+
+.kingdom-event-card[data-tone="anchor"] {
+  border-color: #4d8f8a;
+}
+
+.kingdom-event-card[data-tone="blood"] {
+  border-color: #9a5968;
+}
+
+.kingdom-event-card[data-status="active"] {
+  border-color: #d6b86a;
+}
+
+.kingdom-event-card > div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.kingdom-event-card > div > span {
+  width: max-content;
+  border: 1px solid #7f744f;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #fff1b8;
+  background: rgba(8, 15, 13, 0.58);
+  font-size: 11px;
+}
+
+.kingdom-event-card h3 {
+  font-size: 18px;
+}
+
+.kingdom-event-card p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.kingdom-event-card dl {
+  display: grid;
+  gap: 7px;
+  min-width: 170px;
+  margin: 0;
+}
+
+.kingdom-event-card dl > div {
+  border: 1px solid #40564f;
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(8, 15, 13, 0.44);
+}
+
+.kingdom-event-card dt,
+.kingdom-event-card dd {
+  margin: 0;
+  font-size: 12px;
+}
+
+.kingdom-event-card dt {
+  color: #f5d98d;
+}
+
+.admin-kingdom-events .admin-form-grid textarea {
+  min-height: 140px;
+  resize: vertical;
 }
 
 .admin-wallet-shop-editor,
